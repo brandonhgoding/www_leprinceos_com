@@ -1,16 +1,23 @@
-/* src/pages/Engagements.module.css */
+/* src/pages/EngagementDetail.module.css */
 
 .page {
   padding: 1rem 0;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   margin-bottom: 1.5rem;
-  gap: 1rem;
-  flex-wrap: wrap;
+}
+
+.backLink {
+  display: inline-block;
+  font-size: 0.875rem;
+  color: var(--brass);
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.backLink:hover {
+  text-decoration: underline;
 }
 
 .title {
@@ -23,6 +30,170 @@
 
 .subtitle {
   color: var(--stone);
+  margin: 0;
+}
+
+/* Loading and error states */
+.loading,
+.notFound,
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--stone);
+}
+
+.empty p {
+  margin-bottom: 1rem;
+}
+
+/* Cards Grid */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.cardTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Film Card */
+.cardContent {
+  display: flex;
+  gap: 1rem;
+}
+
+.poster {
+  width: 100px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.filmInfo {
+  flex: 1;
+}
+
+.filmTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin: 0 0 0.5rem 0;
+}
+
+.filmMeta {
+  font-size: 0.875rem;
+  color: var(--charcoal);
+  margin: 0 0 0.25rem 0;
+}
+
+.synopsis {
+  font-size: 0.8125rem;
+  color: var(--stone);
+  margin: 0.75rem 0 0 0;
+  line-height: 1.5;
+}
+
+/* Engagement Card */
+.engagementInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--stone);
+  min-width: 80px;
+}
+
+.notes {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notes p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--charcoal);
+}
+
+/* Status badges */
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.statusConfirmed {
+  background: rgba(34, 197, 94, 0.1);
+  color: #15803d;
+}
+
+.statusDraft {
+  background: rgba(168, 162, 158, 0.2);
+  color: var(--stone);
+}
+
+.statusCancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.statusEnded {
+  background: rgba(107, 114, 128, 0.1);
+  color: #4b5563;
+}
+
+/* Showtimes Section */
+.showtimesSection {
+  margin-top: 2rem;
+}
+
+.showtimesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--charcoal);
   margin: 0;
 }
 
@@ -43,42 +214,22 @@
   background: var(--brass-light);
 }
 
-/* Filters */
-.filters {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.filterLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.secondaryButton {
+  padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
+  font-weight: 500;
   color: var(--charcoal);
-}
-
-.filterSelect {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  border: 1px solid var(--stone);
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
-  background: white;
-  color: var(--charcoal);
   cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
-/* Loading and Empty states */
-.loading,
-.empty {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--stone);
-}
-
-.empty p {
-  margin-bottom: 1rem;
+.secondaryButton:hover {
+  background: var(--cream);
+  border-color: rgba(0, 0, 0, 0.3);
 }
 
 /* Table */
@@ -118,33 +269,31 @@
   border-bottom: none;
 }
 
-.filmCell {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.cancelledRow {
+  opacity: 0.6;
 }
 
-.posterThumb {
-  width: 32px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 2px;
-  background: var(--stone);
-}
-
-.filmTitle {
+.dateTimeCell {
   font-weight: 500;
   color: var(--charcoal);
 }
 
-.formatCell {
-  font-size: 0.75rem;
+.captionsBadge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
   font-weight: 600;
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border-radius: 4px;
+}
+
+.noCaptions {
   color: var(--stone);
 }
 
-/* Status badges */
-.statusBadge {
+.activeBadge,
+.cancelledBadge {
   display: inline-block;
   padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
@@ -154,24 +303,14 @@
   letter-spacing: 0.025em;
 }
 
-.statusConfirmed {
+.activeBadge {
   background: rgba(34, 197, 94, 0.1);
   color: #15803d;
 }
 
-.statusDraft {
-  background: rgba(168, 162, 158, 0.2);
-  color: var(--stone);
-}
-
-.statusCancelled {
+.cancelledBadge {
   background: rgba(239, 68, 68, 0.1);
   color: #dc2626;
-}
-
-.statusEnded {
-  background: rgba(107, 114, 128, 0.1);
-  color: #4b5563;
 }
 
 /* Actions */
@@ -195,16 +334,6 @@
 .actionButton:hover {
   background: var(--cream);
   border-color: rgba(0, 0, 0, 0.25);
-}
-
-.detailsButton {
-  color: var(--brass);
-  text-decoration: none;
-}
-
-.detailsButton:hover {
-  background: rgba(184, 149, 108, 0.1);
-  border-color: var(--brass);
 }
 
 .deleteButton {
@@ -232,7 +361,7 @@
   background: white;
   border-radius: 8px;
   width: 100%;
-  max-width: 500px;
+  max-width: 450px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
@@ -300,8 +429,7 @@
   gap: 1rem;
 }
 
-.input,
-.textarea {
+.input {
   padding: 0.625rem 0.875rem;
   font-size: 0.9375rem;
   border: 1px solid rgba(0, 0, 0, 0.15);
@@ -311,16 +439,25 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.input:focus,
-.textarea:focus {
+.input:focus {
   outline: none;
   border-color: var(--brass);
   box-shadow: 0 0 0 3px rgba(184, 149, 108, 0.1);
 }
 
-.textarea {
-  resize: vertical;
-  min-height: 80px;
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding-top: 1.5rem;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 
 .formActions {
@@ -369,20 +506,93 @@
   cursor: not-allowed;
 }
 
+/* Bulk form */
+.bulkInfo {
+  padding: 0.75rem 1rem;
+  background: var(--cream);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--charcoal);
+}
+
+.timeSlots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.timeSlot {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.timeSlot .input {
+  flex: 1;
+}
+
+.removeTimeButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #dc2626;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.removeTimeButton:hover {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.addTimeButton {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--brass);
+  background: transparent;
+  border: 1px dashed var(--brass);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.addTimeButton:hover {
+  background: rgba(184, 149, 108, 0.05);
+}
+
 /* Responsive */
-@media (max-width: 640px) {
-  .header {
-    flex-direction: column;
-    align-items: stretch;
+@media (max-width: 768px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
   }
 
+  .cardContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .poster {
+    width: 120px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 640px) {
   .formRow {
     grid-template-columns: 1fr;
   }
 
-  .table th:nth-child(4),
-  .table td:nth-child(4) {
-    display: none;
+  .showtimesHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
 
   .actions {

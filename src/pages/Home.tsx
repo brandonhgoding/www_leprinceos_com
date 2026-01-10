@@ -92,8 +92,6 @@ export default function Home() {
         <SummaryCard
           label="Today's Showtimes"
           value={todayShowtimes.length}
-          linkText="View showtimes"
-          linkTo="/dashboard/showtimes"
           isLoading={showtimesLoading}
         />
       </div>

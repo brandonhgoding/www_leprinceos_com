@@ -1,5 +1,6 @@
 // src/pages/Engagements.tsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, filmsApi, screensApi } from '../api';
 import type { Engagement, EngagementCreate, Film, Screen } from '../api/types';
@@ -235,6 +236,12 @@ export default function Engagements() {
                   </td>
                   <td>
                     <div className={styles.actions}>
+                      <Link
+                        to={`/dashboard/engagements/${engagement.id}`}
+                        className={`${styles.actionButton} ${styles.detailsButton}`}
+                      >
+                        Details
+                      </Link>
                       <button
                         className={styles.actionButton}
                         onClick={() => openEditModal(engagement)}

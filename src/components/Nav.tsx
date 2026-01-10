@@ -44,7 +44,6 @@ export default function Nav({ currentCinema, cinemas = [], username, onCinemaCha
   const navItems: NavItem[] = [
     { path: '/dashboard', label: 'Home' },
     { path: '/dashboard/engagements', label: 'Engagements' },
-    { path: '/dashboard/showtimes', label: 'Showtimes' },
     {
       label: 'Cinema',
       items: [

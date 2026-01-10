@@ -5,7 +5,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Engagements from './pages/Engagements';
-import Showtimes from './pages/Showtimes';
+import EngagementDetail from './pages/EngagementDetail';
 import Screens from './pages/Screens';
 import BoxOffice from './pages/BoxOffice';
 import Embeds from './pages/Embeds';
@@ -29,7 +29,7 @@ function App() {
         >
           <Route index element={<Home />} />
           <Route path="engagements" element={<Engagements />} />
-          <Route path="showtimes" element={<Showtimes />} />
+          <Route path="engagements/:id" element={<EngagementDetail />} />
           <Route path="screens" element={<Screens />} />
           <Route path="box-office" element={<BoxOffice />} />
           <Route path="embeds" element={<Embeds />} />
