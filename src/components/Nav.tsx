@@ -48,9 +48,9 @@ export default function Nav({ currentCinema, cinemas = [], username, onCinemaCha
       label: 'Cinema',
       items: [
         { path: '/dashboard/screens', label: 'Screens' },
+        { path: '/dashboard/tickets', label: 'Tickets' },
       ],
     },
-    { path: '/dashboard/box-office', label: 'Box Office' },
     { path: '/dashboard/embeds', label: 'Embeds' },
   ];
 

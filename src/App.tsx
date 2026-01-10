@@ -7,7 +7,8 @@ import Home from './pages/Home';
 import Engagements from './pages/Engagements';
 import EngagementDetail from './pages/EngagementDetail';
 import Screens from './pages/Screens';
-import BoxOffice from './pages/BoxOffice';
+import Tickets from './pages/Tickets';
+import TicketDetail from './pages/TicketDetail';
 import Embeds from './pages/Embeds';
 
 function App() {
@@ -31,7 +32,8 @@ function App() {
           <Route path="engagements" element={<Engagements />} />
           <Route path="engagements/:id" element={<EngagementDetail />} />
           <Route path="screens" element={<Screens />} />
-          <Route path="box-office" element={<BoxOffice />} />
+          <Route path="tickets" element={<Tickets />} />
+          <Route path="tickets/:id" element={<TicketDetail />} />
           <Route path="embeds" element={<Embeds />} />
         </Route>
       </Routes>

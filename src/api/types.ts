@@ -107,3 +107,53 @@ export interface ShowtimeFilters {
   starts_at_after?: string;
   starts_at_before?: string;
 }
+
+// Ticket Types
+export interface TicketTypeRule {
+  id: number;
+  ticket_type: number;
+  name: string;
+  is_active: boolean;
+  priority: number;
+  matinee_cutoff_time: string | null;
+  days_of_week: string;
+  days_of_week_list: number[];
+  presentation_format: '2d' | '3d' | null;
+  requires_3d_screen: boolean | null;
+  screen_type: 'standard' | 'imax' | 'dolby_cinema' | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TicketTypeRuleCreate {
+  name: string;
+  is_active?: boolean;
+  priority?: number;
+  matinee_cutoff_time?: string | null;
+  days_of_week_list?: number[];
+  presentation_format?: '2d' | '3d' | null;
+  requires_3d_screen?: boolean | null;
+  screen_type?: 'standard' | 'imax' | 'dolby_cinema' | null;
+}
+
+export interface TicketType {
+  id: number;
+  name: string;
+  price: string;
+  is_active: boolean;
+  description: string;
+  rules_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TicketTypeDetail extends TicketType {
+  rules: TicketTypeRule[];
+}
+
+export interface TicketTypeCreate {
+  name: string;
+  price: string;
+  is_active?: boolean;
+  description?: string;
+}
