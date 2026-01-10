@@ -30,13 +30,25 @@ export const clearTokens = (): void => {
   localStorage.removeItem('refresh_token');
 };
 
-// Request interceptor - add auth header
+// Get current cinema ID from localStorage
+export const getCurrentCinemaId = (): string | null => {
+  return localStorage.getItem('selected_cinema_id');
+};
+
+// Request interceptor - add auth header and cinema header
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Add cinema header for multi-tenant requests
+    const cinemaId = getCurrentCinemaId();
+    if (cinemaId) {
+      config.headers['X-Cinema-ID'] = cinemaId;
+    }
+
     return config;
   },
   (error) => Promise.reject(error)

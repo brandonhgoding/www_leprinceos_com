@@ -7,6 +7,22 @@ interface Cinema {
   name: string;
 }
 
+interface NavLink {
+  path: string;
+  label: string;
+}
+
+interface NavDropdown {
+  label: string;
+  items: NavLink[];
+}
+
+type NavItem = NavLink | NavDropdown;
+
+function isDropdown(item: NavItem): item is NavDropdown {
+  return 'items' in item;
+}
+
 interface NavProps {
   currentCinema?: Cinema | null;
   cinemas?: Cinema[];
@@ -18,14 +34,23 @@ interface NavProps {
 export default function Nav({ currentCinema, cinemas = [], username, onCinemaChange, onLogout }: NavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCinemaDropdownOpen, setIsCinemaDropdownOpen] = useState(false);
+  const [openNavDropdown, setOpenNavDropdown] = useState<string | null>(null);
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
-  const navLinks = [
+  const isDropdownActive = (items: NavLink[]) => items.some(item => isActive(item.path));
+
+  const navItems: NavItem[] = [
     { path: '/dashboard', label: 'Home' },
     { path: '/dashboard/engagements', label: 'Engagements' },
     { path: '/dashboard/showtimes', label: 'Showtimes' },
+    {
+      label: 'Cinema',
+      items: [
+        { path: '/dashboard/screens', label: 'Screens' },
+      ],
+    },
     { path: '/dashboard/box-office', label: 'Box Office' },
     { path: '/dashboard/embeds', label: 'Embeds' },
   ];
@@ -104,14 +129,44 @@ export default function Nav({ currentCinema, cinemas = [], username, onCinemaCha
 
           {/* Desktop nav links */}
           <ul className={styles.navLinks}>
-            {navLinks.map((link) => (
-              <li key={link.path}>
-                <Link
-                  to={link.path}
-                  className={`${styles.navLink} ${isActive(link.path) ? styles.navLinkActive : ''}`}
-                >
-                  {link.label}
-                </Link>
+            {navItems.map((item) => (
+              <li key={isDropdown(item) ? item.label : item.path}>
+                {isDropdown(item) ? (
+                  <div className={styles.navDropdown}>
+                    <button
+                      className={`${styles.navLink} ${styles.navDropdownTrigger} ${isDropdownActive(item.items) ? styles.navLinkActive : ''}`}
+                      onClick={() => setOpenNavDropdown(openNavDropdown === item.label ? null : item.label)}
+                      onBlur={() => setTimeout(() => setOpenNavDropdown(null), 150)}
+                    >
+                      {item.label}
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M3 5l3 3 3-3" />
+                      </svg>
+                    </button>
+                    {openNavDropdown === item.label && (
+                      <ul className={styles.navDropdownMenu}>
+                        {item.items.map((subItem) => (
+                          <li key={subItem.path}>
+                            <Link
+                              to={subItem.path}
+                              className={`${styles.navDropdownItem} ${isActive(subItem.path) ? styles.navDropdownItemActive : ''}`}
+                              onClick={() => setOpenNavDropdown(null)}
+                            >
+                              {subItem.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className={`${styles.navLink} ${isActive(item.path) ? styles.navLinkActive : ''}`}
+                  >
+                    {item.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
