@@ -8,12 +8,14 @@ interface Cinema {
 }
 
 interface NavProps {
-  currentCinema?: Cinema;
+  currentCinema?: Cinema | null;
   cinemas?: Cinema[];
   username?: string;
+  onCinemaChange?: (cinemaId: number) => void;
+  onLogout?: () => void;
 }
 
-export default function Nav({ currentCinema, cinemas = [], username }: NavProps) {
+export default function Nav({ currentCinema, cinemas = [], username, onCinemaChange, onLogout }: NavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCinemaDropdownOpen, setIsCinemaDropdownOpen] = useState(false);
   const location = useLocation();
@@ -23,6 +25,7 @@ export default function Nav({ currentCinema, cinemas = [], username }: NavProps)
   const navLinks = [
     { path: '/dashboard', label: 'Home' },
     { path: '/dashboard/engagements', label: 'Engagements' },
+    { path: '/dashboard/showtimes', label: 'Showtimes' },
     { path: '/dashboard/box-office', label: 'Box Office' },
     { path: '/dashboard/embeds', label: 'Embeds' },
   ];
@@ -77,7 +80,7 @@ export default function Nav({ currentCinema, cinemas = [], username }: NavProps)
                           <button
                             className={`${styles.dropdownItem} ${cinema.id === currentCinema.id ? styles.dropdownItemActive : ''}`}
                             onClick={() => {
-                              // Handle cinema switch
+                              onCinemaChange?.(cinema.id);
                               setIsCinemaDropdownOpen(false);
                             }}
                           >
@@ -121,6 +124,7 @@ export default function Nav({ currentCinema, cinemas = [], username }: NavProps)
                 <button
                   key={cinema.id}
                   className={`${styles.mobileCinemaItem} ${cinema.id === currentCinema.id ? styles.mobileCinemaItemActive : ''}`}
+                  onClick={() => onCinemaChange?.(cinema.id)}
                 >
                   {cinema.id === currentCinema.id && (
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -136,7 +140,7 @@ export default function Nav({ currentCinema, cinemas = [], username }: NavProps)
           {/* User menu */}
           <div className={styles.userMenu}>
             {username && <span className={styles.username}>{username}</span>}
-            <button className={styles.logoutButton}>Logout</button>
+            <button className={styles.logoutButton} onClick={onLogout}>Logout</button>
           </div>
         </div>
       </div>

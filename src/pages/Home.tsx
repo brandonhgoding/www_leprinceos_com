@@ -1,27 +1,25 @@
+// src/pages/Home.tsx
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { filmsApi, engagementsApi, showtimesApi } from '../api';
+import type { Showtime } from '../api/types';
 import styles from './Home.module.css';
-
-interface Showtime {
-  id: number;
-  time: string;
-  filmTitle: string;
-  screenName: string;
-}
 
 interface SummaryCardProps {
   label: string;
-  value: number;
+  value: number | string;
   linkText?: string;
   linkTo?: string;
   subtitle?: string;
+  isLoading?: boolean;
 }
 
-function SummaryCard({ label, value, linkText, linkTo, subtitle }: SummaryCardProps) {
+function SummaryCard({ label, value, linkText, linkTo, subtitle, isLoading }: SummaryCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardBody}>
         <p className={styles.cardLabel}>{label}</p>
-        <p className={styles.cardValue}>{value}</p>
+        <p className={styles.cardValue}>{isLoading ? '—' : value}</p>
         {linkTo && linkText ? (
           <Link to={linkTo} className={styles.cardLink}>
             {linkText} &rarr;
@@ -34,19 +32,45 @@ function SummaryCard({ label, value, linkText, linkTo, subtitle }: SummaryCardPr
   );
 }
 
-export default function Home() {
-  // Mock data - in a real app this would come from an API
-  const filmCount = 24;
-  const activeEngagements = 8;
-  const todayShowtimes = 12;
+function formatShowtime(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
 
-  const showtimes: Showtime[] = [
-    { id: 1, time: '2:30 PM', filmTitle: 'Dune: Part Two', screenName: 'Screen 1' },
-    { id: 2, time: '3:00 PM', filmTitle: 'Poor Things', screenName: 'Screen 2' },
-    { id: 3, time: '5:15 PM', filmTitle: 'The Holdovers', screenName: 'Screen 3' },
-    { id: 4, time: '6:00 PM', filmTitle: 'Dune: Part Two', screenName: 'Screen 1' },
-    { id: 5, time: '7:30 PM', filmTitle: 'Oppenheimer', screenName: 'Screen 2' },
-  ];
+function getTodayDateString(): string {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+}
+
+export default function Home() {
+  const today = getTodayDateString();
+
+  // Fetch films count
+  const { data: films = [], isLoading: filmsLoading } = useQuery({
+    queryKey: ['films'],
+    queryFn: () => filmsApi.list(),
+  });
+
+  // Fetch active (confirmed) engagements
+  const { data: activeEngagements = [], isLoading: engagementsLoading } = useQuery({
+    queryKey: ['engagements', 'active'],
+    queryFn: () => engagementsApi.list({ status: 'CONFIRMED' }),
+  });
+
+  // Fetch today's showtimes
+  const { data: todayShowtimes = [], isLoading: showtimesLoading } = useQuery({
+    queryKey: ['showtimes', 'today', today],
+    queryFn: () => showtimesApi.list({ date: today, is_cancelled: false }),
+  });
+
+  // Sort showtimes by time
+  const sortedShowtimes = [...todayShowtimes].sort(
+    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+  );
 
   return (
     <div>
@@ -54,20 +78,23 @@ export default function Home() {
       <div className={styles.summaryGrid}>
         <SummaryCard
           label="Films in Catalog"
-          value={filmCount}
+          value={films.length}
           subtitle="Managed by admin"
+          isLoading={filmsLoading}
         />
         <SummaryCard
           label="Active Engagements"
-          value={activeEngagements}
+          value={activeEngagements.length}
           linkText="View all"
-          linkTo="/engagements"
+          linkTo="/dashboard/engagements"
+          isLoading={engagementsLoading}
         />
         <SummaryCard
           label="Today's Showtimes"
-          value={todayShowtimes}
-          linkText="View engagements"
-          linkTo="/engagements"
+          value={todayShowtimes.length}
+          linkText="View showtimes"
+          linkTo="/dashboard/showtimes"
+          isLoading={showtimesLoading}
         />
       </div>
 
@@ -75,7 +102,7 @@ export default function Home() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Quick Actions</h2>
         <div className={styles.actions}>
-          <Link to="/engagements/new" className={styles.btnCharcoal}>
+          <Link to="/dashboard/engagements" className={styles.btnCharcoal}>
             Schedule Engagement
           </Link>
         </div>
@@ -84,7 +111,11 @@ export default function Home() {
       {/* Today's Schedule */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Now Playing</h2>
-        {showtimes.length > 0 ? (
+        {showtimesLoading ? (
+          <div className={styles.emptyCard}>
+            <p className={styles.emptyText}>Loading showtimes...</p>
+          </div>
+        ) : sortedShowtimes.length > 0 ? (
           <div className={styles.tableCard}>
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
@@ -96,11 +127,11 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {showtimes.map((show) => (
+                  {sortedShowtimes.map((show: Showtime) => (
                     <tr key={show.id}>
-                      <td className={styles.timeCell}>{show.time}</td>
-                      <td className={styles.filmCell}>{show.filmTitle}</td>
-                      <td className={styles.screenCell}>{show.screenName}</td>
+                      <td className={styles.timeCell}>{formatShowtime(show.starts_at)}</td>
+                      <td className={styles.filmCell}>{show.film_title}</td>
+                      <td className={styles.screenCell}>{show.screen_name}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -110,7 +141,7 @@ export default function Home() {
         ) : (
           <div className={styles.emptyCard}>
             <p className={styles.emptyText}>No showtimes scheduled for today.</p>
-            <Link to="/engagements" className={styles.emptyLink}>
+            <Link to="/dashboard/engagements" className={styles.emptyLink}>
               View engagements &rarr;
             </Link>
           </div>
