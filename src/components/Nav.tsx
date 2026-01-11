@@ -48,6 +48,9 @@ export default function Nav({ currentCinema, cinemas = [], username, onCinemaCha
       items: [
         { path: '/dashboard/screens', label: 'Screens' },
         { path: '/dashboard/tickets', label: 'Tickets' },
+        { path: '/dashboard/concessions', label: 'Concessions' },
+        { path: '/dashboard/modifiers', label: 'Modifiers' },
+        { path: '/dashboard/integrations', label: 'Integrations' },
       ],
     },
     { path: '/dashboard/engagements', label: 'Engagements' },

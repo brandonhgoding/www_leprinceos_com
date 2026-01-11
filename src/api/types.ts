@@ -157,3 +157,203 @@ export interface TicketTypeCreate {
   is_active?: boolean;
   description?: string;
 }
+
+// Concessions
+export interface ConcessionVariation {
+  id: number;
+  item: number;
+  name: string;
+  sku: string;
+  price: string;
+  cost: string | null;
+  is_active: boolean;
+  square_id: string;
+  margin: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConcessionVariationCreate {
+  name: string;
+  sku?: string;
+  price: string;
+  cost?: string | null;
+  is_active?: boolean;
+  square_id?: string;
+}
+
+export interface ModifierGroupBasic {
+  id: number;
+  name: string;
+  selection_type: 'SINGLE' | 'MULTIPLE';
+  is_required: boolean;
+  modifiers_count: number;
+}
+
+export interface ConcessionItem {
+  id: number;
+  category: number;
+  category_name: string;
+  name: string;
+  description: string;
+  image_url: string;
+  is_active: boolean;
+  square_id: string;
+  variations_count: number;
+  price_range: { min: string; max: string } | null;
+  modifier_groups: ModifierGroupBasic[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConcessionItemDetail extends ConcessionItem {
+  variations: ConcessionVariation[];
+}
+
+export interface ConcessionItemCreate {
+  category: number;
+  name: string;
+  description?: string;
+  image_url?: string;
+  is_active?: boolean;
+  square_id?: string;
+  modifier_group_ids?: number[];
+}
+
+export interface ConcessionCategory {
+  id: number;
+  name: string;
+  description: string;
+  is_active: boolean;
+  square_id: string;
+  items_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConcessionCategoryDetail extends ConcessionCategory {
+  items: ConcessionItemDetail[];
+}
+
+export interface ConcessionCategoryCreate {
+  name: string;
+  description?: string;
+  is_active?: boolean;
+  square_id?: string;
+}
+
+// Modifiers
+export interface Modifier {
+  id: number;
+  group: number;
+  name: string;
+  price_adjustment: string;
+  ordinal: number;
+  on_by_default: boolean;
+  is_active: boolean;
+  square_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ModifierCreate {
+  name: string;
+  price_adjustment?: string;
+  ordinal?: number;
+  on_by_default?: boolean;
+  is_active?: boolean;
+  square_id?: string;
+}
+
+export interface ModifierGroup {
+  id: number;
+  name: string;
+  internal_name: string;
+  selection_type: 'SINGLE' | 'MULTIPLE';
+  min_selections: number;
+  max_selections: number | null;
+  is_required: boolean;
+  ordinal: number;
+  is_active: boolean;
+  square_id: string;
+  modifiers_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ModifierGroupDetail extends ModifierGroup {
+  modifiers: Modifier[];
+}
+
+export interface ModifierGroupCreate {
+  name: string;
+  internal_name?: string;
+  selection_type?: 'SINGLE' | 'MULTIPLE';
+  min_selections?: number;
+  max_selections?: number | null;
+  is_required?: boolean;
+  ordinal?: number;
+  is_active?: boolean;
+  square_id?: string;
+}
+
+// Square Integration
+export interface SquareCredentials {
+  id: number;
+  environment: 'sandbox' | 'production';
+  location_id: string;
+  merchant_id: string;
+  is_active: boolean;
+  is_connected: boolean;
+  is_configured: boolean;
+  token_preview: string;
+  last_sync_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SquareCredentialsCreate {
+  access_token: string;
+  refresh_token?: string;
+  environment: 'sandbox' | 'production';
+  location_id: string;
+  merchant_id?: string;
+}
+
+export interface SquareConnectionTest {
+  success: boolean;
+  location_name?: string;
+  location_id?: string;
+  merchant_id?: string;
+  error?: string;
+}
+
+export type SquareSyncType = 'full' | 'categories' | 'items' | 'modifiers';
+export type SquareSyncStatus = 'pending' | 'in_progress' | 'success' | 'partial' | 'failed';
+
+export interface SquareSyncLog {
+  id: number;
+  sync_type: SquareSyncType;
+  status: SquareSyncStatus;
+  objects_synced: number;
+  objects_failed: number;
+  error_details: Record<string, any> | null;
+  started_at: string;
+  completed_at: string | null;
+}
+
+export interface SquareSyncRequest {
+  sync_type?: SquareSyncType;
+}
+
+// Integration types for the Integrations page
+export interface Integration {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  is_configured: boolean;
+  is_active: boolean;
+  status: 'connected' | 'disconnected' | 'error';
+  last_sync_at: string | null;
+}
