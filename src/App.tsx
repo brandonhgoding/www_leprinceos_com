@@ -11,6 +11,7 @@ import EngagementDetail from './pages/EngagementDetail';
 import Screens from './pages/Screens';
 import Tickets from './pages/Tickets';
 import TicketDetail from './pages/TicketDetail';
+import SalesTaxes from './pages/SalesTaxes';
 import Embeds from './pages/Embeds';
 import Integrations from './pages/Integrations';
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="screens" element={<Screens />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
+          <Route path="sales-taxes" element={<SalesTaxes />} />
           <Route path="embeds" element={<Embeds />} />
           <Route path="integrations" element={<Integrations />} />
         </Route>

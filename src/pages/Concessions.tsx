@@ -1,7 +1,7 @@
 // src/pages/Concessions.tsx
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { concessionsApi, modifiersApi } from '../api';
+import { concessionsApi, modifiersApi, salesTaxesApi } from '../api';
 import type {
   ConcessionCategory,
   ConcessionCategoryCreate,
@@ -28,6 +28,7 @@ interface ItemFormData {
   image_url: string;
   is_active: boolean;
   modifier_group_ids: number[];
+  sales_tax_ids: number[];
 }
 
 interface VariationFormData {
@@ -50,6 +51,7 @@ const initialItemForm: ItemFormData = {
   image_url: '',
   is_active: true,
   modifier_group_ids: [],
+  sales_tax_ids: [],
 };
 
 const initialVariationForm: VariationFormData = {
@@ -92,6 +94,11 @@ export default function Concessions() {
   const { data: modifierGroups = [] } = useQuery({
     queryKey: ['modifier-groups'],
     queryFn: () => modifiersApi.listGroups(),
+  });
+
+  const { data: salesTaxes = [] } = useQuery({
+    queryKey: ['sales-taxes'],
+    queryFn: () => salesTaxesApi.list(),
   });
 
   // Fetch category details for expanded categories
@@ -283,6 +290,7 @@ export default function Concessions() {
       image_url: item.image_url,
       is_active: item.is_active,
       modifier_group_ids: item.modifier_groups?.map((g) => g.id) || [],
+      sales_tax_ids: item.sales_taxes?.map((t) => t.id) || [],
     });
     setSelectedItem(item);
     setModalType('item');
@@ -301,6 +309,7 @@ export default function Concessions() {
         image_url: itemForm.image_url || undefined,
         is_active: itemForm.is_active,
         modifier_group_ids: itemForm.modifier_group_ids,
+        sales_tax_ids: itemForm.sales_tax_ids,
       };
       createItemMutation.mutate(data);
     } else if (selectedItem) {
@@ -312,6 +321,7 @@ export default function Concessions() {
           image_url: itemForm.image_url || undefined,
           is_active: itemForm.is_active,
           modifier_group_ids: itemForm.modifier_group_ids,
+          sales_tax_ids: itemForm.sales_tax_ids,
         },
       });
     }
@@ -737,6 +747,48 @@ export default function Concessions() {
                   </div>
                 </div>
               )}
+
+              <div className={styles.formGroup}>
+                <label>Sales Taxes</label>
+                {salesTaxes.filter((t) => t.is_active).length > 0 ? (
+                  <div className={styles.checkboxList}>
+                    {salesTaxes
+                      .filter((t) => t.is_active)
+                      .map((tax) => (
+                        <label key={tax.id} className={styles.checkboxLabel}>
+                          <input
+                            type="checkbox"
+                            checked={itemForm.sales_tax_ids.includes(tax.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setItemForm({
+                                  ...itemForm,
+                                  sales_tax_ids: [...itemForm.sales_tax_ids, tax.id],
+                                });
+                              } else {
+                                setItemForm({
+                                  ...itemForm,
+                                  sales_tax_ids: itemForm.sales_tax_ids.filter(
+                                    (id) => id !== tax.id
+                                  ),
+                                });
+                              }
+                            }}
+                          />
+                          {tax.name}
+                          <span className={styles.modifierGroupMeta}>({tax.percentage}%)</span>
+                        </label>
+                      ))}
+                  </div>
+                ) : (
+                  <p className={styles.noTaxesMessage}>
+                    No taxes configured.{' '}
+                    <a href="/dashboard/sales-taxes" className={styles.taxLink}>
+                      Add sales taxes
+                    </a>
+                  </p>
+                )}
+              </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.checkboxLabel}>

@@ -190,6 +190,14 @@ export interface ModifierGroupBasic {
   modifiers_count: number;
 }
 
+export interface SalesTaxBasic {
+  id: number;
+  name: string;
+  percentage: string;
+  tax_type: TaxType;
+  inclusion_type: InclusionType;
+}
+
 export interface ConcessionItem {
   id: number;
   category: number;
@@ -202,6 +210,7 @@ export interface ConcessionItem {
   variations_count: number;
   price_range: { min: string; max: string } | null;
   modifier_groups: ModifierGroupBasic[];
+  sales_taxes: SalesTaxBasic[];
   created_at: string;
   updated_at: string;
 }
@@ -218,6 +227,7 @@ export interface ConcessionItemCreate {
   is_active?: boolean;
   square_id?: string;
   modifier_group_ids?: number[];
+  sales_tax_ids?: number[];
 }
 
 export interface ConcessionCategory {
@@ -344,6 +354,37 @@ export interface SquareSyncLog {
 
 export interface SquareSyncRequest {
   sync_type?: SquareSyncType;
+}
+
+// Sales Taxes
+export type TaxType = 'state' | 'local' | 'county' | 'city' | 'other';
+export type InclusionType = 'additive' | 'inclusive';
+
+export interface SalesTax {
+  id: number;
+  name: string;
+  percentage: string;
+  tax_type: TaxType;
+  inclusion_type: InclusionType;
+  is_active: boolean;
+  square_id: string;
+  concession_items_count: number;
+  ticket_types_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SalesTaxDetail extends SalesTax {
+  concession_items: { id: number; name: string }[];
+  ticket_types: { id: number; name: string }[];
+}
+
+export interface SalesTaxCreate {
+  name: string;
+  percentage: string;
+  tax_type?: TaxType;
+  inclusion_type?: InclusionType;
+  is_active?: boolean;
 }
 
 // Integration types for the Integrations page

@@ -12,5 +12,6 @@ export { default as showtimesApi } from './showtimes';
 export { default as filmsApi } from './films';
 export { default as screensApi } from './screens';
 export { default as ticketsApi } from './tickets';
+export { default as salesTaxesApi } from './salestaxes';
 
 export * from './types';

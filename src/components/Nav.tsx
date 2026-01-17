@@ -43,18 +43,24 @@ export default function Nav({ currentCinema, cinemas = [], username, onCinemaCha
 
   const navItems: NavItem[] = [
     { path: '/dashboard', label: 'Home' },
+    { path: '/dashboard/engagements', label: 'Engagements' },
+    { path: '/dashboard/tickets', label: 'Tickets' },
     {
-      label: 'Cinema',
+      label: 'Concessions',
       items: [
-        { path: '/dashboard/screens', label: 'Screens' },
-        { path: '/dashboard/tickets', label: 'Tickets' },
-        { path: '/dashboard/concessions', label: 'Concessions' },
+        { path: '/dashboard/concessions', label: 'Catalog' },
         { path: '/dashboard/modifiers', label: 'Modifiers' },
-        { path: '/dashboard/integrations', label: 'Integrations' },
       ],
     },
-    { path: '/dashboard/engagements', label: 'Engagements' },
-    { path: '/dashboard/embeds', label: 'Embeds' },
+    {
+      label: 'Settings',
+      items: [
+        { path: '/dashboard/screens', label: 'Screens' },
+        { path: '/dashboard/sales-taxes', label: 'Sales Taxes' },
+        { path: '/dashboard/integrations', label: 'Integrations' },
+        { path: '/dashboard/embeds', label: 'Embeds' },
+      ],
+    },
   ];
 
   return (
