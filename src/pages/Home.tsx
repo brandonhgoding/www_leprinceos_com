@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { filmsApi, engagementsApi, showtimesApi } from '../api';
 import type { Showtime } from '../api/types';
+import { useAuth } from '../contexts/AuthContext';
+import { formatTime, getTodayInTimezone } from '../utils/timezone';
 import styles from './Home.module.css';
 
 interface SummaryCardProps {
@@ -32,22 +34,10 @@ function SummaryCard({ label, value, linkText, linkTo, subtitle, isLoading }: Su
   );
 }
 
-function formatShowtime(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
-function getTodayDateString(): string {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-}
-
 export default function Home() {
-  const today = getTodayDateString();
+  const { currentCinema } = useAuth();
+  const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
+  const today = getTodayInTimezone(cinemaTimezone);
 
   // Fetch films count
   const { data: films = [], isLoading: filmsLoading } = useQuery({
@@ -127,7 +117,7 @@ export default function Home() {
                 <tbody>
                   {sortedShowtimes.map((show: Showtime) => (
                     <tr key={show.id}>
-                      <td className={styles.timeCell}>{formatShowtime(show.starts_at)}</td>
+                      <td className={styles.timeCell}>{formatTime(show.starts_at, cinemaTimezone)}</td>
                       <td className={styles.filmCell}>{show.film_title}</td>
                       <td className={styles.screenCell}>{show.screen_name}</td>
                     </tr>

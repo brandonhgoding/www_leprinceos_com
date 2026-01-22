@@ -4,6 +4,8 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, showtimesApi, filmsApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate } from '../api/types';
+import { useAuth } from '../contexts/AuthContext';
+import { formatDateTime, formatDate, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
 import styles from './EngagementDetail.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
@@ -36,30 +38,12 @@ const initialBulkFormData: BulkFormData = {
   captions: null,
 };
 
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
-function formatDateTime(isoString: string): string {
-  return new Date(isoString).toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
 export default function EngagementDetail() {
   const { id } = useParams<{ id: string }>();
   const engagementId = parseInt(id || '0');
   const queryClient = useQueryClient();
+  const { currentCinema } = useAuth();
+  const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
 
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedShowtime, setSelectedShowtime] = useState<Showtime | null>(null);
@@ -134,8 +118,8 @@ export default function EngagementDetail() {
   const openEditModal = (showtime: Showtime) => {
     const startsAt = new Date(showtime.starts_at);
     setFormData({
-      starts_at_date: startsAt.toISOString().split('T')[0],
-      starts_at_time: startsAt.toTimeString().slice(0, 5),
+      starts_at_date: getDateInTimezone(startsAt, cinemaTimezone),
+      starts_at_time: getTimeInTimezone(startsAt, cinemaTimezone),
       is_cancelled: showtime.is_cancelled,
       captions: showtime.captions,
     });
@@ -322,11 +306,11 @@ export default function EngagementDetail() {
             </div>
             <div className={styles.infoRow}>
               <span className={styles.label}>Start Date:</span>
-              <span>{formatDate(engagement.start_date)}</span>
+              <span>{formatDate(engagement.start_date, cinemaTimezone)}</span>
             </div>
             <div className={styles.infoRow}>
               <span className={styles.label}>End Date:</span>
-              <span>{formatDate(engagement.end_date)}</span>
+              <span>{formatDate(engagement.end_date, cinemaTimezone)}</span>
             </div>
             {engagement.notes && (
               <div className={styles.notes}>
@@ -376,7 +360,7 @@ export default function EngagementDetail() {
               <tbody>
                 {sortedShowtimes.map((showtime) => (
                   <tr key={showtime.id} className={showtime.is_cancelled ? styles.cancelledRow : ''}>
-                    <td className={styles.dateTimeCell}>{formatDateTime(showtime.starts_at)}</td>
+                    <td className={styles.dateTimeCell}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</td>
                     <td>{showtime.screen_name}</td>
                     <td>
                       {showtime.captions ? (

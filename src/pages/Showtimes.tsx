@@ -4,34 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { showtimesApi, engagementsApi, screensApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate, Engagement, Screen } from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
+import { formatDateTime, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
 import styles from './Showtimes.module.css';
-
-// Timezone utility functions
-function formatInTimezone(date: Date, timezone: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat('en-US', { ...options, timeZone: timezone }).format(date);
-}
-
-function getDateInTimezone(date: Date, timezone: string): string {
-  // Returns YYYY-MM-DD in the specified timezone
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(date);
-  return parts; // en-CA format is YYYY-MM-DD
-}
-
-function getTimeInTimezone(date: Date, timezone: string): string {
-  // Returns HH:MM in the specified timezone
-  const parts = new Intl.DateTimeFormat('en-GB', {
-    timeZone: timezone,
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }).format(date);
-  return parts; // en-GB format is HH:MM
-}
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
 
@@ -236,16 +210,6 @@ export default function Showtimes() {
     setBulkFormData({ ...bulkFormData, times: newTimes });
   };
 
-  const formatDateTime = (dateStr: string) => {
-    return formatInTimezone(new Date(dateStr), cinemaTimezone, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  };
-
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -337,7 +301,7 @@ export default function Showtimes() {
                     )}
                   </td>
                   <td>{showtime.screen_name}</td>
-                  <td>{formatDateTime(showtime.starts_at)}</td>
+                  <td>{formatDateTime(showtime.starts_at, cinemaTimezone)}</td>
                   <td>{showtime.captions || '-'}</td>
                   <td>
                     {showtime.is_cancelled ? (
