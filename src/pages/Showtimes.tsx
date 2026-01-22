@@ -3,7 +3,35 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { showtimesApi, engagementsApi, screensApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate, Engagement, Screen } from '../api/types';
+import { useAuth } from '../contexts/AuthContext';
 import styles from './Showtimes.module.css';
+
+// Timezone utility functions
+function formatInTimezone(date: Date, timezone: string, options: Intl.DateTimeFormatOptions): string {
+  return new Intl.DateTimeFormat('en-US', { ...options, timeZone: timezone }).format(date);
+}
+
+function getDateInTimezone(date: Date, timezone: string): string {
+  // Returns YYYY-MM-DD in the specified timezone
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(date);
+  return parts; // en-CA format is YYYY-MM-DD
+}
+
+function getTimeInTimezone(date: Date, timezone: string): string {
+  // Returns HH:MM in the specified timezone
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).format(date);
+  return parts; // en-GB format is HH:MM
+}
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
 
@@ -45,6 +73,8 @@ const initialBulkFormData: BulkFormData = {
 
 export default function Showtimes() {
   const queryClient = useQueryClient();
+  const { currentCinema } = useAuth();
+  const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedShowtime, setSelectedShowtime] = useState<Showtime | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -127,8 +157,8 @@ export default function Showtimes() {
     setFormData({
       engagement: showtime.engagement,
       screen: showtime.screen,
-      starts_at_date: startsAt.toISOString().split('T')[0],
-      starts_at_time: startsAt.toTimeString().slice(0, 5),
+      starts_at_date: getDateInTimezone(startsAt, cinemaTimezone),
+      starts_at_time: getTimeInTimezone(startsAt, cinemaTimezone),
       is_cancelled: showtime.is_cancelled,
       captions: showtime.captions || '',
     });
@@ -207,7 +237,7 @@ export default function Showtimes() {
   };
 
   const formatDateTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleString('en-US', {
+    return formatInTimezone(new Date(dateStr), cinemaTimezone, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
