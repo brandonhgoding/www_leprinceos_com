@@ -1,0 +1,355 @@
+.nav {
+  background-color: var(--charcoal);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0;
+  text-decoration: none;
+}
+
+.brandText {
+  display: flex;
+  align-items: baseline;
+}
+
+.brandName {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--paper);
+}
+
+.brandAccent {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--brass);
+}
+
+.tagline {
+  display: none;
+  font-size: 0.625rem;
+  color: var(--text-light-50);
+  letter-spacing: 0.025em;
+  margin-top: -0.25rem;
+}
+
+@media (min-width: 640px) {
+  .tagline {
+    display: block;
+  }
+}
+
+/* Mobile menu button */
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--paper);
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .menuButton {
+    display: none;
+  }
+}
+
+/* Nav content */
+.navContent {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  padding-bottom: 1rem;
+}
+
+.navContentOpen {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .navContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    padding-bottom: 0;
+    flex: 1;
+  }
+}
+
+/* Cinema selector */
+.cinemaSelector {
+  display: none;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border-dark);
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .cinemaSelector {
+    display: flex;
+  }
+}
+
+.cinemaName {
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+  cursor: pointer;
+}
+
+.dropdownTrigger:hover {
+  color: var(--paper);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  min-width: 180px;
+  background-color: var(--charcoal);
+  border: 1px solid var(--border-dark);
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  list-style: none;
+  z-index: 50;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.25rem;
+}
+
+.dropdownItem:hover {
+  background-color: rgba(13, 13, 13, 0.5);
+  color: var(--paper);
+}
+
+.dropdownItemActive {
+  color: var(--brass);
+}
+
+/* Nav links */
+.navLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .navLinks {
+    flex-direction: row;
+    margin-left: 1rem;
+  }
+}
+
+.navLink {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-light-muted);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.navLink:hover {
+  background-color: rgba(13, 13, 13, 0.5);
+  color: var(--paper);
+}
+
+.navLinkActive {
+  background-color: var(--warmblack);
+  color: var(--paper);
+}
+
+/* Nav Dropdown */
+.navDropdown {
+  position: relative;
+}
+
+.navDropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navDropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  min-width: 160px;
+  background-color: var(--charcoal);
+  border: 1px solid var(--border-dark);
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  list-style: none;
+  z-index: 50;
+}
+
+.navDropdownItem {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+  text-decoration: none;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.navDropdownItem:hover {
+  background-color: rgba(13, 13, 13, 0.5);
+  color: var(--paper);
+}
+
+.navDropdownItemActive {
+  color: var(--brass);
+}
+
+/* Mobile cinema selector */
+.mobileCinemaSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-dark);
+}
+
+@media (min-width: 768px) {
+  .mobileCinemaSelector {
+    display: none;
+  }
+}
+
+.mobileCinemaLabel {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-light-50);
+  margin-bottom: 0.25rem;
+}
+
+.mobileCinemaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+  cursor: pointer;
+}
+
+.mobileCinemaItemActive {
+  color: var(--brass);
+}
+
+/* User menu */
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-dark);
+}
+
+@media (min-width: 768px) {
+  .userMenu {
+    margin-left: auto;
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
+  }
+}
+
+.username {
+  display: none;
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+}
+
+@media (min-width: 768px) {
+  .username {
+    display: inline;
+  }
+}
+
+.logoutButton {
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.logoutButton:hover {
+  background-color: rgba(13, 13, 13, 0.5);
+  color: var(--paper);
+}

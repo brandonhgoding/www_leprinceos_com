@@ -1,0 +1,183 @@
+/* Summary Cards Grid */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .summaryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Card */
+.card {
+  background-color: var(--paper);
+  border: 1px solid var(--border-lighter);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cardBody {
+  padding: 1rem;
+}
+
+.cardLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardValue {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--warmblack);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.cardLink {
+  font-size: 0.875rem;
+  color: var(--brass);
+  text-decoration: none;
+}
+
+.cardLink:hover {
+  color: var(--brass-light);
+}
+
+.cardSubtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--warmblack);
+  margin-bottom: 0.75rem;
+}
+
+/* Quick Actions */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btnCharcoal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--charcoal);
+  color: var(--paper);
+  border: none;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.btnCharcoal:hover {
+  background-color: var(--warmblack);
+  color: var(--paper);
+}
+
+/* Table Card */
+.tableCard {
+  background-color: var(--paper);
+  border: 1px solid var(--border-lighter);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background-color: var(--paper);
+}
+
+.table tbody tr:hover {
+  background-color: var(--cream);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.timeCell {
+  font-size: 0.875rem;
+  color: var(--warmblack);
+}
+
+.filmCell {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--warmblack);
+}
+
+.screenCell {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Empty State */
+.emptyCard {
+  background-color: var(--paper);
+  border: 1px solid var(--border-lighter);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.emptyLink {
+  font-size: 0.875rem;
+  color: var(--brass);
+  text-decoration: none;
+}
+
+.emptyLink:hover {
+  color: var(--brass-light);
+}
