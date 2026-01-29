@@ -1,0 +1,283 @@
+/* Sidebar Overlay (mobile) */
+.sidebarOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+}
+
+@media (min-width: 768px) {
+  .sidebarOverlay {
+    display: none;
+  }
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background-color: var(--charcoal);
+  display: flex;
+  flex-direction: column;
+  z-index: 1002;
+  overflow-y: auto;
+  transition: transform 0.25s ease;
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+}
+
+/* Sidebar Brand */
+.sidebarBrand {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.sidebarLogo {
+  font-family: var(--font-serif);
+  color: var(--brass);
+  font-size: 1.375rem;
+  font-weight: 400;
+  text-decoration: none;
+  display: block;
+}
+
+.sidebarLogo:hover {
+  color: var(--brass-light);
+}
+
+/* Cinema Selector */
+.sidebarCinemaSelector {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.cinemaSelectorToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--paper);
+  background-color: var(--warmblack);
+  border: 1px solid var(--border-dark);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cinemaSelectorToggle:hover {
+  border-color: var(--brass);
+}
+
+.cinemaName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cinemaSelectorMenu {
+  margin-top: 0.5rem;
+  background-color: var(--warmblack);
+  border: 1px solid var(--border-dark);
+  border-radius: 6px;
+  padding: 0.25rem;
+  overflow: hidden;
+}
+
+.cinemaSelectorItem {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-light-muted);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.cinemaSelectorItem:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--paper);
+}
+
+.cinemaSelectorItem.active {
+  color: var(--brass);
+}
+
+/* Sidebar Navigation */
+.sidebarNav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.sidebarLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  margin: 0 0.5rem 0.125rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-light-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.sidebarLink:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--paper);
+}
+
+.sidebarLink.active {
+  background-color: var(--warmblack);
+  color: var(--paper);
+}
+
+.sidebarLink.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background-color: var(--brass);
+  border-radius: 0 2px 2px 0;
+}
+
+.sidebarIcon {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.sidebarLink.active .sidebarIcon,
+.sidebarLink:hover .sidebarIcon {
+  opacity: 1;
+}
+
+/* Sidebar Groups (Collapsible) */
+.sidebarGroup {
+  margin: 0.25rem 0;
+}
+
+.sidebarGroupToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: calc(100% - 1rem);
+  padding: 0.625rem 1rem;
+  margin: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-light-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.sidebarGroupToggle:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--paper);
+}
+
+.sidebarGroupToggle.active {
+  color: var(--paper);
+}
+
+.sidebarGroupLabel {
+  flex: 1;
+}
+
+.sidebarGroupArrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  opacity: 0.5;
+}
+
+.sidebarGroupArrow.rotated {
+  transform: rotate(180deg);
+}
+
+.sidebarGroupItems {
+  overflow: hidden;
+}
+
+.sidebarSublink {
+  display: block;
+  padding: 0.5rem 1rem 0.5rem 3.25rem;
+  margin: 0 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-light-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.sidebarSublink:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--paper);
+}
+
+.sidebarSublink.active {
+  color: var(--brass);
+}
+
+/* Sidebar User Section */
+.sidebarUser {
+  padding: 1rem;
+  border-top: 1px solid var(--border-dark);
+  margin-top: auto;
+}
+
+.sidebarUserInfo {
+  margin-bottom: 0.5rem;
+}
+
+.sidebarUsername {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--paper);
+}
+
+.sidebarLogout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-light-muted);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sidebarLogout:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--paper);
+}
