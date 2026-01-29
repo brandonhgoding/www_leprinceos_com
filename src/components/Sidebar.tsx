@@ -110,8 +110,9 @@ export default function Sidebar({
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const location = useLocation();
 
+  // Paths are relative since we use basename="/dashboard" in BrowserRouter
   const isActive = (path: string) =>
-    location.pathname === path || (path !== '/dashboard' && location.pathname.startsWith(path + '/'));
+    location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'));
 
   const isGroupActive = (items: { path: string; label: string }[]) =>
     items.some(item => isActive(item.path));
@@ -126,28 +127,29 @@ export default function Sidebar({
     return isGroupActive(items);
   };
 
+  // Paths are relative to /dashboard (the router basename)
   const navItems: NavItem[] = [
-    { path: '/dashboard', label: 'Home', icon: <HomeIcon /> },
-    { path: '/dashboard/engagements', label: 'Engagements', icon: <EngagementsIcon /> },
-    { path: '/dashboard/screens', label: 'Screens', icon: <ScreensIcon /> },
+    { path: '/', label: 'Home', icon: <HomeIcon /> },
+    { path: '/engagements', label: 'Engagements', icon: <EngagementsIcon /> },
+    { path: '/screens', label: 'Screens', icon: <ScreensIcon /> },
     {
       label: 'Billing',
       icon: <BillingIcon />,
       items: [
-        { path: '/dashboard/tickets', label: 'Ticket Types' },
-        { path: '/dashboard/sales-taxes', label: 'Sales Taxes' },
+        { path: '/tickets', label: 'Ticket Types' },
+        { path: '/sales-taxes', label: 'Sales Taxes' },
       ],
     },
     {
       label: 'Concessions',
       icon: <ConcessionsIcon />,
       items: [
-        { path: '/dashboard/concessions', label: 'Items' },
-        { path: '/dashboard/modifiers', label: 'Modifiers' },
+        { path: '/concessions', label: 'Items' },
+        { path: '/modifiers', label: 'Modifiers' },
       ],
     },
-    { path: '/dashboard/integrations', label: 'Integrations', icon: <IntegrationsIcon /> },
-    { path: '/dashboard/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
+    { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon /> },
+    { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
   ];
 
   const handleLinkClick = () => {
@@ -168,7 +170,7 @@ export default function Sidebar({
       <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
         {/* Brand */}
         <div className={styles.sidebarBrand}>
-          <Link to="/dashboard" className={styles.sidebarLogo} onClick={handleLinkClick}>
+          <Link to="/" className={styles.sidebarLogo} onClick={handleLinkClick}>
             LeprinceOS
           </Link>
         </div>

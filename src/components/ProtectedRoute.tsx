@@ -1,5 +1,4 @@
 // src/components/ProtectedRoute.tsx
-import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
@@ -8,7 +7,6 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -26,8 +24,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isAuthenticated) {
-    // Redirect to login, but save the attempted location
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Redirect to Django's login page with return URL
+    // Use window.location for full page navigation (not React Router)
+    const returnUrl = encodeURIComponent(window.location.pathname);
+    window.location.href = `/login?next=${returnUrl}`;
+    return null;
   }
 
   return <>{children}</>;

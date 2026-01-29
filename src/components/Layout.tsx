@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import styles from './Layout.module.css';
 
 export default function Layout() {
-  const { user, currentCinema, selectCinema, logout } = useAuth();
+  const { user, currentCinema, selectCinema } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Transform cinema memberships for Sidebar component
@@ -22,6 +22,11 @@ export default function Layout() {
 
   const handleCinemaChange = (cinemaId: number) => {
     selectCinema(cinemaId);
+  };
+
+  const handleLogout = () => {
+    // Redirect to Django's logout endpoint (full page navigation)
+    window.location.href = '/logout/';
   };
 
   const toggleSidebar = () => {
@@ -47,7 +52,7 @@ export default function Layout() {
             <span></span>
           </span>
         </button>
-        <Link to="/dashboard" className={styles.mobileBrand}>
+        <Link to="/" className={styles.mobileBrand}>
           LeprinceOS
         </Link>
       </header>
@@ -58,7 +63,7 @@ export default function Layout() {
         cinemas={cinemas}
         username={user?.username || ''}
         onCinemaChange={handleCinemaChange}
-        onLogout={logout}
+        onLogout={handleLogout}
         isOpen={isSidebarOpen}
         onClose={closeSidebar}
       />

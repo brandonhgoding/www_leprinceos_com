@@ -1,8 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
 import Home from './pages/Home';
 import Concessions from './pages/Concessions';
 import Engagements from './pages/Engagements';
@@ -17,15 +15,13 @@ import Integrations from './pages/Integrations';
 
 function App() {
   return (
-    <BrowserRouter>
+    // basename="/dashboard" makes all routes relative to /dashboard
+    <BrowserRouter basename="/dashboard">
       <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-
-        {/* Protected dashboard routes */}
+        {/* All dashboard routes are protected by Django's @login_required */}
+        {/* ProtectedRoute provides client-side session validation */}
         <Route
-          path="/dashboard"
+          path="/"
           element={
             <ProtectedRoute>
               <Layout />
