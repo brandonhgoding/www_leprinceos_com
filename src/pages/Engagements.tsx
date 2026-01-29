@@ -134,16 +134,25 @@ export default function Engagements() {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'CONFIRMED':
-        return styles.statusConfirmed;
+        return 'status-confirmed';
       case 'DRAFT':
-        return styles.statusDraft;
+        return 'status-draft';
       case 'CANCELLED':
-        return styles.statusCancelled;
+        return 'status-cancelled';
       case 'ENDED':
-        return styles.statusEnded;
+        return 'status-ended';
       default:
         return '';
     }
+  };
+
+  // Count engagements by status for filter tabs
+  const statusCounts = {
+    all: engagements.length,
+    DRAFT: engagements.filter(e => e.status === 'DRAFT').length,
+    CONFIRMED: engagements.filter(e => e.status === 'CONFIRMED').length,
+    ENDED: engagements.filter(e => e.status === 'ENDED').length,
+    CANCELLED: engagements.filter(e => e.status === 'CANCELLED').length,
   };
 
   const formatDate = (dateStr: string) => {
@@ -166,22 +175,53 @@ export default function Engagements() {
         </button>
       </div>
 
-      {/* Filters */}
-      <div className={styles.filters}>
-        <label className={styles.filterLabel}>
-          Status:
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className={styles.filterSelect}
-          >
-            <option value="">All</option>
-            <option value="DRAFT">Draft</option>
-            <option value="CONFIRMED">Confirmed</option>
-            <option value="CANCELLED">Cancelled</option>
-            <option value="ENDED">Ended</option>
-          </select>
-        </label>
+      {/* Filter Tabs */}
+      <div className="filter-tabs" role="tablist">
+        <button
+          className={`filter-tab ${statusFilter === '' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={statusFilter === ''}
+          onClick={() => setStatusFilter('')}
+        >
+          All
+          <span className="filter-count">{statusCounts.all}</span>
+        </button>
+        <button
+          className={`filter-tab ${statusFilter === 'DRAFT' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={statusFilter === 'DRAFT'}
+          onClick={() => setStatusFilter('DRAFT')}
+        >
+          Draft
+          <span className="filter-count">{statusCounts.DRAFT}</span>
+        </button>
+        <button
+          className={`filter-tab ${statusFilter === 'CONFIRMED' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={statusFilter === 'CONFIRMED'}
+          onClick={() => setStatusFilter('CONFIRMED')}
+        >
+          Confirmed
+          <span className="filter-count">{statusCounts.CONFIRMED}</span>
+        </button>
+        <button
+          className={`filter-tab ${statusFilter === 'ENDED' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={statusFilter === 'ENDED'}
+          onClick={() => setStatusFilter('ENDED')}
+        >
+          Ended
+          <span className="filter-count">{statusCounts.ENDED}</span>
+        </button>
+        <button
+          className={`filter-tab ${statusFilter === 'CANCELLED' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={statusFilter === 'CANCELLED'}
+          onClick={() => setStatusFilter('CANCELLED')}
+        >
+          Cancelled
+          <span className="filter-count">{statusCounts.CANCELLED}</span>
+        </button>
       </div>
 
       {/* Engagements List */}
@@ -230,7 +270,7 @@ export default function Engagements() {
                     {engagement.presentation_format.toUpperCase()}
                   </td>
                   <td>
-                    <span className={`${styles.statusBadge} ${getStatusBadgeClass(engagement.status)}`}>
+                    <span className={`status-badge ${getStatusBadgeClass(engagement.status)}`}>
                       {engagement.status}
                     </span>
                   </td>
