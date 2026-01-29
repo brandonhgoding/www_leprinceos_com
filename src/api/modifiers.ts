@@ -6,13 +6,14 @@ import type {
   ModifierGroup,
   ModifierGroupCreate,
   ModifierGroupDetail,
+  PaginatedResponse,
 } from './types';
 
 export const modifiersApi = {
   // Modifier Groups
   listGroups: async (): Promise<ModifierGroup[]> => {
-    const response = await apiClient.get<ModifierGroup[]>('/v1/modifier-groups/');
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<ModifierGroup>>('/v1/modifier-groups/');
+    return response.data.results;
   },
 
   getGroup: async (id: number): Promise<ModifierGroupDetail> => {

@@ -9,13 +9,14 @@ import type {
   ConcessionItemDetail,
   ConcessionVariation,
   ConcessionVariationCreate,
+  PaginatedResponse,
 } from './types';
 
 export const concessionsApi = {
   // Categories
   listCategories: async (): Promise<ConcessionCategory[]> => {
-    const response = await apiClient.get<ConcessionCategory[]>('/v1/concession-categories/');
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<ConcessionCategory>>('/v1/concession-categories/');
+    return response.data.results;
   },
 
   getCategory: async (id: number): Promise<ConcessionCategoryDetail> => {
@@ -50,8 +51,8 @@ export const concessionsApi = {
 
   // Items
   listItems: async (): Promise<ConcessionItem[]> => {
-    const response = await apiClient.get<ConcessionItem[]>('/v1/concession-items/');
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<ConcessionItem>>('/v1/concession-items/');
+    return response.data.results;
   },
 
   getItem: async (id: number): Promise<ConcessionItemDetail> => {

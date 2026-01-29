@@ -1,11 +1,11 @@
 // src/api/salestaxes.ts
 import apiClient from './client';
-import type { SalesTax, SalesTaxDetail, SalesTaxCreate } from './types';
+import type { SalesTax, SalesTaxDetail, SalesTaxCreate, PaginatedResponse } from './types';
 
 export const salesTaxesApi = {
   list: async (): Promise<SalesTax[]> => {
-    const response = await apiClient.get<SalesTax[]>('/v1/sales-taxes/');
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<SalesTax>>('/v1/sales-taxes/');
+    return response.data.results;
   },
 
   get: async (id: number): Promise<SalesTaxDetail> => {

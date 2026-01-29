@@ -6,13 +6,14 @@ import type {
   TicketTypeCreate,
   TicketTypeRule,
   TicketTypeRuleCreate,
+  PaginatedResponse,
 } from './types';
 
 export const ticketsApi = {
   // Ticket Types
   list: async (): Promise<TicketType[]> => {
-    const response = await apiClient.get<TicketType[]>('/v1/ticket-types/');
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<TicketType>>('/v1/ticket-types/');
+    return response.data.results;
   },
 
   get: async (id: number): Promise<TicketTypeDetail> => {
@@ -39,6 +40,7 @@ export const ticketsApi = {
     const response = await apiClient.get<TicketTypeRule[]>(
       `/v1/ticket-types/${ticketTypeId}/rules/`
     );
+    // Rules endpoint returns array directly (custom action, not paginated)
     return response.data;
   },
 
