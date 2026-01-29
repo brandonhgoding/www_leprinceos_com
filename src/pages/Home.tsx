@@ -1,7 +1,7 @@
 // src/pages/Home.tsx
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { filmsApi, engagementsApi, showtimesApi } from '../api';
+import { engagementsApi, showtimesApi, screensApi } from '../api';
 import type { Showtime } from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
 import { formatTime, getTodayInTimezone } from '../utils/timezone';
@@ -12,37 +12,34 @@ interface SummaryCardProps {
   value: number | string;
   linkText?: string;
   linkTo?: string;
-  subtitle?: string;
   isLoading?: boolean;
 }
 
-function SummaryCard({ label, value, linkText, linkTo, subtitle, isLoading }: SummaryCardProps) {
+function SummaryCard({ label, value, linkText, linkTo, isLoading }: SummaryCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.cardBody}>
         <p className={styles.cardLabel}>{label}</p>
         <p className={styles.cardValue}>{isLoading ? '—' : value}</p>
-        {linkTo && linkText ? (
+        {linkTo && linkText && (
           <Link to={linkTo} className={styles.cardLink}>
             {linkText} &rarr;
           </Link>
-        ) : subtitle ? (
-          <span className={styles.cardSubtitle}>{subtitle}</span>
-        ) : null}
+        )}
       </div>
     </div>
   );
 }
 
 export default function Home() {
-  const { currentCinema } = useAuth();
+  const { user, currentCinema } = useAuth();
   const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
   const today = getTodayInTimezone(cinemaTimezone);
 
-  // Fetch films count
-  const { data: films = [], isLoading: filmsLoading } = useQuery({
-    queryKey: ['films'],
-    queryFn: () => filmsApi.list(),
+  // Fetch screens count
+  const { data: screens = [], isLoading: screensLoading } = useQuery({
+    queryKey: ['screens'],
+    queryFn: () => screensApi.list(),
   });
 
   // Fetch active (confirmed) engagements
@@ -54,7 +51,7 @@ export default function Home() {
   // Fetch today's showtimes
   const { data: todayShowtimes = [], isLoading: showtimesLoading } = useQuery({
     queryKey: ['showtimes', 'today', today],
-    queryFn: () => showtimesApi.list({ date: today, is_cancelled: false }),
+    queryFn: () => showtimesApi.list({ date: today }),
   });
 
   // Sort showtimes by time
@@ -62,16 +59,18 @@ export default function Home() {
     (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
   );
 
+  const displayName = user?.first_name || user?.username || 'User';
+
   return (
-    <div>
+    <div className={styles.dashboardHome}>
+      {/* Page Header */}
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Dashboard</h1>
+        <p className={styles.welcomeText}>Welcome back, {displayName}</p>
+      </div>
+
       {/* Summary Cards */}
       <div className={styles.summaryGrid}>
-        <SummaryCard
-          label="Films in Catalog"
-          value={films.length}
-          subtitle="Managed by admin"
-          isLoading={filmsLoading}
-        />
         <SummaryCard
           label="Active Engagements"
           value={activeEngagements.length}
@@ -84,21 +83,18 @@ export default function Home() {
           value={todayShowtimes.length}
           isLoading={showtimesLoading}
         />
+        <SummaryCard
+          label="Screens"
+          value={screens.length}
+          linkText="Manage"
+          linkTo="/dashboard/screens"
+          isLoading={screensLoading}
+        />
       </div>
 
-      {/* Quick Actions */}
+      {/* Today's Showtimes */}
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Quick Actions</h2>
-        <div className={styles.actions}>
-          <Link to="/dashboard/engagements" className={styles.btnCharcoal}>
-            Schedule Engagement
-          </Link>
-        </div>
-      </section>
-
-      {/* Today's Schedule */}
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Now Playing</h2>
+        <h2 className={styles.sectionTitle}>Today's Showtimes</h2>
         {showtimesLoading ? (
           <div className={styles.emptyCard}>
             <p className={styles.emptyText}>Loading showtimes...</p>
@@ -112,14 +108,28 @@ export default function Home() {
                     <th>Time</th>
                     <th>Film</th>
                     <th>Screen</th>
+                    <th>Format</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {sortedShowtimes.map((show: Showtime) => (
                     <tr key={show.id}>
-                      <td className={styles.timeCell}>{formatTime(show.starts_at, cinemaTimezone)}</td>
+                      <td className={styles.timeCell}>
+                        {formatTime(show.starts_at, cinemaTimezone)}
+                      </td>
                       <td className={styles.filmCell}>{show.film_title}</td>
                       <td className={styles.screenCell}>{show.screen_name}</td>
+                      <td className={styles.formatCell}>
+                        {show.presentation_format_display || '2D'}
+                      </td>
+                      <td>
+                        {show.is_cancelled ? (
+                          <span className={styles.statusCancelled}>Cancelled</span>
+                        ) : (
+                          <span className={styles.statusActive}>Active</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,6 +1,6 @@
 // src/api/screens.ts
 import apiClient from './client';
-import type { Screen } from './types';
+import type { Screen, PaginatedResponse } from './types';
 
 export interface ScreenCreate {
   name: string;
@@ -13,8 +13,8 @@ export interface ScreenCreate {
 
 export const screensApi = {
   list: async (): Promise<Screen[]> => {
-    const response = await apiClient.get<Screen[]>('/v1/screens/');
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<Screen>>('/v1/screens/');
+    return response.data.results;
   },
 
   get: async (id: number): Promise<Screen> => {

@@ -1,5 +1,13 @@
 // src/api/types.ts
 
+// DRF paginated response wrapper
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 export interface Cinema {
   id: number;
   name: string;
@@ -69,6 +77,8 @@ export interface Showtime {
   film_title: string;
   film_poster_url: string | null;
   is_outside_engagement_range: boolean;
+  presentation_format: '2d' | '3d';
+  presentation_format_display: string;
 }
 
 export interface ShowtimeCreate {

@@ -1,6 +1,6 @@
 // src/api/engagements.ts
 import apiClient from './client';
-import type { Engagement, EngagementCreate, EngagementFilters } from './types';
+import type { Engagement, EngagementCreate, EngagementFilters, PaginatedResponse } from './types';
 
 const buildQueryString = (filters: EngagementFilters): string => {
   const params = new URLSearchParams();
@@ -16,8 +16,8 @@ export const engagementsApi = {
   list: async (filters: EngagementFilters = {}): Promise<Engagement[]> => {
     const query = buildQueryString(filters);
     const url = query ? `/v1/engagements/?${query}` : '/v1/engagements/';
-    const response = await apiClient.get<Engagement[]>(url);
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<Engagement>>(url);
+    return response.data.results;
   },
 
   get: async (id: number): Promise<Engagement> => {

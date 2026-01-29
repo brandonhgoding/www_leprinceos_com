@@ -1,6 +1,6 @@
 // src/api/showtimes.ts
 import apiClient from './client';
-import type { Showtime, ShowtimeCreate, ShowtimeFilters, BulkShowtimeCreate } from './types';
+import type { Showtime, ShowtimeCreate, ShowtimeFilters, BulkShowtimeCreate, PaginatedResponse } from './types';
 
 const buildQueryString = (filters: ShowtimeFilters): string => {
   const params = new URLSearchParams();
@@ -16,8 +16,8 @@ export const showtimesApi = {
   list: async (filters: ShowtimeFilters = {}): Promise<Showtime[]> => {
     const query = buildQueryString(filters);
     const url = query ? `/v1/showtimes/?${query}` : '/v1/showtimes/';
-    const response = await apiClient.get<Showtime[]>(url);
-    return response.data;
+    const response = await apiClient.get<PaginatedResponse<Showtime>>(url);
+    return response.data.results;
   },
 
   get: async (id: number): Promise<Showtime> => {
