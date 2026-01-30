@@ -6,11 +6,7 @@
   inset: 0;
   background: var(--surface-overlay);
   z-index: 1000;
-  animation: overlayFadeIn var(--transition-fast) ease-out forwards;
-}
-
-.overlayClosing {
-  animation: overlayFadeOut var(--transition-fast) ease-in forwards;
+  animation: overlayFadeIn var(--transition-fast) ease-out;
 }
 
 @keyframes overlayFadeIn {
@@ -19,15 +15,6 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes overlayFadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
   }
 }
 
@@ -41,12 +28,8 @@
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-xl);
-  animation: drawerSlideIn var(--transition-normal) ease-out forwards;
+  animation: drawerSlideIn var(--transition-normal) ease-out;
   outline: none;
-}
-
-.drawerClosing {
-  animation: drawerSlideOut var(--transition-normal) ease-in forwards;
 }
 
 @keyframes drawerSlideIn {
@@ -55,15 +38,6 @@
   }
   to {
     transform: translateX(0);
-  }
-}
-
-@keyframes drawerSlideOut {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(100%);
   }
 }
 
@@ -154,13 +128,11 @@
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .overlay,
-  .overlayClosing {
+  .overlay {
     animation: none;
   }
 
-  .drawer,
-  .drawerClosing {
+  .drawer {
     animation: none;
   }
 }

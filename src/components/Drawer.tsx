@@ -1,5 +1,5 @@
 // src/components/Drawer.tsx
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import styles from './Drawer.module.css';
 
 interface DrawerProps {
@@ -22,32 +22,11 @@ export default function Drawer({
   const drawerRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
-  const [isClosing, setIsClosing] = useState(false);
-  const [shouldRender, setShouldRender] = useState(false);
 
   // Keep onClose ref updated without triggering effects
   useEffect(() => {
     onCloseRef.current = onClose;
   });
-
-  // Handle mount/unmount with animation
-  useEffect(() => {
-    if (isOpen) {
-      setShouldRender(true);
-      setIsClosing(false);
-    } else if (shouldRender) {
-      // Start closing animation
-      setIsClosing(true);
-    }
-  }, [isOpen, shouldRender]);
-
-  // Handle animation end for closing
-  const handleAnimationEnd = () => {
-    if (isClosing) {
-      setShouldRender(false);
-      setIsClosing(false);
-    }
-  };
 
   // Handle open/close side effects
   useEffect(() => {
@@ -114,17 +93,13 @@ export default function Drawer({
     };
   }, [isOpen]);
 
-  if (!shouldRender) return null;
+  if (!isOpen) return null;
 
   return (
-    <div
-      className={`${styles.overlay} ${isClosing ? styles.overlayClosing : ''}`}
-      onClick={onClose}
-      onAnimationEnd={handleAnimationEnd}
-    >
+    <div className={styles.overlay} onClick={onClose}>
       <div
         ref={drawerRef}
-        className={`${styles.drawer} ${styles[width]} ${isClosing ? styles.drawerClosing : ''}`}
+        className={`${styles.drawer} ${styles[width]}`}
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
         role="dialog"
