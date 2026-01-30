@@ -236,72 +236,135 @@ export default function Engagements() {
           </button>
         </div>
       ) : (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Film</th>
-                <th>Screen</th>
-                <th>Dates</th>
-                <th>Format</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {engagements.map((engagement) => (
-                <tr key={engagement.id}>
-                  <td>
-                    <div className={styles.filmCell}>
-                      {engagement.film_poster_url && (
-                        <img
-                          src={engagement.film_poster_url}
-                          alt=""
-                          className={styles.posterThumb}
-                        />
-                      )}
-                      <span className={styles.filmTitle}>{engagement.film_title}</span>
-                    </div>
-                  </td>
-                  <td>{engagement.screen_name}</td>
-                  <td>
-                    {formatDate(engagement.start_date)} - {formatDate(engagement.end_date)}
-                  </td>
-                  <td className={styles.formatCell}>
-                    {engagement.presentation_format.toUpperCase()}
-                  </td>
-                  <td>
-                    <span className={`status-badge ${getStatusBadgeClass(engagement.status)}`}>
-                      {engagement.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className={styles.actions}>
-                      <Link
-                        to={`/engagements/${engagement.id}`}
-                        className={`${styles.actionButton} ${styles.detailsButton}`}
-                      >
-                        Details
-                      </Link>
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => openEditModal(engagement)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        onClick={() => handleDelete(engagement)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+        <>
+          {/* Desktop Table View */}
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Film</th>
+                  <th>Screen</th>
+                  <th>Dates</th>
+                  <th>Format</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {engagements.map((engagement) => (
+                  <tr key={engagement.id}>
+                    <td>
+                      <div className={styles.filmCell}>
+                        {engagement.film_poster_url && (
+                          <img
+                            src={engagement.film_poster_url}
+                            alt=""
+                            className={styles.posterThumb}
+                          />
+                        )}
+                        <span className={styles.filmTitle}>{engagement.film_title}</span>
+                      </div>
+                    </td>
+                    <td>{engagement.screen_name}</td>
+                    <td>
+                      {formatDate(engagement.start_date)} - {formatDate(engagement.end_date)}
+                    </td>
+                    <td className={styles.formatCell}>
+                      {engagement.presentation_format.toUpperCase()}
+                    </td>
+                    <td>
+                      <span className={`status-badge ${getStatusBadgeClass(engagement.status)}`}>
+                        {engagement.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <Link
+                          to={`/engagements/${engagement.id}`}
+                          className={`${styles.actionButton} ${styles.detailsButton}`}
+                        >
+                          Details
+                        </Link>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => openEditModal(engagement)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className={`${styles.actionButton} ${styles.deleteButton}`}
+                          onClick={() => handleDelete(engagement)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className={styles.cardList}>
+            {engagements.map((engagement) => (
+              <div key={engagement.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  {engagement.film_poster_url && (
+                    <img
+                      src={engagement.film_poster_url}
+                      alt=""
+                      className={styles.cardPoster}
+                    />
+                  )}
+                  <div className={styles.cardTitleSection}>
+                    <h3 className={styles.cardTitle}>{engagement.film_title}</h3>
+                    <div className={styles.cardBadges}>
+                      <span className={`status-badge ${getStatusBadgeClass(engagement.status)}`}>
+                        {engagement.status}
+                      </span>
+                      <span className={styles.formatBadge}>
+                        {engagement.presentation_format.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Screen</span>
+                    <span className={styles.cardValue}>{engagement.screen_name}</span>
+                  </div>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Dates</span>
+                    <span className={styles.cardValue}>
+                      {formatDate(engagement.start_date)} - {formatDate(engagement.end_date)}
+                    </span>
+                  </div>
+                </div>
+                <div className={styles.cardActions}>
+                  <Link
+                    to={`/engagements/${engagement.id}`}
+                    className={`${styles.actionButton} ${styles.detailsButton}`}
+                  >
+                    Details
+                  </Link>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => openEditModal(engagement)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                    onClick={() => handleDelete(engagement)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Create/Edit Drawer */}
