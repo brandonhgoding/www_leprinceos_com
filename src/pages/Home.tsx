@@ -139,7 +139,7 @@ export default function Home() {
         ) : (
           <div className={styles.emptyCard}>
             <p className={styles.emptyText}>No showtimes scheduled for today.</p>
-            <Link to="/dashboard/engagements" className={styles.emptyLink}>
+            <Link to="/engagements" className={styles.emptyLink}>
               View engagements &rarr;
             </Link>
           </div>

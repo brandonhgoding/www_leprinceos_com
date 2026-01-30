@@ -6,6 +6,7 @@ import { engagementsApi, showtimesApi, filmsApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate } from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDateTime, formatDate, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
+import Drawer from '../components/Drawer';
 import styles from './EngagementDetail.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
@@ -230,7 +231,7 @@ export default function EngagementDetail() {
     return (
       <div className={styles.notFound}>
         <p>Engagement not found.</p>
-        <Link to="/dashboard/engagements" className={styles.backLink}>
+        <Link to="/engagements" className={styles.backLink}>
           &larr; Back to Engagements
         </Link>
       </div>
@@ -242,7 +243,7 @@ export default function EngagementDetail() {
       {/* Header */}
       <div className={styles.header}>
         <div>
-          <Link to="/dashboard/engagements" className={styles.backLink}>
+          <Link to="/engagements" className={styles.backLink}>
             &larr; Back to Engagements
           </Link>
           <h1 className={styles.title}>{engagement.film_title}</h1>
@@ -400,194 +401,186 @@ export default function EngagementDetail() {
         )}
       </section>
 
-      {/* Create/Edit Showtime Modal */}
-      {(modalMode === 'create' || modalMode === 'edit') && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'Add Showtime' : 'Edit Showtime'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
+      {/* Create/Edit Showtime Drawer */}
+      <Drawer
+        isOpen={modalMode === 'create' || modalMode === 'edit'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'Add Showtime' : 'Edit Showtime'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="showtime-form"
+              className={styles.submitButton}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                ? 'Add Showtime'
+                : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="showtime-form" onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Date</label>
+              <input
+                type="date"
+                value={formData.starts_at_date}
+                onChange={(e) => setFormData({ ...formData, starts_at_date: e.target.value })}
+                required
+                className={styles.input}
+                min={engagement?.start_date}
+                max={engagement?.end_date}
+              />
             </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Date</label>
+            <div className={styles.formGroup}>
+              <label>Time</label>
+              <input
+                type="time"
+                value={formData.starts_at_time}
+                onChange={(e) => setFormData({ ...formData, starts_at_time: e.target.value })}
+                required
+                className={styles.input}
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Captions</label>
+              <select
+                value={formData.captions || ''}
+                onChange={(e) => setFormData({ ...formData, captions: e.target.value as 'CC' | 'OC' | null || null })}
+                className={styles.input}
+              >
+                <option value="">None</option>
+                <option value="CC">Closed Captions (CC)</option>
+                <option value="OC">Open Captions (OC)</option>
+              </select>
+            </div>
+            {modalMode === 'edit' && (
+              <div className={styles.formGroup}>
+                <label className={styles.checkboxLabel}>
                   <input
-                    type="date"
-                    value={formData.starts_at_date}
-                    onChange={(e) => setFormData({ ...formData, starts_at_date: e.target.value })}
-                    required
-                    className={styles.input}
-                    min={engagement.start_date}
-                    max={engagement.end_date}
+                    type="checkbox"
+                    checked={formData.is_cancelled}
+                    onChange={(e) => setFormData({ ...formData, is_cancelled: e.target.checked })}
                   />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Time</label>
+                  Cancelled
+                </label>
+              </div>
+            )}
+          </div>
+        </form>
+      </Drawer>
+
+      {/* Bulk Add Showtimes Drawer */}
+      <Drawer
+        isOpen={modalMode === 'bulk'}
+        onClose={closeModal}
+        title="Bulk Add Showtimes"
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="bulk-showtime-form"
+              className={styles.submitButton}
+              disabled={bulkCreateMutation.isPending}
+            >
+              {bulkCreateMutation.isPending ? 'Creating...' : 'Create Showtimes'}
+            </button>
+          </>
+        }
+      >
+        <form id="bulk-showtime-form" onSubmit={handleBulkSubmit} className={styles.form}>
+          <div className={styles.bulkInfo}>
+            Create showtimes for each day in the date range at the specified times.
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Start Date</label>
+              <input
+                type="date"
+                value={bulkFormData.start_date}
+                onChange={(e) => setBulkFormData({ ...bulkFormData, start_date: e.target.value })}
+                required
+                className={styles.input}
+                min={engagement?.start_date}
+                max={engagement?.end_date}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>End Date</label>
+              <input
+                type="date"
+                value={bulkFormData.end_date}
+                onChange={(e) => setBulkFormData({ ...bulkFormData, end_date: e.target.value })}
+                required
+                className={styles.input}
+                min={engagement?.start_date}
+                max={engagement?.end_date}
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Showtimes (per day)</label>
+            <div className={styles.timeSlots}>
+              {bulkFormData.times.map((time, index) => (
+                <div key={index} className={styles.timeSlot}>
                   <input
                     type="time"
-                    value={formData.starts_at_time}
-                    onChange={(e) => setFormData({ ...formData, starts_at_time: e.target.value })}
+                    value={time}
+                    onChange={(e) => updateTimeSlot(index, e.target.value)}
                     required
                     className={styles.input}
                   />
+                  {bulkFormData.times.length > 1 && (
+                    <button
+                      type="button"
+                      className={styles.removeTimeButton}
+                      onClick={() => removeTimeSlot(index)}
+                    >
+                      &times;
+                    </button>
+                  )}
                 </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Captions</label>
-                  <select
-                    value={formData.captions || ''}
-                    onChange={(e) => setFormData({ ...formData, captions: e.target.value as 'CC' | 'OC' | null || null })}
-                    className={styles.input}
-                  >
-                    <option value="">None</option>
-                    <option value="CC">Closed Captions (CC)</option>
-                    <option value="OC">Open Captions (OC)</option>
-                  </select>
-                </div>
-                {modalMode === 'edit' && (
-                  <div className={styles.formGroup}>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={formData.is_cancelled}
-                        onChange={(e) => setFormData({ ...formData, is_cancelled: e.target.checked })}
-                      />
-                      Cancelled
-                    </label>
-                  </div>
-                )}
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {createMutation.isPending || updateMutation.isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                    ? 'Add Showtime'
-                    : 'Save Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Bulk Add Showtimes Modal */}
-      {modalMode === 'bulk' && engagement && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>Bulk Add Showtimes</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
+              ))}
+              <button
+                type="button"
+                className={styles.addTimeButton}
+                onClick={addTimeSlot}
+              >
+                + Add another time
               </button>
             </div>
-            <form onSubmit={handleBulkSubmit} className={styles.form}>
-              <div className={styles.bulkInfo}>
-                Create showtimes for each day in the date range at the specified times.
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Start Date</label>
-                  <input
-                    type="date"
-                    value={bulkFormData.start_date}
-                    onChange={(e) => setBulkFormData({ ...bulkFormData, start_date: e.target.value })}
-                    required
-                    className={styles.input}
-                    min={engagement.start_date}
-                    max={engagement.end_date}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>End Date</label>
-                  <input
-                    type="date"
-                    value={bulkFormData.end_date}
-                    onChange={(e) => setBulkFormData({ ...bulkFormData, end_date: e.target.value })}
-                    required
-                    className={styles.input}
-                    min={engagement.start_date}
-                    max={engagement.end_date}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Showtimes (per day)</label>
-                <div className={styles.timeSlots}>
-                  {bulkFormData.times.map((time, index) => (
-                    <div key={index} className={styles.timeSlot}>
-                      <input
-                        type="time"
-                        value={time}
-                        onChange={(e) => updateTimeSlot(index, e.target.value)}
-                        required
-                        className={styles.input}
-                      />
-                      {bulkFormData.times.length > 1 && (
-                        <button
-                          type="button"
-                          className={styles.removeTimeButton}
-                          onClick={() => removeTimeSlot(index)}
-                        >
-                          &times;
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    className={styles.addTimeButton}
-                    onClick={addTimeSlot}
-                  >
-                    + Add another time
-                  </button>
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Captions (optional)</label>
-                <select
-                  value={bulkFormData.captions || ''}
-                  onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as 'CC' | 'OC' | null || null })}
-                  className={styles.input}
-                >
-                  <option value="">None</option>
-                  <option value="CC">Closed Captions (CC)</option>
-                  <option value="OC">Open Captions (OC)</option>
-                </select>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={bulkCreateMutation.isPending}
-                >
-                  {bulkCreateMutation.isPending ? 'Creating...' : 'Create Showtimes'}
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
+
+          <div className={styles.formGroup}>
+            <label>Captions (optional)</label>
+            <select
+              value={bulkFormData.captions || ''}
+              onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as 'CC' | 'OC' | null || null })}
+              className={styles.input}
+            >
+              <option value="">None</option>
+              <option value="CC">Closed Captions (CC)</option>
+              <option value="OC">Open Captions (OC)</option>
+            </select>
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

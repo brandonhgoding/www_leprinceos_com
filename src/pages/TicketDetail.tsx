@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ticketsApi } from '../api';
 import type { TicketTypeRule, TicketTypeRuleCreate } from '../api/types';
+import Drawer from '../components/Drawer';
 import styles from './TicketDetail.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -177,7 +178,7 @@ export default function TicketDetail() {
     return (
       <div className={styles.notFound}>
         <p>Ticket type not found.</p>
-        <Link to="/dashboard/tickets" className={styles.backLink}>
+        <Link to="/tickets" className={styles.backLink}>
           &larr; Back to Ticket Types
         </Link>
       </div>
@@ -189,7 +190,7 @@ export default function TicketDetail() {
       {/* Header */}
       <div className={styles.header}>
         <div>
-          <Link to="/dashboard/tickets" className={styles.backLink}>
+          <Link to="/tickets" className={styles.backLink}>
             &larr; Back to Ticket Types
           </Link>
           <h1 className={styles.title}>{ticketType.name}</h1>
@@ -315,143 +316,139 @@ export default function TicketDetail() {
         )}
       </section>
 
-      {/* Create/Edit Rule Modal */}
-      {(modalMode === 'create' || modalMode === 'edit') && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'Add Rule' : 'Edit Rule'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
+      {/* Create/Edit Rule Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'Add Rule' : 'Edit Rule'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="rule-form"
+              className={styles.submitButton}
+              disabled={createRuleMutation.isPending || updateRuleMutation.isPending}
+            >
+              {createRuleMutation.isPending || updateRuleMutation.isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                ? 'Add Rule'
+                : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="rule-form" onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Rule Name</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., Weekday Matinee, Weekend Evening"
+              />
             </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Rule Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., Weekday Matinee, Weekend Evening"
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Priority</label>
-                  <input
-                    type="number"
-                    value={formData.priority}
-                    onChange={(e) => setFormData({ ...formData, priority: e.target.value ? parseInt(e.target.value) : '' })}
-                    min="0"
-                    className={styles.input}
-                    placeholder="Lower = higher priority"
-                  />
-                </div>
-              </div>
+            <div className={styles.formGroup}>
+              <label>Priority</label>
+              <input
+                type="number"
+                value={formData.priority}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value ? parseInt(e.target.value) : '' })}
+                min="0"
+                className={styles.input}
+                placeholder="Lower = higher priority"
+              />
+            </div>
+          </div>
 
-              <div className={styles.formGroup}>
-                <label>Days of Week</label>
-                <div className={styles.daysGrid}>
-                  {DAYS_OF_WEEK.map((day) => (
-                    <label key={day.value} className={styles.dayCheckbox}>
-                      <input
-                        type="checkbox"
-                        checked={formData.days_of_week_list.includes(day.value)}
-                        onChange={() => handleDayToggle(day.value)}
-                      />
-                      <span>{day.label.slice(0, 3)}</span>
-                    </label>
-                  ))}
-                </div>
-                <span className={styles.fieldHint}>Leave empty to apply to all days</span>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Matinee Cutoff Time</label>
-                  <input
-                    type="time"
-                    value={formData.matinee_cutoff_time}
-                    onChange={(e) => setFormData({ ...formData, matinee_cutoff_time: e.target.value })}
-                    className={styles.input}
-                  />
-                  <span className={styles.fieldHint}>Applies to showtimes before this time</span>
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Presentation Format</label>
-                  <select
-                    value={formData.presentation_format}
-                    onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as RuleFormData['presentation_format'] })}
-                    className={styles.input}
-                  >
-                    <option value="">Any</option>
-                    <option value="2d">2D</option>
-                    <option value="3d">3D</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Screen Type</label>
-                  <select
-                    value={formData.screen_type}
-                    onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as RuleFormData['screen_type'] })}
-                    className={styles.input}
-                  >
-                    <option value="">Any</option>
-                    <option value="standard">Standard</option>
-                    <option value="imax">IMAX</option>
-                    <option value="dolby_cinema">Dolby Cinema</option>
-                  </select>
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Requires 3D Screen</label>
-                  <select
-                    value={formData.requires_3d_screen === '' ? '' : formData.requires_3d_screen ? 'true' : 'false'}
-                    onChange={(e) => setFormData({ ...formData, requires_3d_screen: e.target.value === '' ? '' : e.target.value === 'true' })}
-                    className={styles.input}
-                  >
-                    <option value="">Any</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
+          <div className={styles.formGroup}>
+            <label>Days of Week</label>
+            <div className={styles.daysGrid}>
+              {DAYS_OF_WEEK.map((day) => (
+                <label key={day.value} className={styles.dayCheckbox}>
                   <input
                     type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    checked={formData.days_of_week_list.includes(day.value)}
+                    onChange={() => handleDayToggle(day.value)}
                   />
-                  Rule is active
+                  <span>{day.label.slice(0, 3)}</span>
                 </label>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={createRuleMutation.isPending || updateRuleMutation.isPending}
-                >
-                  {createRuleMutation.isPending || updateRuleMutation.isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                    ? 'Add Rule'
-                    : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+              ))}
+            </div>
+            <span className={styles.fieldHint}>Leave empty to apply to all days</span>
           </div>
-        </div>
-      )}
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Matinee Cutoff Time</label>
+              <input
+                type="time"
+                value={formData.matinee_cutoff_time}
+                onChange={(e) => setFormData({ ...formData, matinee_cutoff_time: e.target.value })}
+                className={styles.input}
+              />
+              <span className={styles.fieldHint}>Applies to showtimes before this time</span>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Presentation Format</label>
+              <select
+                value={formData.presentation_format}
+                onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as RuleFormData['presentation_format'] })}
+                className={styles.input}
+              >
+                <option value="">Any</option>
+                <option value="2d">2D</option>
+                <option value="3d">3D</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Screen Type</label>
+              <select
+                value={formData.screen_type}
+                onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as RuleFormData['screen_type'] })}
+                className={styles.input}
+              >
+                <option value="">Any</option>
+                <option value="standard">Standard</option>
+                <option value="imax">IMAX</option>
+                <option value="dolby_cinema">Dolby Cinema</option>
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Requires 3D Screen</label>
+              <select
+                value={formData.requires_3d_screen === '' ? '' : formData.requires_3d_screen ? 'true' : 'false'}
+                onChange={(e) => setFormData({ ...formData, requires_3d_screen: e.target.value === '' ? '' : e.target.value === 'true' })}
+                className={styles.input}
+              >
+                <option value="">Any</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              />
+              Rule is active
+            </label>
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

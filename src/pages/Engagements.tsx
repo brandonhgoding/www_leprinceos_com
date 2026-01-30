@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, filmsApi, screensApi } from '../api';
 import type { Engagement, EngagementCreate, Film, Screen } from '../api/types';
+import Drawer from '../components/Drawer';
 import styles from './Engagements.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'showtimes';
@@ -277,7 +278,7 @@ export default function Engagements() {
                   <td>
                     <div className={styles.actions}>
                       <Link
-                        to={`/dashboard/engagements/${engagement.id}`}
+                        to={`/engagements/${engagement.id}`}
                         className={`${styles.actionButton} ${styles.detailsButton}`}
                       >
                         Details
@@ -303,132 +304,128 @@ export default function Engagements() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
-      {(modalMode === 'create' || modalMode === 'edit') && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Engagement' : 'Edit Engagement'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label>Film</label>
-                <select
-                  value={formData.film}
-                  onChange={(e) => setFormData({ ...formData, film: e.target.value ? parseInt(e.target.value) : '' })}
-                  required
-                  className={styles.input}
-                >
-                  <option value="">Select a film</option>
-                  {films.map((film: Film) => (
-                    <option key={film.id} value={film.id}>
-                      {film.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Screen</label>
-                <select
-                  value={formData.screen}
-                  onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
-                  required
-                  className={styles.input}
-                >
-                  <option value="">Select a screen</option>
-                  {screens.map((screen: Screen) => (
-                    <option key={screen.id} value={screen.id}>
-                      {screen.name} ({screen.capacity} seats)
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Start Date</label>
-                  <input
-                    type="date"
-                    value={formData.start_date}
-                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                    required
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>End Date</label>
-                  <input
-                    type="date"
-                    value={formData.end_date}
-                    onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                    required
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Format</label>
-                  <select
-                    value={formData.presentation_format}
-                    onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as '2d' | '3d' })}
-                    className={styles.input}
-                  >
-                    <option value="2d">2D</option>
-                    <option value="3d">3D</option>
-                  </select>
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as FormData['status'] })}
-                    className={styles.input}
-                  >
-                    <option value="DRAFT">Draft</option>
-                    <option value="CONFIRMED">Confirmed</option>
-                    <option value="CANCELLED">Cancelled</option>
-                    <option value="ENDED">Ended</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className={styles.textarea}
-                  rows={3}
-                  placeholder="Optional notes about this engagement..."
-                />
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {createMutation.isPending || updateMutation.isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                    ? 'Create Engagement'
-                    : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+      {/* Create/Edit Drawer */}
+      <Drawer
+        isOpen={modalMode === 'create' || modalMode === 'edit'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Engagement' : 'Edit Engagement'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="engagement-form"
+              className={styles.submitButton}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                ? 'Create Engagement'
+                : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="engagement-form" onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Film</label>
+            <select
+              value={formData.film}
+              onChange={(e) => setFormData({ ...formData, film: e.target.value ? parseInt(e.target.value) : '' })}
+              required
+              className={styles.input}
+            >
+              <option value="">Select a film</option>
+              {films.map((film: Film) => (
+                <option key={film.id} value={film.id}>
+                  {film.title}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
-      )}
+
+          <div className={styles.formGroup}>
+            <label>Screen</label>
+            <select
+              value={formData.screen}
+              onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
+              required
+              className={styles.input}
+            >
+              <option value="">Select a screen</option>
+              {screens.map((screen: Screen) => (
+                <option key={screen.id} value={screen.id}>
+                  {screen.name} ({screen.capacity} seats)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Start Date</label>
+              <input
+                type="date"
+                value={formData.start_date}
+                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                required
+                className={styles.input}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>End Date</label>
+              <input
+                type="date"
+                value={formData.end_date}
+                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                required
+                className={styles.input}
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Format</label>
+              <select
+                value={formData.presentation_format}
+                onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as '2d' | '3d' })}
+                className={styles.input}
+              >
+                <option value="2d">2D</option>
+                <option value="3d">3D</option>
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as FormData['status'] })}
+                className={styles.input}
+              >
+                <option value="DRAFT">Draft</option>
+                <option value="CONFIRMED">Confirmed</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="ENDED">Ended</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Notes</label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              className={styles.textarea}
+              rows={3}
+              placeholder="Optional notes about this engagement..."
+            />
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }
