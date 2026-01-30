@@ -168,7 +168,7 @@ export default function Tickets() {
                     <div className={styles.actions}>
                       <button
                         className={styles.actionButton}
-                        onClick={() => navigate(`/dashboard/tickets/${ticket.id}`)}
+                        onClick={() => navigate(`/tickets/${ticket.id}`)}
                       >
                         Details
                       </button>
