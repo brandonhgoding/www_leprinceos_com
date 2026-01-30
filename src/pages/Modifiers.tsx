@@ -444,10 +444,13 @@ export default function Modifiers() {
               Cancel
             </button>
             <button
-              type="submit"
-              form="group-form"
+              type="button"
               className={styles.submitButton}
               disabled={isPending}
+              onClick={() => {
+                const form = document.getElementById('group-form') as HTMLFormElement;
+                form?.requestSubmit();
+              }}
             >
               {isPending
                 ? 'Saving...'
@@ -560,10 +563,13 @@ export default function Modifiers() {
               Cancel
             </button>
             <button
-              type="submit"
-              form="modifier-form"
+              type="button"
               className={styles.submitButton}
               disabled={isPending}
+              onClick={() => {
+                const form = document.getElementById('modifier-form') as HTMLFormElement;
+                form?.requestSubmit();
+              }}
             >
               {isPending
                 ? 'Saving...'
