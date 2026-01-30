@@ -1,6 +1,8 @@
 // src/pages/Embeds.tsx
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
+import { engagementsApi } from '../api';
 import styles from './Embeds.module.css';
 
 interface EmbedType {
@@ -9,6 +11,8 @@ interface EmbedType {
   description: string;
   icon: string;
   previewDescription: string;
+  urlPath: string; // Backend URL path
+  requiresEngagement?: boolean;
 }
 
 interface EmbedConfig {
@@ -18,6 +22,7 @@ interface EmbedConfig {
   showHeader: boolean;
   showPoster: boolean;
   maxItems: number;
+  engagementId: number | null;
 }
 
 const EMBED_TYPES: EmbedType[] = [
@@ -27,6 +32,7 @@ const EMBED_TYPES: EmbedType[] = [
     description: 'Display films currently showing at your cinema with showtimes.',
     icon: '🎬',
     previewDescription: 'Shows current films with poster, title, rating, and today\'s showtimes.',
+    urlPath: 'nowplaying',
   },
   {
     id: 'coming-soon',
@@ -34,6 +40,7 @@ const EMBED_TYPES: EmbedType[] = [
     description: 'Showcase upcoming films to build anticipation.',
     icon: '🎞️',
     previewDescription: 'Displays upcoming films with release dates and trailers.',
+    urlPath: 'comingsoon',
   },
   {
     id: 'schedule',
@@ -41,6 +48,7 @@ const EMBED_TYPES: EmbedType[] = [
     description: 'Full showtime schedule for the week.',
     icon: '📅',
     previewDescription: 'Calendar-style view of all showtimes for the next 7 days.',
+    urlPath: 'showtimes',
   },
   {
     id: 'single-film',
@@ -48,6 +56,8 @@ const EMBED_TYPES: EmbedType[] = [
     description: 'Feature a specific film with all its showtimes.',
     icon: '🎥',
     previewDescription: 'Detailed view of one film with synopsis, cast, and all showtimes.',
+    urlPath: 'film',
+    requiresEngagement: true,
   },
   {
     id: 'concessions',
@@ -55,6 +65,7 @@ const EMBED_TYPES: EmbedType[] = [
     description: 'Display your concession items and pricing.',
     icon: '🍿',
     previewDescription: 'Browse your food and beverage menu with categories and prices.',
+    urlPath: 'concessions',
   },
   {
     id: 'ticket-prices',
@@ -62,6 +73,7 @@ const EMBED_TYPES: EmbedType[] = [
     description: 'Show your ticket types and pricing.',
     icon: '🎟️',
     previewDescription: 'Lists all ticket types with prices and descriptions.',
+    urlPath: 'tickets',
   },
 ];
 
@@ -72,10 +84,14 @@ const DEFAULT_CONFIG: EmbedConfig = {
   showHeader: true,
   showPoster: true,
   maxItems: 10,
+  engagementId: null,
 };
 
-// Base URL for embeds - this would be configured per environment
-const EMBED_BASE_URL = 'https://embed.leprinceos.com';
+// Production embed base URL (for generated code that users copy)
+const PRODUCTION_EMBED_URL = 'https://leprinceos.com/embeds';
+
+// Local embed base URL (for preview iframe, proxied via vite)
+const LOCAL_EMBED_URL = '/embeds';
 
 export default function Embeds() {
   const { currentCinema } = useAuth();
@@ -85,19 +101,44 @@ export default function Embeds() {
 
   const cinemaSlug = currentCinema?.cinema_slug || 'your-cinema';
 
-  const generateEmbedUrl = (embedId: string): string => {
+  // Fetch engagements for single-film embed selector
+  const { data: engagements = [] } = useQuery({
+    queryKey: ['engagements', 'active'],
+    queryFn: () => engagementsApi.list({ status: 'CONFIRMED' }),
+    enabled: selectedEmbed?.requiresEngagement ?? false,
+  });
+
+  // Generate embed URL with configurable base (local for preview, production for code)
+  const generateEmbedUrl = (embed: EmbedType, baseUrl: string = LOCAL_EMBED_URL): string => {
     const params = new URLSearchParams();
     if (config.theme !== 'light') params.set('theme', config.theme);
     if (!config.showHeader) params.set('header', 'false');
     if (!config.showPoster) params.set('poster', 'false');
     if (config.maxItems !== 10) params.set('limit', String(config.maxItems));
 
+    let path = `${baseUrl}/${cinemaSlug}/${embed.urlPath}`;
+
+    // Handle single-film which requires an engagement ID
+    if (embed.requiresEngagement && config.engagementId) {
+      path = `${path}/${config.engagementId}`;
+    }
+
     const queryString = params.toString();
-    return `${EMBED_BASE_URL}/${cinemaSlug}/${embedId}${queryString ? `?${queryString}` : ''}`;
+    return `${path}/${queryString ? `?${queryString}` : ''}`;
   };
 
-  const generateIframeCode = (embedId: string): string => {
-    const url = generateEmbedUrl(embedId);
+  // Generate URL for preview (uses local proxy)
+  const getPreviewUrl = (embed: EmbedType): string => {
+    return generateEmbedUrl(embed, LOCAL_EMBED_URL);
+  };
+
+  // Generate URL for embed code (uses production URL)
+  const getProductionUrl = (embed: EmbedType): string => {
+    return generateEmbedUrl(embed, PRODUCTION_EMBED_URL);
+  };
+
+  const generateIframeCode = (embed: EmbedType): string => {
+    const url = getProductionUrl(embed);
     const height = config.height.includes('%') ? config.height : `${config.height}px`;
     return `<iframe
   src="${url}"
@@ -105,14 +146,14 @@ export default function Embeds() {
   height="${height}"
   frameborder="0"
   style="border: none; border-radius: 8px;"
-  title="${EMBED_TYPES.find(e => e.id === embedId)?.name || 'Cinema Embed'}"
+  title="${embed.name}"
   loading="lazy"
 ></iframe>`;
   };
 
-  const generateScriptCode = (embedId: string): string => {
-    return `<div id="leprince-${embedId}" data-cinema="${cinemaSlug}" data-theme="${config.theme}"></div>
-<script src="${EMBED_BASE_URL}/widget.js" async></script>`;
+  const generateScriptCode = (embed: EmbedType): string => {
+    return `<div id="leprince-${embed.id}" data-cinema="${cinemaSlug}" data-theme="${config.theme}"></div>
+<script src="${PRODUCTION_EMBED_URL}/widget.js" async></script>`;
   };
 
   const copyToClipboard = async (text: string) => {
@@ -232,6 +273,32 @@ export default function Embeds() {
                 </div>
               </div>
 
+              {/* Engagement selector for single-film embed */}
+              {selectedEmbed.requiresEngagement && (
+                <div className={styles.configField} style={{ marginBottom: 'var(--space-md)' }}>
+                  <label>Select Film</label>
+                  <select
+                    value={config.engagementId || ''}
+                    onChange={(e) =>
+                      setConfig({ ...config, engagementId: e.target.value ? parseInt(e.target.value) : null })
+                    }
+                    className={styles.select}
+                  >
+                    <option value="">-- Select a film --</option>
+                    {engagements.map((engagement) => (
+                      <option key={engagement.id} value={engagement.id}>
+                        {engagement.film_title}
+                      </option>
+                    ))}
+                  </select>
+                  {!config.engagementId && (
+                    <p className={styles.fieldNote}>
+                      Please select a film to generate the embed code.
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className={styles.checkboxGroup}>
                 <label className={styles.checkboxLabel}>
                   <input
@@ -256,18 +323,29 @@ export default function Embeds() {
             <div className={styles.configSection}>
               <h3 className={styles.sectionTitle}>Preview</h3>
               <div className={styles.previewContainer}>
-                <div
-                  className={`${styles.previewFrame} ${config.theme === 'dark' ? styles.previewDark : ''}`}
-                  style={{ height: `${Math.min(parseInt(config.height) || 400, 400)}px` }}
-                >
-                  <div className={styles.previewPlaceholder}>
-                    <span className={styles.previewIcon}>{selectedEmbed.icon}</span>
-                    <p>{selectedEmbed.name}</p>
-                    <p className={styles.previewNote}>
-                      Preview will be available once embed endpoints are deployed
-                    </p>
+                {selectedEmbed.requiresEngagement && !config.engagementId ? (
+                  <div
+                    className={`${styles.previewFrame} ${config.theme === 'dark' ? styles.previewDark : ''}`}
+                    style={{ height: `${Math.min(parseInt(config.height) || 400, 400)}px` }}
+                  >
+                    <div className={styles.previewPlaceholder}>
+                      <span className={styles.previewIcon}>{selectedEmbed.icon}</span>
+                      <p>{selectedEmbed.name}</p>
+                      <p className={styles.previewNote}>Select a film above to preview</p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <iframe
+                    src={getPreviewUrl(selectedEmbed)}
+                    style={{
+                      width: '100%',
+                      height: `${Math.min(parseInt(config.height) || 400, 400)}px`,
+                      border: 'none',
+                      borderRadius: '8px',
+                    }}
+                    title={`${selectedEmbed.name} Preview`}
+                  />
+                )}
               </div>
             </div>
 
@@ -283,10 +361,10 @@ export default function Embeds() {
                   </p>
                 </div>
                 <div className={styles.codeBlock}>
-                  <pre>{generateIframeCode(selectedEmbed.id)}</pre>
+                  <pre>{generateIframeCode(selectedEmbed)}</pre>
                   <button
                     className={styles.copyButton}
-                    onClick={() => copyToClipboard(generateIframeCode(selectedEmbed.id))}
+                    onClick={() => copyToClipboard(generateIframeCode(selectedEmbed))}
                   >
                     {copied ? 'Copied!' : 'Copy Code'}
                   </button>
@@ -301,10 +379,10 @@ export default function Embeds() {
                   </p>
                 </div>
                 <div className={styles.codeBlock}>
-                  <pre>{generateScriptCode(selectedEmbed.id)}</pre>
+                  <pre>{generateScriptCode(selectedEmbed)}</pre>
                   <button
                     className={styles.copyButton}
-                    onClick={() => copyToClipboard(generateScriptCode(selectedEmbed.id))}
+                    onClick={() => copyToClipboard(generateScriptCode(selectedEmbed))}
                   >
                     {copied ? 'Copied!' : 'Copy Code'}
                   </button>
@@ -319,10 +397,10 @@ export default function Embeds() {
                   </p>
                 </div>
                 <div className={styles.codeBlock}>
-                  <pre>{generateEmbedUrl(selectedEmbed.id)}</pre>
+                  <pre>{getProductionUrl(selectedEmbed)}</pre>
                   <button
                     className={styles.copyButton}
-                    onClick={() => copyToClipboard(generateEmbedUrl(selectedEmbed.id))}
+                    onClick={() => copyToClipboard(getProductionUrl(selectedEmbed))}
                   >
                     {copied ? 'Copied!' : 'Copy URL'}
                   </button>

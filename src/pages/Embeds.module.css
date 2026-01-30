@@ -196,6 +196,12 @@
   color: var(--charcoal);
 }
 
+.fieldNote {
+  font-size: 0.75rem;
+  color: var(--stone);
+  margin: 0.25rem 0 0 0;
+}
+
 .input,
 .select {
   padding: 0.625rem 0.875rem;
