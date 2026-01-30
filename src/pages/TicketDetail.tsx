@@ -246,73 +246,131 @@ export default function TicketDetail() {
             </button>
           </div>
         ) : (
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Priority</th>
-                  <th>Name</th>
-                  <th>Days</th>
-                  <th>Matinee</th>
-                  <th>Format</th>
-                  <th>Screen Type</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedRules.map((rule) => (
-                  <tr key={rule.id} className={!rule.is_active ? styles.inactiveRow : ''}>
-                    <td className={styles.priorityCell}>{rule.priority}</td>
-                    <td className={styles.ruleName}>{rule.name}</td>
-                    <td>{getDaysLabel(rule.days_of_week_list)}</td>
-                    <td>
-                      {rule.matinee_cutoff_time ? (
-                        <span>Before {rule.matinee_cutoff_time}</span>
-                      ) : (
-                        <span className={styles.anyValue}>Any</span>
-                      )}
-                    </td>
-                    <td>
-                      {rule.presentation_format ? (
-                        <span className={styles.formatBadge}>{rule.presentation_format.toUpperCase()}</span>
-                      ) : (
-                        <span className={styles.anyValue}>Any</span>
-                      )}
-                    </td>
-                    <td>
-                      {rule.screen_type ? (
-                        <span>{SCREEN_TYPE_LABELS[rule.screen_type]}</span>
-                      ) : (
-                        <span className={styles.anyValue}>Any</span>
-                      )}
-                    </td>
-                    <td>
-                      <span className={`${styles.statusBadge} ${rule.is_active ? styles.statusActive : styles.statusInactive}`}>
-                        {rule.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td>
-                      <div className={styles.actions}>
-                        <button
-                          className={styles.actionButton}
-                          onClick={() => openEditModal(rule)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className={`${styles.actionButton} ${styles.deleteButton}`}
-                          onClick={() => handleDelete(rule)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Name</th>
+                    <th>Days</th>
+                    <th>Matinee</th>
+                    <th>Format</th>
+                    <th>Screen Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {sortedRules.map((rule) => (
+                    <tr key={rule.id} className={!rule.is_active ? styles.inactiveRow : ''}>
+                      <td className={styles.priorityCell}>{rule.priority}</td>
+                      <td className={styles.ruleName}>{rule.name}</td>
+                      <td>{getDaysLabel(rule.days_of_week_list)}</td>
+                      <td>
+                        {rule.matinee_cutoff_time ? (
+                          <span>Before {rule.matinee_cutoff_time}</span>
+                        ) : (
+                          <span className={styles.anyValue}>Any</span>
+                        )}
+                      </td>
+                      <td>
+                        {rule.presentation_format ? (
+                          <span className={styles.formatBadge}>{rule.presentation_format.toUpperCase()}</span>
+                        ) : (
+                          <span className={styles.anyValue}>Any</span>
+                        )}
+                      </td>
+                      <td>
+                        {rule.screen_type ? (
+                          <span>{SCREEN_TYPE_LABELS[rule.screen_type]}</span>
+                        ) : (
+                          <span className={styles.anyValue}>Any</span>
+                        )}
+                      </td>
+                      <td>
+                        <span className={`${styles.statusBadge} ${rule.is_active ? styles.statusActive : styles.statusInactive}`}>
+                          {rule.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td>
+                        <div className={styles.actions}>
+                          <button
+                            className={styles.actionButton}
+                            onClick={() => openEditModal(rule)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                            onClick={() => handleDelete(rule)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className={styles.cardList}>
+              {sortedRules.map((rule) => (
+                <div key={rule.id} className={`${styles.card} ${!rule.is_active ? styles.cardInactive : ''}`}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.cardTitleRow}>
+                      <span className={styles.cardPriority}>#{rule.priority}</span>
+                      <h3 className={styles.cardTitle}>{rule.name}</h3>
+                    </div>
+                    <span className={`${styles.statusBadge} ${rule.is_active ? styles.statusActive : styles.statusInactive}`}>
+                      {rule.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                  <div className={styles.cardBody}>
+                    <div className={styles.cardDetail}>
+                      <span className={styles.cardLabel}>Days</span>
+                      <span className={styles.cardValue}>{getDaysLabel(rule.days_of_week_list)}</span>
+                    </div>
+                    <div className={styles.cardDetail}>
+                      <span className={styles.cardLabel}>Matinee</span>
+                      <span className={styles.cardValue}>
+                        {rule.matinee_cutoff_time ? `Before ${rule.matinee_cutoff_time}` : 'Any'}
+                      </span>
+                    </div>
+                    <div className={styles.cardDetail}>
+                      <span className={styles.cardLabel}>Format</span>
+                      <span className={styles.cardValue}>
+                        {rule.presentation_format ? rule.presentation_format.toUpperCase() : 'Any'}
+                      </span>
+                    </div>
+                    <div className={styles.cardDetail}>
+                      <span className={styles.cardLabel}>Screen Type</span>
+                      <span className={styles.cardValue}>
+                        {rule.screen_type ? SCREEN_TYPE_LABELS[rule.screen_type] : 'Any'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={styles.cardActions}>
+                    <button
+                      className={styles.actionButton}
+                      onClick={() => openEditModal(rule)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                      onClick={() => handleDelete(rule)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
 

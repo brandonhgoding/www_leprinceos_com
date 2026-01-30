@@ -75,7 +75,7 @@ export default function Home() {
           label="Active Engagements"
           value={activeEngagements.length}
           linkText="View all"
-          linkTo="/dashboard/engagements"
+          linkTo="/engagements"
           isLoading={engagementsLoading}
         />
         <SummaryCard
@@ -87,7 +87,7 @@ export default function Home() {
           label="Screens"
           value={screens.length}
           linkText="Manage"
-          linkTo="/dashboard/screens"
+          linkTo="/screens"
           isLoading={screensLoading}
         />
       </div>
@@ -100,42 +100,72 @@ export default function Home() {
             <p className={styles.emptyText}>Loading showtimes...</p>
           </div>
         ) : sortedShowtimes.length > 0 ? (
-          <div className={styles.tableCard}>
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>Film</th>
-                    <th>Screen</th>
-                    <th>Format</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedShowtimes.map((show: Showtime) => (
-                    <tr key={show.id}>
-                      <td className={styles.timeCell}>
-                        {formatTime(show.starts_at, cinemaTimezone)}
-                      </td>
-                      <td className={styles.filmCell}>{show.film_title}</td>
-                      <td className={styles.screenCell}>{show.screen_name}</td>
-                      <td className={styles.formatCell}>
-                        {show.presentation_format_display || '2D'}
-                      </td>
-                      <td>
-                        {show.is_cancelled ? (
-                          <span className={styles.statusCancelled}>Cancelled</span>
-                        ) : (
-                          <span className={styles.statusActive}>Active</span>
-                        )}
-                      </td>
+          <>
+            {/* Desktop Table View */}
+            <div className={styles.tableCard}>
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Film</th>
+                      <th>Screen</th>
+                      <th>Format</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {sortedShowtimes.map((show: Showtime) => (
+                      <tr key={show.id}>
+                        <td className={styles.timeCell}>
+                          {formatTime(show.starts_at, cinemaTimezone)}
+                        </td>
+                        <td className={styles.filmCell}>{show.film_title}</td>
+                        <td className={styles.screenCell}>{show.screen_name}</td>
+                        <td className={styles.formatCell}>
+                          {show.presentation_format_display || '2D'}
+                        </td>
+                        <td>
+                          {show.is_cancelled ? (
+                            <span className={styles.statusCancelled}>Cancelled</span>
+                          ) : (
+                            <span className={styles.statusActive}>Active</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+
+            {/* Mobile Card View */}
+            <div className={styles.cardList}>
+              {sortedShowtimes.map((show: Showtime) => (
+                <div key={show.id} className={styles.showtimeCard}>
+                  <div className={styles.showtimeCardHeader}>
+                    <span className={styles.showtimeTime}>
+                      {formatTime(show.starts_at, cinemaTimezone)}
+                    </span>
+                    {show.is_cancelled ? (
+                      <span className={styles.statusCancelled}>Cancelled</span>
+                    ) : (
+                      <span className={styles.statusActive}>Active</span>
+                    )}
+                  </div>
+                  <div className={styles.showtimeCardBody}>
+                    <h3 className={styles.showtimeFilm}>{show.film_title}</h3>
+                    <div className={styles.showtimeMeta}>
+                      <span>{show.screen_name}</span>
+                      <span className={styles.showtimeFormat}>
+                        {show.presentation_format_display || '2D'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className={styles.emptyCard}>
             <p className={styles.emptyText}>No showtimes scheduled for today.</p>

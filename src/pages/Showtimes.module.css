@@ -235,67 +235,102 @@
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-/* Modal */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  z-index: 1000;
+/* Mobile Card View */
+.cardList {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.modal {
+.card {
   background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
-.modalHeader {
+.cardCancelled {
+  opacity: 0.6;
+}
+
+.cardHeader {
+  padding: 1rem;
+  background: var(--cream);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cardTitleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
 }
 
-.modalHeader h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.25rem;
+.cardTitle {
+  font-size: 1rem;
   font-weight: 600;
   color: var(--charcoal);
   margin: 0;
-}
-
-.closeButton {
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: var(--stone);
-  background: transparent;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  gap: 0.5rem;
 }
 
-.closeButton:hover {
-  background: var(--cream);
+.cardBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.captionsBadge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border-radius: 4px;
+}
+
+.cardBody {
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardDetail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardLabel {
+  font-size: 0.8125rem;
+  color: var(--stone);
+}
+
+.cardValue {
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--charcoal);
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cardActions .actionButton {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
 }
 
 /* Form */
 .form {
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -461,6 +496,16 @@
 }
 
 /* Responsive */
+@media (max-width: 768px) {
+  .tableWrapper {
+    display: none;
+  }
+
+  .cardList {
+    display: flex;
+  }
+}
+
 @media (max-width: 640px) {
   .header {
     flex-direction: column;

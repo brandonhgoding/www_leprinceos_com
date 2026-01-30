@@ -5,6 +5,7 @@ import { showtimesApi, engagementsApi, screensApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate, Engagement, Screen } from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDateTime, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
+import Drawer from '../components/Drawer';
 import styles from './Showtimes.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
@@ -277,312 +278,359 @@ export default function Showtimes() {
           </button>
         </div>
       ) : (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Film</th>
-                <th>Screen</th>
-                <th>Date & Time</th>
-                <th>Captions</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {showtimes.map((showtime) => (
-                <tr key={showtime.id} className={showtime.is_cancelled ? styles.cancelledRow : ''}>
-                  <td>
-                    <span className={styles.filmTitle}>{showtime.film_title}</span>
-                    {showtime.is_outside_engagement_range && (
-                      <span className={styles.warningBadge} title="Outside engagement date range">
-                        !
-                      </span>
-                    )}
-                  </td>
-                  <td>{showtime.screen_name}</td>
-                  <td>{formatDateTime(showtime.starts_at, cinemaTimezone)}</td>
-                  <td>{showtime.captions || '-'}</td>
-                  <td>
+        <>
+          {/* Desktop Table View */}
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Film</th>
+                  <th>Screen</th>
+                  <th>Date & Time</th>
+                  <th>Captions</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {showtimes.map((showtime) => (
+                  <tr key={showtime.id} className={showtime.is_cancelled ? styles.cancelledRow : ''}>
+                    <td>
+                      <span className={styles.filmTitle}>{showtime.film_title}</span>
+                      {showtime.is_outside_engagement_range && (
+                        <span className={styles.warningBadge} title="Outside engagement date range">
+                          !
+                        </span>
+                      )}
+                    </td>
+                    <td>{showtime.screen_name}</td>
+                    <td>{formatDateTime(showtime.starts_at, cinemaTimezone)}</td>
+                    <td>{showtime.captions || '-'}</td>
+                    <td>
+                      {showtime.is_cancelled ? (
+                        <span className={styles.cancelledBadge}>Cancelled</span>
+                      ) : (
+                        <span className={styles.activeBadge}>Active</span>
+                      )}
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => openEditModal(showtime)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className={`${styles.actionButton} ${styles.deleteButton}`}
+                          onClick={() => handleDelete(showtime)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className={styles.cardList}>
+            {showtimes.map((showtime) => (
+              <div key={showtime.id} className={`${styles.card} ${showtime.is_cancelled ? styles.cardCancelled : ''}`}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.cardTitleRow}>
+                    <h3 className={styles.cardTitle}>
+                      {showtime.film_title}
+                      {showtime.is_outside_engagement_range && (
+                        <span className={styles.warningBadge} title="Outside engagement date range">!</span>
+                      )}
+                    </h3>
+                  </div>
+                  <div className={styles.cardBadges}>
                     {showtime.is_cancelled ? (
                       <span className={styles.cancelledBadge}>Cancelled</span>
                     ) : (
                       <span className={styles.activeBadge}>Active</span>
                     )}
-                  </td>
-                  <td>
-                    <div className={styles.actions}>
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => openEditModal(showtime)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        onClick={() => handleDelete(showtime)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Single Showtime Modal */}
-      {(modalMode === 'create' || modalMode === 'edit') && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Showtime' : 'Edit Showtime'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label>Engagement</label>
-                <select
-                  value={formData.engagement}
-                  onChange={(e) => setFormData({ ...formData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
-                  required
-                  className={styles.input}
-                >
-                  <option value="">Select an engagement</option>
-                  {engagements.map((eng: Engagement) => (
-                    <option key={eng.id} value={eng.id}>
-                      {eng.film_title} ({eng.start_date} - {eng.end_date})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Screen (optional, defaults to engagement's screen)</label>
-                <select
-                  value={formData.screen}
-                  onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
-                  className={styles.input}
-                >
-                  <option value="">Use engagement default</option>
-                  {screens.map((screen: Screen) => (
-                    <option key={screen.id} value={screen.id}>
-                      {screen.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Date</label>
-                  <input
-                    type="date"
-                    value={formData.starts_at_date}
-                    onChange={(e) => setFormData({ ...formData, starts_at_date: e.target.value })}
-                    required
-                    className={styles.input}
-                  />
+                    {showtime.captions && (
+                      <span className={styles.captionsBadge}>{showtime.captions}</span>
+                    )}
+                  </div>
                 </div>
-                <div className={styles.formGroup}>
-                  <label>Time</label>
-                  <input
-                    type="time"
-                    value={formData.starts_at_time}
-                    onChange={(e) => setFormData({ ...formData, starts_at_time: e.target.value })}
-                    required
-                    className={styles.input}
-                  />
+                <div className={styles.cardBody}>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Date & Time</span>
+                    <span className={styles.cardValue}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</span>
+                  </div>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Screen</span>
+                    <span className={styles.cardValue}>{showtime.screen_name}</span>
+                  </div>
                 </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Captions</label>
-                  <select
-                    value={formData.captions}
-                    onChange={(e) => setFormData({ ...formData, captions: e.target.value as FormData['captions'] })}
-                    className={styles.input}
+                <div className={styles.cardActions}>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => openEditModal(showtime)}
                   >
-                    <option value="">None</option>
-                    <option value="CC">Closed Captions</option>
-                    <option value="OC">Open Captions</option>
-                  </select>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={formData.is_cancelled}
-                      onChange={(e) => setFormData({ ...formData, is_cancelled: e.target.checked })}
-                    />
-                    Cancelled
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {createMutation.isPending || updateMutation.isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                    ? 'Create Showtime'
-                    : 'Save Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Bulk Create Modal */}
-      {modalMode === 'bulk' && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>Bulk Create Showtimes</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <form onSubmit={handleBulkSubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label>Engagement</label>
-                <select
-                  value={bulkFormData.engagement}
-                  onChange={(e) => setBulkFormData({ ...bulkFormData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
-                  required
-                  className={styles.input}
-                >
-                  <option value="">Select an engagement</option>
-                  {engagements.map((eng: Engagement) => (
-                    <option key={eng.id} value={eng.id}>
-                      {eng.film_title} ({eng.start_date} - {eng.end_date})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Screen (optional)</label>
-                <select
-                  value={bulkFormData.screen}
-                  onChange={(e) => setBulkFormData({ ...bulkFormData, screen: e.target.value ? parseInt(e.target.value) : '' })}
-                  className={styles.input}
-                >
-                  <option value="">Use engagement default</option>
-                  {screens.map((screen: Screen) => (
-                    <option key={screen.id} value={screen.id}>
-                      {screen.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Start Date</label>
-                  <input
-                    type="date"
-                    value={bulkFormData.start_date}
-                    onChange={(e) => setBulkFormData({ ...bulkFormData, start_date: e.target.value })}
-                    required
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>End Date</label>
-                  <input
-                    type="date"
-                    value={bulkFormData.end_date}
-                    onChange={(e) => setBulkFormData({ ...bulkFormData, end_date: e.target.value })}
-                    required
-                    className={styles.input}
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Show Times</label>
-                <div className={styles.timeSlots}>
-                  {bulkFormData.times.map((time, index) => (
-                    <div key={index} className={styles.timeSlot}>
-                      <input
-                        type="time"
-                        value={time}
-                        onChange={(e) => updateTimeSlot(index, e.target.value)}
-                        required
-                        className={styles.input}
-                      />
-                      {bulkFormData.times.length > 1 && (
-                        <button
-                          type="button"
-                          className={styles.removeTimeButton}
-                          onClick={() => removeTimeSlot(index)}
-                        >
-                          &times;
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button type="button" className={styles.addTimeButton} onClick={addTimeSlot}>
-                    + Add Time
+                    Edit
+                  </button>
+                  <button
+                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                    onClick={() => handleDelete(showtime)}
+                  >
+                    Delete
                   </button>
                 </div>
               </div>
-
-              <div className={styles.formGroup}>
-                <label>Captions</label>
-                <select
-                  value={bulkFormData.captions}
-                  onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as BulkFormData['captions'] })}
-                  className={styles.input}
-                >
-                  <option value="">None</option>
-                  <option value="CC">Closed Captions</option>
-                  <option value="OC">Open Captions</option>
-                </select>
-              </div>
-
-              <div className={styles.bulkInfo}>
-                {bulkFormData.start_date && bulkFormData.end_date && bulkFormData.times.filter(t => t).length > 0 && (
-                  <p>
-                    This will create{' '}
-                    <strong>
-                      {Math.max(0, Math.ceil((new Date(bulkFormData.end_date).getTime() - new Date(bulkFormData.start_date).getTime()) / (1000 * 60 * 60 * 24) + 1) * bulkFormData.times.filter(t => t).length)}
-                    </strong>{' '}
-                    showtimes.
-                  </p>
-                )}
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={bulkCreateMutation.isPending}
-                >
-                  {bulkCreateMutation.isPending ? 'Creating...' : 'Create Showtimes'}
-                </button>
-              </div>
-            </form>
+            ))}
           </div>
-        </div>
+        </>
       )}
+
+      {/* Single Showtime Drawer */}
+      <Drawer
+        isOpen={modalMode === 'create' || modalMode === 'edit'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Showtime' : 'Edit Showtime'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="showtime-form"
+              className={styles.submitButton}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                ? 'Create Showtime'
+                : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="showtime-form" onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Engagement</label>
+            <select
+              value={formData.engagement}
+              onChange={(e) => setFormData({ ...formData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
+              required
+              className={styles.input}
+            >
+              <option value="">Select an engagement</option>
+              {engagements.map((eng: Engagement) => (
+                <option key={eng.id} value={eng.id}>
+                  {eng.film_title} ({eng.start_date} - {eng.end_date})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Screen (optional, defaults to engagement's screen)</label>
+            <select
+              value={formData.screen}
+              onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
+              className={styles.input}
+            >
+              <option value="">Use engagement default</option>
+              {screens.map((screen: Screen) => (
+                <option key={screen.id} value={screen.id}>
+                  {screen.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Date</label>
+              <input
+                type="date"
+                value={formData.starts_at_date}
+                onChange={(e) => setFormData({ ...formData, starts_at_date: e.target.value })}
+                required
+                className={styles.input}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Time</label>
+              <input
+                type="time"
+                value={formData.starts_at_time}
+                onChange={(e) => setFormData({ ...formData, starts_at_time: e.target.value })}
+                required
+                className={styles.input}
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Captions</label>
+              <select
+                value={formData.captions}
+                onChange={(e) => setFormData({ ...formData, captions: e.target.value as FormData['captions'] })}
+                className={styles.input}
+              >
+                <option value="">None</option>
+                <option value="CC">Closed Captions</option>
+                <option value="OC">Open Captions</option>
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={formData.is_cancelled}
+                  onChange={(e) => setFormData({ ...formData, is_cancelled: e.target.checked })}
+                />
+                Cancelled
+              </label>
+            </div>
+          </div>
+        </form>
+      </Drawer>
+
+      {/* Bulk Create Drawer */}
+      <Drawer
+        isOpen={modalMode === 'bulk'}
+        onClose={closeModal}
+        title="Bulk Create Showtimes"
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="bulk-showtime-form"
+              className={styles.submitButton}
+              disabled={bulkCreateMutation.isPending}
+            >
+              {bulkCreateMutation.isPending ? 'Creating...' : 'Create Showtimes'}
+            </button>
+          </>
+        }
+      >
+        <form id="bulk-showtime-form" onSubmit={handleBulkSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Engagement</label>
+            <select
+              value={bulkFormData.engagement}
+              onChange={(e) => setBulkFormData({ ...bulkFormData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
+              required
+              className={styles.input}
+            >
+              <option value="">Select an engagement</option>
+              {engagements.map((eng: Engagement) => (
+                <option key={eng.id} value={eng.id}>
+                  {eng.film_title} ({eng.start_date} - {eng.end_date})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Screen (optional)</label>
+            <select
+              value={bulkFormData.screen}
+              onChange={(e) => setBulkFormData({ ...bulkFormData, screen: e.target.value ? parseInt(e.target.value) : '' })}
+              className={styles.input}
+            >
+              <option value="">Use engagement default</option>
+              {screens.map((screen: Screen) => (
+                <option key={screen.id} value={screen.id}>
+                  {screen.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Start Date</label>
+              <input
+                type="date"
+                value={bulkFormData.start_date}
+                onChange={(e) => setBulkFormData({ ...bulkFormData, start_date: e.target.value })}
+                required
+                className={styles.input}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>End Date</label>
+              <input
+                type="date"
+                value={bulkFormData.end_date}
+                onChange={(e) => setBulkFormData({ ...bulkFormData, end_date: e.target.value })}
+                required
+                className={styles.input}
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Show Times</label>
+            <div className={styles.timeSlots}>
+              {bulkFormData.times.map((time, index) => (
+                <div key={index} className={styles.timeSlot}>
+                  <input
+                    type="time"
+                    value={time}
+                    onChange={(e) => updateTimeSlot(index, e.target.value)}
+                    required
+                    className={styles.input}
+                  />
+                  {bulkFormData.times.length > 1 && (
+                    <button
+                      type="button"
+                      className={styles.removeTimeButton}
+                      onClick={() => removeTimeSlot(index)}
+                    >
+                      &times;
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" className={styles.addTimeButton} onClick={addTimeSlot}>
+                + Add Time
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Captions</label>
+            <select
+              value={bulkFormData.captions}
+              onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as BulkFormData['captions'] })}
+              className={styles.input}
+            >
+              <option value="">None</option>
+              <option value="CC">Closed Captions</option>
+              <option value="OC">Open Captions</option>
+            </select>
+          </div>
+
+          <div className={styles.bulkInfo}>
+            {bulkFormData.start_date && bulkFormData.end_date && bulkFormData.times.filter(t => t).length > 0 && (
+              <p>
+                This will create{' '}
+                <strong>
+                  {Math.max(0, Math.ceil((new Date(bulkFormData.end_date).getTime() - new Date(bulkFormData.start_date).getTime()) / (1000 * 60 * 60 * 24) + 1) * bulkFormData.times.filter(t => t).length)}
+                </strong>{' '}
+                showtimes.
+              </p>
+            )}
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

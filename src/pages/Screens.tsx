@@ -159,59 +159,106 @@ export default function Screens() {
           </button>
         </div>
       ) : (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Capacity</th>
-                <th>Type</th>
-                <th>Aspect Ratio</th>
-                <th>Sound</th>
-                <th>3D</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {screens.map((screen) => (
-                <tr key={screen.id}>
-                  <td className={styles.screenName}>{screen.name}</td>
-                  <td>{screen.capacity} seats</td>
-                  <td>
+        <>
+          {/* Desktop Table View */}
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Capacity</th>
+                  <th>Type</th>
+                  <th>Aspect Ratio</th>
+                  <th>Sound</th>
+                  <th>3D</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {screens.map((screen) => (
+                  <tr key={screen.id}>
+                    <td className={styles.screenName}>{screen.name}</td>
+                    <td>{screen.capacity} seats</td>
+                    <td>
+                      <span className={`${styles.typeBadge} ${styles[`type${screen.screen_type}`]}`}>
+                        {SCREEN_TYPE_LABELS[screen.screen_type]}
+                      </span>
+                    </td>
+                    <td>{ASPECT_RATIO_LABELS[screen.aspect_ratio]}</td>
+                    <td>{SOUND_SYSTEM_LABELS[screen.sound_system]}</td>
+                    <td>
+                      {screen.supports_3d ? (
+                        <span className={styles.badge3d}>3D</span>
+                      ) : (
+                        <span className={styles.badgeNo}>—</span>
+                      )}
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => openEditModal(screen)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className={`${styles.actionButton} ${styles.deleteButton}`}
+                          onClick={() => handleDelete(screen)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className={styles.cardList}>
+            {screens.map((screen) => (
+              <div key={screen.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.cardTitleRow}>
+                    <h3 className={styles.cardTitle}>{screen.name}</h3>
                     <span className={`${styles.typeBadge} ${styles[`type${screen.screen_type}`]}`}>
                       {SCREEN_TYPE_LABELS[screen.screen_type]}
                     </span>
-                  </td>
-                  <td>{ASPECT_RATIO_LABELS[screen.aspect_ratio]}</td>
-                  <td>{SOUND_SYSTEM_LABELS[screen.sound_system]}</td>
-                  <td>
-                    {screen.supports_3d ? (
-                      <span className={styles.badge3d}>3D</span>
-                    ) : (
-                      <span className={styles.badgeNo}>—</span>
-                    )}
-                  </td>
-                  <td>
-                    <div className={styles.actions}>
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => openEditModal(screen)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        onClick={() => handleDelete(screen)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                  <div className={styles.cardBadges}>
+                    <span className={styles.cardCapacity}>{screen.capacity} seats</span>
+                    {screen.supports_3d && <span className={styles.badge3d}>3D</span>}
+                  </div>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Aspect Ratio</span>
+                    <span className={styles.cardValue}>{ASPECT_RATIO_LABELS[screen.aspect_ratio]}</span>
+                  </div>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Sound</span>
+                    <span className={styles.cardValue}>{SOUND_SYSTEM_LABELS[screen.sound_system]}</span>
+                  </div>
+                </div>
+                <div className={styles.cardActions}>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => openEditModal(screen)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                    onClick={() => handleDelete(screen)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Create/Edit Drawer */}

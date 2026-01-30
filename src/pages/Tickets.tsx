@@ -138,59 +138,104 @@ export default function Tickets() {
           </button>
         </div>
       ) : (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Rules</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ticketTypes.map((ticket) => (
-                <tr key={ticket.id}>
-                  <td className={styles.ticketName}>{ticket.name}</td>
-                  <td className={styles.price}>{formatPrice(ticket.price)}</td>
-                  <td>
+        <>
+          {/* Desktop Table View */}
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Rules</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ticketTypes.map((ticket) => (
+                  <tr key={ticket.id}>
+                    <td className={styles.ticketName}>{ticket.name}</td>
+                    <td className={styles.price}>{formatPrice(ticket.price)}</td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
+                        {ticket.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={styles.rulesCount}>
+                        {ticket.rules_count} {ticket.rules_count === 1 ? 'rule' : 'rules'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => navigate(`/tickets/${ticket.id}`)}
+                        >
+                          Details
+                        </button>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => openEditModal(ticket)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className={`${styles.actionButton} ${styles.deleteButton}`}
+                          onClick={() => handleDelete(ticket)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className={styles.cardList}>
+            {ticketTypes.map((ticket) => (
+              <div key={ticket.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.cardTitleRow}>
+                    <h3 className={styles.cardTitle}>{ticket.name}</h3>
+                    <span className={styles.cardPrice}>{formatPrice(ticket.price)}</span>
+                  </div>
+                  <div className={styles.cardBadges}>
                     <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
                       {ticket.is_active ? 'Active' : 'Inactive'}
                     </span>
-                  </td>
-                  <td>
                     <span className={styles.rulesCount}>
                       {ticket.rules_count} {ticket.rules_count === 1 ? 'rule' : 'rules'}
                     </span>
-                  </td>
-                  <td>
-                    <div className={styles.actions}>
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => navigate(`/tickets/${ticket.id}`)}
-                      >
-                        Details
-                      </button>
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => openEditModal(ticket)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        onClick={() => handleDelete(ticket)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
+                <div className={styles.cardActions}>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => navigate(`/tickets/${ticket.id}`)}
+                  >
+                    Details
+                  </button>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => openEditModal(ticket)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                    onClick={() => handleDelete(ticket)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Create/Edit Drawer */}

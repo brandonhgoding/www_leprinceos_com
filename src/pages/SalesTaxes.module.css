@@ -179,6 +179,89 @@
   border-color: rgba(239, 68, 68, 0.3);
 }
 
+/* Mobile Card View */
+.cardList {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 1rem;
+  background: var(--cream);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cardTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin: 0;
+}
+
+.cardRate {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.cardBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardBody {
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardDetail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardLabel {
+  font-size: 0.8125rem;
+  color: var(--stone);
+}
+
+.cardValue {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cardActions .actionButton {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+}
+
 /* Form */
 .form {
   display: flex;
@@ -295,11 +378,12 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .table th:nth-child(4),
-  .table td:nth-child(4),
-  .table th:nth-child(6),
-  .table td:nth-child(6) {
+  .tableWrapper {
     display: none;
+  }
+
+  .cardList {
+    display: flex;
   }
 }
 
@@ -311,9 +395,5 @@
 
   .formRow {
     grid-template-columns: 1fr;
-  }
-
-  .actions {
-    flex-direction: column;
   }
 }

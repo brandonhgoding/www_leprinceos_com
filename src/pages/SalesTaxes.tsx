@@ -153,58 +153,108 @@ export default function SalesTaxes() {
           </button>
         </div>
       ) : (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Rate</th>
-                <th>Type</th>
-                <th>Application</th>
-                <th>Status</th>
-                <th>Usage</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {salesTaxes.map((tax) => (
-                <tr key={tax.id}>
-                  <td className={styles.taxName}>{tax.name}</td>
-                  <td className={styles.percentage}>{formatPercentage(tax.percentage)}</td>
-                  <td>
+        <>
+          {/* Desktop Table View */}
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Rate</th>
+                  <th>Type</th>
+                  <th>Application</th>
+                  <th>Status</th>
+                  <th>Usage</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {salesTaxes.map((tax) => (
+                  <tr key={tax.id}>
+                    <td className={styles.taxName}>{tax.name}</td>
+                    <td className={styles.percentage}>{formatPercentage(tax.percentage)}</td>
+                    <td>
+                      <span className={styles.typeBadge}>{TAX_TYPE_LABELS[tax.tax_type]}</span>
+                    </td>
+                    <td className={styles.inclusionType}>
+                      {tax.inclusion_type === 'additive' ? 'Added to price' : 'Included in price'}
+                    </td>
+                    <td>
+                      <span
+                        className={`${styles.statusBadge} ${tax.is_active ? styles.statusActive : styles.statusInactive}`}
+                      >
+                        {tax.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className={styles.usageCount}>
+                      {tax.concession_items_count} items, {tax.ticket_types_count} tickets
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <button className={styles.actionButton} onClick={() => openEditModal(tax)}>
+                          Edit
+                        </button>
+                        <button
+                          className={`${styles.actionButton} ${styles.deleteButton}`}
+                          onClick={() => handleDelete(tax)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className={styles.cardList}>
+            {salesTaxes.map((tax) => (
+              <div key={tax.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.cardTitleRow}>
+                    <h3 className={styles.cardTitle}>{tax.name}</h3>
+                    <span className={styles.cardRate}>{formatPercentage(tax.percentage)}</span>
+                  </div>
+                  <div className={styles.cardBadges}>
                     <span className={styles.typeBadge}>{TAX_TYPE_LABELS[tax.tax_type]}</span>
-                  </td>
-                  <td className={styles.inclusionType}>
-                    {tax.inclusion_type === 'additive' ? 'Added to price' : 'Included in price'}
-                  </td>
-                  <td>
                     <span
                       className={`${styles.statusBadge} ${tax.is_active ? styles.statusActive : styles.statusInactive}`}
                     >
                       {tax.is_active ? 'Active' : 'Inactive'}
                     </span>
-                  </td>
-                  <td className={styles.usageCount}>
-                    {tax.concession_items_count} items, {tax.ticket_types_count} tickets
-                  </td>
-                  <td>
-                    <div className={styles.actions}>
-                      <button className={styles.actionButton} onClick={() => openEditModal(tax)}>
-                        Edit
-                      </button>
-                      <button
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        onClick={() => handleDelete(tax)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Application</span>
+                    <span className={styles.cardValue}>
+                      {tax.inclusion_type === 'additive' ? 'Added to price' : 'Included'}
+                    </span>
+                  </div>
+                  <div className={styles.cardDetail}>
+                    <span className={styles.cardLabel}>Usage</span>
+                    <span className={styles.cardValue}>
+                      {tax.concession_items_count} items, {tax.ticket_types_count} tickets
+                    </span>
+                  </div>
+                </div>
+                <div className={styles.cardActions}>
+                  <button className={styles.actionButton} onClick={() => openEditModal(tax)}>
+                    Edit
+                  </button>
+                  <button
+                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                    onClick={() => handleDelete(tax)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Create/Edit Drawer */}

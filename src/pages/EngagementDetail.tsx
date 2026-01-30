@@ -347,57 +347,101 @@ export default function EngagementDetail() {
             </button>
           </div>
         ) : (
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Date & Time</th>
-                  <th>Screen</th>
-                  <th>Captions</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedShowtimes.map((showtime) => (
-                  <tr key={showtime.id} className={showtime.is_cancelled ? styles.cancelledRow : ''}>
-                    <td className={styles.dateTimeCell}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</td>
-                    <td>{showtime.screen_name}</td>
-                    <td>
-                      {showtime.captions ? (
-                        <span className={styles.captionsBadge}>{showtime.captions}</span>
-                      ) : (
-                        <span className={styles.noCaptions}>—</span>
-                      )}
-                    </td>
-                    <td>
+          <>
+            {/* Desktop Table View */}
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Screen</th>
+                    <th>Captions</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedShowtimes.map((showtime) => (
+                    <tr key={showtime.id} className={showtime.is_cancelled ? styles.cancelledRow : ''}>
+                      <td className={styles.dateTimeCell}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</td>
+                      <td>{showtime.screen_name}</td>
+                      <td>
+                        {showtime.captions ? (
+                          <span className={styles.captionsBadge}>{showtime.captions}</span>
+                        ) : (
+                          <span className={styles.noCaptions}>—</span>
+                        )}
+                      </td>
+                      <td>
+                        {showtime.is_cancelled ? (
+                          <span className={styles.cancelledBadge}>Cancelled</span>
+                        ) : (
+                          <span className={styles.activeBadge}>Active</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className={styles.actions}>
+                          <button
+                            className={styles.actionButton}
+                            onClick={() => openEditModal(showtime)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                            onClick={() => handleDelete(showtime)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className={styles.cardList}>
+              {sortedShowtimes.map((showtime) => (
+                <div key={showtime.id} className={`${styles.card} ${showtime.is_cancelled ? styles.cardCancelled : ''}`}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.cardDateTime}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</div>
+                    <div className={styles.cardBadges}>
                       {showtime.is_cancelled ? (
                         <span className={styles.cancelledBadge}>Cancelled</span>
                       ) : (
                         <span className={styles.activeBadge}>Active</span>
                       )}
-                    </td>
-                    <td>
-                      <div className={styles.actions}>
-                        <button
-                          className={styles.actionButton}
-                          onClick={() => openEditModal(showtime)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className={`${styles.actionButton} ${styles.deleteButton}`}
-                          onClick={() => handleDelete(showtime)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      {showtime.captions && (
+                        <span className={styles.captionsBadge}>{showtime.captions}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className={styles.cardBody}>
+                    <div className={styles.cardDetail}>
+                      <span className={styles.cardLabel}>Screen</span>
+                      <span className={styles.cardValue}>{showtime.screen_name}</span>
+                    </div>
+                  </div>
+                  <div className={styles.cardActions}>
+                    <button
+                      className={styles.actionButton}
+                      onClick={() => openEditModal(showtime)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                      onClick={() => handleDelete(showtime)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
