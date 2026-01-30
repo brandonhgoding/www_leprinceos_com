@@ -200,6 +200,34 @@ export interface ModifierGroupBasic {
   modifiers_count: number;
 }
 
+// Item-to-ModifierGroup assignment (through model for per-item settings)
+export interface ItemModifierAssignment {
+  id: number;
+  modifier_group: ModifierGroupBasic;
+  min_selected_modifiers: number;  // -1 = use group default
+  max_selected_modifiers: number;  // -1 = use group default
+  effective_min_selections: number;
+  effective_max_selections: number | null;
+  enabled: boolean;
+  ordinal: number;
+  modifier_overrides: ModifierOverride[];
+}
+
+export interface ModifierOverride {
+  modifier_id: string;
+  on_by_default?: boolean;
+  hidden_online?: boolean;
+}
+
+export interface ItemModifierAssignmentCreate {
+  modifier_group_id: number;
+  min_selected_modifiers?: number;
+  max_selected_modifiers?: number;
+  enabled?: boolean;
+  ordinal?: number;
+  modifier_overrides?: ModifierOverride[];
+}
+
 export interface SalesTaxBasic {
   id: number;
   name: string;
@@ -220,6 +248,7 @@ export interface ConcessionItem {
   variations_count: number;
   price_range: { min: string; max: string } | null;
   modifier_groups: ModifierGroupBasic[];
+  modifier_assignments: ItemModifierAssignment[];
   sales_taxes: SalesTaxBasic[];
   created_at: string;
   updated_at: string;
@@ -236,7 +265,8 @@ export interface ConcessionItemCreate {
   image_url?: string;
   is_active?: boolean;
   square_id?: string;
-  modifier_group_ids?: number[];
+  modifier_group_ids?: number[];  // Simple mode: just IDs (creates default assignments)
+  modifier_assignments?: ItemModifierAssignmentCreate[];  // Advanced mode: per-item settings
   sales_tax_ids?: number[];
 }
 
