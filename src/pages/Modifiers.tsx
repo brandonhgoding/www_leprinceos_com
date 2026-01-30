@@ -191,8 +191,7 @@ export default function Modifiers() {
     setModalMode('edit');
   };
 
-  const handleGroupSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitGroup = () => {
     if (!groupForm.name) return;
 
     const data: ModifierGroupCreate = {
@@ -210,6 +209,11 @@ export default function Modifiers() {
     } else if (selectedGroup) {
       updateGroupMutation.mutate({ id: selectedGroup.id, data });
     }
+  };
+
+  const handleGroupSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitGroup();
   };
 
   const handleDeleteGroup = (group: ModifierGroup) => {
@@ -242,8 +246,7 @@ export default function Modifiers() {
     setModalMode('edit');
   };
 
-  const handleModifierSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitModifier = () => {
     if (!modifierForm.name) return;
 
     const data: ModifierCreate = {
@@ -258,6 +261,11 @@ export default function Modifiers() {
     } else if (selectedModifier) {
       updateModifierMutation.mutate({ id: selectedModifier.id, data });
     }
+  };
+
+  const handleModifierSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitModifier();
   };
 
   const handleDeleteModifier = (modifier: Modifier) => {
@@ -447,10 +455,7 @@ export default function Modifiers() {
               type="button"
               className={styles.submitButton}
               disabled={isPending}
-              onClick={() => {
-                const form = document.getElementById('group-form') as HTMLFormElement;
-                form?.requestSubmit();
-              }}
+              onClick={submitGroup}
             >
               {isPending
                 ? 'Saving...'
@@ -566,10 +571,7 @@ export default function Modifiers() {
               type="button"
               className={styles.submitButton}
               disabled={isPending}
-              onClick={() => {
-                const form = document.getElementById('modifier-form') as HTMLFormElement;
-                form?.requestSubmit();
-              }}
+              onClick={submitModifier}
             >
               {isPending
                 ? 'Saving...'
