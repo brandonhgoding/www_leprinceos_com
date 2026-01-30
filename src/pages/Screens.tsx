@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { screensApi } from '../api';
 import type { Screen } from '../api/types';
 import type { ScreenCreate } from '../api/screens';
+import Drawer from '../components/Drawer';
 import styles from './Screens.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -213,116 +214,112 @@ export default function Screens() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
-      {(modalMode === 'create' || modalMode === 'edit') && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Screen' : 'Edit Screen'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
+      {/* Create/Edit Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Screen' : 'Edit Screen'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="screen-form"
+              className={styles.submitButton}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                ? 'Create Screen'
+                : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="screen-form" onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Screen Name</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., Screen 1, Main Auditorium"
+              />
             </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Screen Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., Screen 1, Main Auditorium"
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Capacity (seats)</label>
-                  <input
-                    type="number"
-                    value={formData.capacity}
-                    onChange={(e) => setFormData({ ...formData, capacity: e.target.value ? parseInt(e.target.value) : '' })}
-                    required
-                    min="1"
-                    className={styles.input}
-                    placeholder="e.g., 150"
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Screen Type</label>
-                  <select
-                    value={formData.screen_type}
-                    onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as FormData['screen_type'] })}
-                    className={styles.input}
-                  >
-                    <option value="standard">Standard</option>
-                    <option value="imax">IMAX</option>
-                    <option value="dolby_cinema">Dolby Cinema</option>
-                  </select>
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Aspect Ratio</label>
-                  <select
-                    value={formData.aspect_ratio}
-                    onChange={(e) => setFormData({ ...formData, aspect_ratio: e.target.value as FormData['aspect_ratio'] })}
-                    className={styles.input}
-                  >
-                    <option value="flat">Flat (1.85:1)</option>
-                    <option value="scope">Scope (2.39:1)</option>
-                    <option value="imax_190">IMAX 1.90:1</option>
-                    <option value="imax_143">IMAX 1.43:1</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Sound System</label>
-                  <select
-                    value={formData.sound_system}
-                    onChange={(e) => setFormData({ ...formData, sound_system: e.target.value as FormData['sound_system'] })}
-                    className={styles.input}
-                  >
-                    <option value="standard">Standard</option>
-                    <option value="dolby_digital">Dolby Digital</option>
-                    <option value="dolby_atmos">Dolby Atmos</option>
-                  </select>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={formData.supports_3d}
-                      onChange={(e) => setFormData({ ...formData, supports_3d: e.target.checked })}
-                    />
-                    Supports 3D Projection
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {createMutation.isPending || updateMutation.isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                    ? 'Create Screen'
-                    : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+            <div className={styles.formGroup}>
+              <label>Capacity (seats)</label>
+              <input
+                type="number"
+                value={formData.capacity}
+                onChange={(e) => setFormData({ ...formData, capacity: e.target.value ? parseInt(e.target.value) : '' })}
+                required
+                min="1"
+                className={styles.input}
+                placeholder="e.g., 150"
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Screen Type</label>
+              <select
+                value={formData.screen_type}
+                onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as FormData['screen_type'] })}
+                className={styles.input}
+              >
+                <option value="standard">Standard</option>
+                <option value="imax">IMAX</option>
+                <option value="dolby_cinema">Dolby Cinema</option>
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Aspect Ratio</label>
+              <select
+                value={formData.aspect_ratio}
+                onChange={(e) => setFormData({ ...formData, aspect_ratio: e.target.value as FormData['aspect_ratio'] })}
+                className={styles.input}
+              >
+                <option value="flat">Flat (1.85:1)</option>
+                <option value="scope">Scope (2.39:1)</option>
+                <option value="imax_190">IMAX 1.90:1</option>
+                <option value="imax_143">IMAX 1.43:1</option>
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Sound System</label>
+              <select
+                value={formData.sound_system}
+                onChange={(e) => setFormData({ ...formData, sound_system: e.target.value as FormData['sound_system'] })}
+                className={styles.input}
+              >
+                <option value="standard">Standard</option>
+                <option value="dolby_digital">Dolby Digital</option>
+                <option value="dolby_atmos">Dolby Atmos</option>
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={formData.supports_3d}
+                  onChange={(e) => setFormData({ ...formData, supports_3d: e.target.checked })}
+                />
+                Supports 3D Projection
+              </label>
+            </div>
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

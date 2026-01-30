@@ -9,6 +9,7 @@ import type {
   ModifierGroupCreate,
   ModifierGroupDetail,
 } from '../api/types';
+import Drawer from '../components/Drawer';
 import styles from './Modifiers.module.css';
 
 type ModalType = 'group' | 'modifier';
@@ -432,200 +433,201 @@ export default function Modifiers() {
         </div>
       )}
 
-      {/* Group Modal */}
-      {modalMode !== 'closed' && modalType === 'group' && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Modifier Group' : 'Edit Modifier Group'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <form onSubmit={handleGroupSubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label>Name</label>
-                <input
-                  type="text"
-                  value={groupForm.name}
-                  onChange={(e) => setGroupForm({ ...groupForm, name: e.target.value })}
-                  required
-                  className={styles.input}
-                  placeholder="e.g., Toppings, Extras, Flavors"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Internal Name (optional)</label>
-                <input
-                  type="text"
-                  value={groupForm.internal_name}
-                  onChange={(e) => setGroupForm({ ...groupForm, internal_name: e.target.value })}
-                  className={styles.input}
-                  placeholder="Internal notes (not shown to customers)"
-                />
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Selection Type</label>
-                  <select
-                    value={groupForm.selection_type}
-                    onChange={(e) =>
-                      setGroupForm({
-                        ...groupForm,
-                        selection_type: e.target.value as 'SINGLE' | 'MULTIPLE',
-                      })
-                    }
-                    className={styles.select}
-                  >
-                    <option value="SINGLE">Single Selection</option>
-                    <option value="MULTIPLE">Multiple Selection</option>
-                  </select>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={groupForm.is_required}
-                      onChange={(e) => setGroupForm({ ...groupForm, is_required: e.target.checked })}
-                    />
-                    Required
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Min Selections</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={groupForm.min_selections}
-                    onChange={(e) => setGroupForm({ ...groupForm, min_selections: e.target.value })}
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Max Selections (blank = unlimited)</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={groupForm.max_selections}
-                    onChange={(e) => setGroupForm({ ...groupForm, max_selections: e.target.value })}
-                    className={styles.input}
-                    placeholder="Unlimited"
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={groupForm.is_active}
-                    onChange={(e) => setGroupForm({ ...groupForm, is_active: e.target.checked })}
-                  />
-                  Active
-                </label>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button type="submit" className={styles.submitButton} disabled={isPending}>
-                  {isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                      ? 'Create Group'
-                      : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+      {/* Group Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed' && modalType === 'group'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Modifier Group' : 'Edit Modifier Group'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="group-form"
+              className={styles.submitButton}
+              disabled={isPending}
+            >
+              {isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                  ? 'Create Group'
+                  : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="group-form" onSubmit={handleGroupSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Name</label>
+            <input
+              type="text"
+              value={groupForm.name}
+              onChange={(e) => setGroupForm({ ...groupForm, name: e.target.value })}
+              required
+              className={styles.input}
+              placeholder="e.g., Toppings, Extras, Flavors"
+            />
           </div>
-        </div>
-      )}
 
-      {/* Modifier Modal */}
-      {modalMode !== 'closed' && modalType === 'modifier' && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Modifier' : 'Edit Modifier'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
+          <div className={styles.formGroup}>
+            <label>Internal Name (optional)</label>
+            <input
+              type="text"
+              value={groupForm.internal_name}
+              onChange={(e) => setGroupForm({ ...groupForm, internal_name: e.target.value })}
+              className={styles.input}
+              placeholder="Internal notes (not shown to customers)"
+            />
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Selection Type</label>
+              <select
+                value={groupForm.selection_type}
+                onChange={(e) =>
+                  setGroupForm({
+                    ...groupForm,
+                    selection_type: e.target.value as 'SINGLE' | 'MULTIPLE',
+                  })
+                }
+                className={styles.select}
+              >
+                <option value="SINGLE">Single Selection</option>
+                <option value="MULTIPLE">Multiple Selection</option>
+              </select>
             </div>
-            <form onSubmit={handleModifierSubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label>Name</label>
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
                 <input
-                  type="text"
-                  value={modifierForm.name}
-                  onChange={(e) => setModifierForm({ ...modifierForm, name: e.target.value })}
-                  required
-                  className={styles.input}
-                  placeholder="e.g., Extra Butter, Jalapenos"
+                  type="checkbox"
+                  checked={groupForm.is_required}
+                  onChange={(e) => setGroupForm({ ...groupForm, is_required: e.target.checked })}
                 />
-              </div>
+                Required
+              </label>
+            </div>
+          </div>
 
-              <div className={styles.formGroup}>
-                <label>Price Adjustment</label>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Min Selections</label>
+              <input
+                type="number"
+                min="0"
+                value={groupForm.min_selections}
+                onChange={(e) => setGroupForm({ ...groupForm, min_selections: e.target.value })}
+                className={styles.input}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Max Selections (blank = unlimited)</label>
+              <input
+                type="number"
+                min="1"
+                value={groupForm.max_selections}
+                onChange={(e) => setGroupForm({ ...groupForm, max_selections: e.target.value })}
+                className={styles.input}
+                placeholder="Unlimited"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={groupForm.is_active}
+                onChange={(e) => setGroupForm({ ...groupForm, is_active: e.target.checked })}
+              />
+              Active
+            </label>
+          </div>
+        </form>
+      </Drawer>
+
+      {/* Modifier Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed' && modalType === 'modifier'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Modifier' : 'Edit Modifier'}
+        width="sm"
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="modifier-form"
+              className={styles.submitButton}
+              disabled={isPending}
+            >
+              {isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                  ? 'Create Modifier'
+                  : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="modifier-form" onSubmit={handleModifierSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Name</label>
+            <input
+              type="text"
+              value={modifierForm.name}
+              onChange={(e) => setModifierForm({ ...modifierForm, name: e.target.value })}
+              required
+              className={styles.input}
+              placeholder="e.g., Extra Butter, Jalapenos"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Price Adjustment</label>
+            <input
+              type="text"
+              value={modifierForm.price_adjustment}
+              onChange={(e) =>
+                setModifierForm({ ...modifierForm, price_adjustment: e.target.value })
+              }
+              className={styles.input}
+              placeholder="e.g., 0.50, -1.00, or 0.00 for free"
+            />
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
                 <input
-                  type="text"
-                  value={modifierForm.price_adjustment}
+                  type="checkbox"
+                  checked={modifierForm.on_by_default}
                   onChange={(e) =>
-                    setModifierForm({ ...modifierForm, price_adjustment: e.target.value })
+                    setModifierForm({ ...modifierForm, on_by_default: e.target.checked })
                   }
-                  className={styles.input}
-                  placeholder="e.g., 0.50, -1.00, or 0.00 for free"
                 />
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={modifierForm.on_by_default}
-                      onChange={(e) =>
-                        setModifierForm({ ...modifierForm, on_by_default: e.target.checked })
-                      }
-                    />
-                    Selected by default
-                  </label>
-                </div>
-                <div className={styles.formGroup}>
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={modifierForm.is_active}
-                      onChange={(e) =>
-                        setModifierForm({ ...modifierForm, is_active: e.target.checked })
-                      }
-                    />
-                    Active
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button type="submit" className={styles.submitButton} disabled={isPending}>
-                  {isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                      ? 'Create Modifier'
-                      : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+                Selected by default
+              </label>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={modifierForm.is_active}
+                  onChange={(e) =>
+                    setModifierForm({ ...modifierForm, is_active: e.target.checked })
+                  }
+                />
+                Active
+              </label>
+            </div>
           </div>
-        </div>
-      )}
+        </form>
+      </Drawer>
     </div>
   );
 }

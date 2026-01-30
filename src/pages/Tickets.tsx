@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { ticketsApi } from '../api';
 import type { TicketType, TicketTypeCreate } from '../api/types';
+import Drawer from '../components/Drawer';
 import styles from './Tickets.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -192,84 +193,80 @@ export default function Tickets() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
-      {(modalMode === 'create' || modalMode === 'edit') && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Ticket Type' : 'Edit Ticket Type'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
+      {/* Create/Edit Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Ticket Type' : 'Edit Ticket Type'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="ticket-form"
+              className={styles.submitButton}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                ? 'Create Ticket Type'
+                : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="ticket-form" onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Name</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., Adult, Child, Senior"
+              />
             </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., Adult, Child, Senior"
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Price</label>
-                  <input
-                    type="text"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., 12.50"
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  />
-                  Active
-                </label>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className={styles.textarea}
-                  placeholder="Optional description for this ticket type"
-                  rows={3}
-                />
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {createMutation.isPending || updateMutation.isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                    ? 'Create Ticket Type'
-                    : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+            <div className={styles.formGroup}>
+              <label>Price</label>
+              <input
+                type="text"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., 12.50"
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              />
+              Active
+            </label>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Description</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className={styles.textarea}
+              placeholder="Optional description for this ticket type"
+              rows={3}
+            />
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

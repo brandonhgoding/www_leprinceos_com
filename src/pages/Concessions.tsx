@@ -11,6 +11,7 @@ import type {
   ConcessionVariation,
   ConcessionVariationCreate,
 } from '../api/types';
+import Drawer from '../components/Drawer';
 import styles from './Concessions.module.css';
 
 type ModalType = 'category' | 'item' | 'variation';
@@ -605,303 +606,305 @@ export default function Concessions() {
         </div>
       )}
 
-      {/* Category Modal */}
-      {modalMode !== 'closed' && modalType === 'category' && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Category' : 'Edit Category'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <form onSubmit={handleCategorySubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label>Name</label>
-                <input
-                  type="text"
-                  value={categoryForm.name}
-                  onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
-                  required
-                  className={styles.input}
-                  placeholder="e.g., Drinks, Snacks, Combos"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Description</label>
-                <textarea
-                  value={categoryForm.description}
-                  onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
-                  className={styles.textarea}
-                  placeholder="Optional description"
-                  rows={3}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={categoryForm.is_active}
-                    onChange={(e) =>
-                      setCategoryForm({ ...categoryForm, is_active: e.target.checked })
-                    }
-                  />
-                  Active
-                </label>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button type="submit" className={styles.submitButton} disabled={isPending}>
-                  {isPending ? 'Saving...' : modalMode === 'create' ? 'Create Category' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+      {/* Category Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed' && modalType === 'category'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Category' : 'Edit Category'}
+        width="sm"
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="category-form"
+              className={styles.submitButton}
+              disabled={isPending}
+            >
+              {isPending ? 'Saving...' : modalMode === 'create' ? 'Create Category' : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="category-form" onSubmit={handleCategorySubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Name</label>
+            <input
+              type="text"
+              value={categoryForm.name}
+              onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+              required
+              className={styles.input}
+              placeholder="e.g., Drinks, Snacks, Combos"
+            />
           </div>
-        </div>
-      )}
 
-      {/* Item Modal */}
-      {modalMode !== 'closed' && modalType === 'item' && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Item' : 'Edit Item'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <form onSubmit={handleItemSubmit} className={styles.form}>
-              <div className={styles.formGroup}>
-                <label>Name</label>
-                <input
-                  type="text"
-                  value={itemForm.name}
-                  onChange={(e) => setItemForm({ ...itemForm, name: e.target.value })}
-                  required
-                  className={styles.input}
-                  placeholder="e.g., Popcorn, Soda, Hot Dog"
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Description</label>
-                <textarea
-                  value={itemForm.description}
-                  onChange={(e) => setItemForm({ ...itemForm, description: e.target.value })}
-                  className={styles.textarea}
-                  placeholder="Optional description"
-                  rows={3}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Image URL</label>
-                <input
-                  type="url"
-                  value={itemForm.image_url}
-                  onChange={(e) => setItemForm({ ...itemForm, image_url: e.target.value })}
-                  className={styles.input}
-                  placeholder="https://..."
-                />
-              </div>
-
-              {modifierGroups.length > 0 && (
-                <div className={styles.formGroup}>
-                  <label>Modifier Groups</label>
-                  <div className={styles.checkboxList}>
-                    {modifierGroups
-                      .filter((g) => g.is_active)
-                      .map((group) => (
-                        <label key={group.id} className={styles.checkboxLabel}>
-                          <input
-                            type="checkbox"
-                            checked={itemForm.modifier_group_ids.includes(group.id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setItemForm({
-                                  ...itemForm,
-                                  modifier_group_ids: [...itemForm.modifier_group_ids, group.id],
-                                });
-                              } else {
-                                setItemForm({
-                                  ...itemForm,
-                                  modifier_group_ids: itemForm.modifier_group_ids.filter(
-                                    (id) => id !== group.id
-                                  ),
-                                });
-                              }
-                            }}
-                          />
-                          {group.name}
-                          <span className={styles.modifierGroupMeta}>
-                            ({group.modifiers_count}{' '}
-                            {group.modifiers_count === 1 ? 'option' : 'options'})
-                          </span>
-                        </label>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              <div className={styles.formGroup}>
-                <label>Sales Taxes</label>
-                {salesTaxes.filter((t) => t.is_active).length > 0 ? (
-                  <div className={styles.checkboxList}>
-                    {salesTaxes
-                      .filter((t) => t.is_active)
-                      .map((tax) => (
-                        <label key={tax.id} className={styles.checkboxLabel}>
-                          <input
-                            type="checkbox"
-                            checked={itemForm.sales_tax_ids.includes(tax.id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setItemForm({
-                                  ...itemForm,
-                                  sales_tax_ids: [...itemForm.sales_tax_ids, tax.id],
-                                });
-                              } else {
-                                setItemForm({
-                                  ...itemForm,
-                                  sales_tax_ids: itemForm.sales_tax_ids.filter(
-                                    (id) => id !== tax.id
-                                  ),
-                                });
-                              }
-                            }}
-                          />
-                          {tax.name}
-                          <span className={styles.modifierGroupMeta}>({tax.percentage}%)</span>
-                        </label>
-                      ))}
-                  </div>
-                ) : (
-                  <p className={styles.noTaxesMessage}>
-                    No taxes configured.{' '}
-                    <a href="/dashboard/sales-taxes" className={styles.taxLink}>
-                      Add sales taxes
-                    </a>
-                  </p>
-                )}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={itemForm.is_active}
-                    onChange={(e) => setItemForm({ ...itemForm, is_active: e.target.checked })}
-                  />
-                  Active
-                </label>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button type="submit" className={styles.submitButton} disabled={isPending}>
-                  {isPending ? 'Saving...' : modalMode === 'create' ? 'Create Item' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+          <div className={styles.formGroup}>
+            <label>Description</label>
+            <textarea
+              value={categoryForm.description}
+              onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+              className={styles.textarea}
+              placeholder="Optional description"
+              rows={3}
+            />
           </div>
-        </div>
-      )}
 
-      {/* Variation Modal */}
-      {modalMode !== 'closed' && modalType === 'variation' && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Variation' : 'Edit Variation'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
-            </div>
-            <form onSubmit={handleVariationSubmit} className={styles.form}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    value={variationForm.name}
-                    onChange={(e) => setVariationForm({ ...variationForm, name: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., Small, Medium, Large"
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>SKU</label>
-                  <input
-                    type="text"
-                    value={variationForm.sku}
-                    onChange={(e) => setVariationForm({ ...variationForm, sku: e.target.value })}
-                    className={styles.input}
-                    placeholder="Optional barcode/SKU"
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Price</label>
-                  <input
-                    type="text"
-                    value={variationForm.price}
-                    onChange={(e) => setVariationForm({ ...variationForm, price: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., 5.99"
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Cost (optional)</label>
-                  <input
-                    type="text"
-                    value={variationForm.cost}
-                    onChange={(e) => setVariationForm({ ...variationForm, cost: e.target.value })}
-                    className={styles.input}
-                    placeholder="For margin tracking"
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={variationForm.is_active}
-                    onChange={(e) =>
-                      setVariationForm({ ...variationForm, is_active: e.target.checked })
-                    }
-                  />
-                  Active
-                </label>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button type="submit" className={styles.submitButton} disabled={isPending}>
-                  {isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                      ? 'Create Variation'
-                      : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={categoryForm.is_active}
+                onChange={(e) =>
+                  setCategoryForm({ ...categoryForm, is_active: e.target.checked })
+                }
+              />
+              Active
+            </label>
           </div>
-        </div>
-      )}
+        </form>
+      </Drawer>
+
+      {/* Item Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed' && modalType === 'item'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Item' : 'Edit Item'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="item-form"
+              className={styles.submitButton}
+              disabled={isPending}
+            >
+              {isPending ? 'Saving...' : modalMode === 'create' ? 'Create Item' : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="item-form" onSubmit={handleItemSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Name</label>
+            <input
+              type="text"
+              value={itemForm.name}
+              onChange={(e) => setItemForm({ ...itemForm, name: e.target.value })}
+              required
+              className={styles.input}
+              placeholder="e.g., Popcorn, Soda, Hot Dog"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Description</label>
+            <textarea
+              value={itemForm.description}
+              onChange={(e) => setItemForm({ ...itemForm, description: e.target.value })}
+              className={styles.textarea}
+              placeholder="Optional description"
+              rows={3}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Image URL</label>
+            <input
+              type="url"
+              value={itemForm.image_url}
+              onChange={(e) => setItemForm({ ...itemForm, image_url: e.target.value })}
+              className={styles.input}
+              placeholder="https://..."
+            />
+          </div>
+
+          {modifierGroups.length > 0 && (
+            <div className={styles.formGroup}>
+              <label>Modifier Groups</label>
+              <div className={styles.checkboxList}>
+                {modifierGroups
+                  .filter((g) => g.is_active)
+                  .map((group) => (
+                    <label key={group.id} className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={itemForm.modifier_group_ids.includes(group.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setItemForm({
+                              ...itemForm,
+                              modifier_group_ids: [...itemForm.modifier_group_ids, group.id],
+                            });
+                          } else {
+                            setItemForm({
+                              ...itemForm,
+                              modifier_group_ids: itemForm.modifier_group_ids.filter(
+                                (id) => id !== group.id
+                              ),
+                            });
+                          }
+                        }}
+                      />
+                      {group.name}
+                      <span className={styles.modifierGroupMeta}>
+                        ({group.modifiers_count}{' '}
+                        {group.modifiers_count === 1 ? 'option' : 'options'})
+                      </span>
+                    </label>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          <div className={styles.formGroup}>
+            <label>Sales Taxes</label>
+            {salesTaxes.filter((t) => t.is_active).length > 0 ? (
+              <div className={styles.checkboxList}>
+                {salesTaxes
+                  .filter((t) => t.is_active)
+                  .map((tax) => (
+                    <label key={tax.id} className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={itemForm.sales_tax_ids.includes(tax.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setItemForm({
+                              ...itemForm,
+                              sales_tax_ids: [...itemForm.sales_tax_ids, tax.id],
+                            });
+                          } else {
+                            setItemForm({
+                              ...itemForm,
+                              sales_tax_ids: itemForm.sales_tax_ids.filter(
+                                (id) => id !== tax.id
+                              ),
+                            });
+                          }
+                        }}
+                      />
+                      {tax.name}
+                      <span className={styles.modifierGroupMeta}>({tax.percentage}%)</span>
+                    </label>
+                  ))}
+              </div>
+            ) : (
+              <p className={styles.noTaxesMessage}>
+                No taxes configured.{' '}
+                <a href="/dashboard/sales-taxes" className={styles.taxLink}>
+                  Add sales taxes
+                </a>
+              </p>
+            )}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={itemForm.is_active}
+                onChange={(e) => setItemForm({ ...itemForm, is_active: e.target.checked })}
+              />
+              Active
+            </label>
+          </div>
+        </form>
+      </Drawer>
+
+      {/* Variation Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed' && modalType === 'variation'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Variation' : 'Edit Variation'}
+        width="sm"
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="variation-form"
+              className={styles.submitButton}
+              disabled={isPending}
+            >
+              {isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                  ? 'Create Variation'
+                  : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="variation-form" onSubmit={handleVariationSubmit} className={styles.form}>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Name</label>
+              <input
+                type="text"
+                value={variationForm.name}
+                onChange={(e) => setVariationForm({ ...variationForm, name: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., Small, Medium, Large"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>SKU</label>
+              <input
+                type="text"
+                value={variationForm.sku}
+                onChange={(e) => setVariationForm({ ...variationForm, sku: e.target.value })}
+                className={styles.input}
+                placeholder="Optional barcode/SKU"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Price</label>
+              <input
+                type="text"
+                value={variationForm.price}
+                onChange={(e) => setVariationForm({ ...variationForm, price: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., 5.99"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Cost (optional)</label>
+              <input
+                type="text"
+                value={variationForm.cost}
+                onChange={(e) => setVariationForm({ ...variationForm, cost: e.target.value })}
+                className={styles.input}
+                placeholder="For margin tracking"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={variationForm.is_active}
+                onChange={(e) =>
+                  setVariationForm({ ...variationForm, is_active: e.target.checked })
+                }
+              />
+              Active
+            </label>
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

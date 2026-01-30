@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { salesTaxesApi } from '../api';
 import type { SalesTax, SalesTaxCreate, TaxType, InclusionType } from '../api/types';
+import Drawer from '../components/Drawer';
 import styles from './SalesTaxes.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -206,108 +207,104 @@ export default function SalesTaxes() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
-      {(modalMode === 'create' || modalMode === 'edit') && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{modalMode === 'create' ? 'New Sales Tax' : 'Edit Sales Tax'}</h2>
-              <button className={styles.closeButton} onClick={closeModal}>
-                &times;
-              </button>
+      {/* Create/Edit Drawer */}
+      <Drawer
+        isOpen={modalMode !== 'closed'}
+        onClose={closeModal}
+        title={modalMode === 'create' ? 'New Sales Tax' : 'Edit Sales Tax'}
+        footer={
+          <>
+            <button type="button" className={styles.cancelButton} onClick={closeModal}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="sales-tax-form"
+              className={styles.submitButton}
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? 'Saving...'
+                : modalMode === 'create'
+                  ? 'Create Sales Tax'
+                  : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form id="sales-tax-form" onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Name</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., Maine State Tax"
+              />
             </div>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., Maine State Tax"
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Rate (%)</label>
-                  <input
-                    type="text"
-                    value={formData.percentage}
-                    onChange={(e) => setFormData({ ...formData, percentage: e.target.value })}
-                    required
-                    className={styles.input}
-                    placeholder="e.g., 5.5"
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Tax Type</label>
-                  <select
-                    value={formData.tax_type}
-                    onChange={(e) =>
-                      setFormData({ ...formData, tax_type: e.target.value as TaxType })
-                    }
-                    className={styles.select}
-                  >
-                    {Object.entries(TAX_TYPE_LABELS).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Application</label>
-                  <select
-                    value={formData.inclusion_type}
-                    onChange={(e) =>
-                      setFormData({ ...formData, inclusion_type: e.target.value as InclusionType })
-                    }
-                    className={styles.select}
-                  >
-                    {Object.entries(INCLUSION_TYPE_LABELS).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  />
-                  Active
-                </label>
-              </div>
-
-              <div className={styles.formActions}>
-                <button type="button" className={styles.cancelButton} onClick={closeModal}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                >
-                  {createMutation.isPending || updateMutation.isPending
-                    ? 'Saving...'
-                    : modalMode === 'create'
-                      ? 'Create Sales Tax'
-                      : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+            <div className={styles.formGroup}>
+              <label>Rate (%)</label>
+              <input
+                type="text"
+                value={formData.percentage}
+                onChange={(e) => setFormData({ ...formData, percentage: e.target.value })}
+                required
+                className={styles.input}
+                placeholder="e.g., 5.5"
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Tax Type</label>
+              <select
+                value={formData.tax_type}
+                onChange={(e) =>
+                  setFormData({ ...formData, tax_type: e.target.value as TaxType })
+                }
+                className={styles.select}
+              >
+                {Object.entries(TAX_TYPE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Application</label>
+              <select
+                value={formData.inclusion_type}
+                onChange={(e) =>
+                  setFormData({ ...formData, inclusion_type: e.target.value as InclusionType })
+                }
+                className={styles.select}
+              >
+                {Object.entries(INCLUSION_TYPE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              />
+              Active
+            </label>
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

@@ -3,7 +3,20 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
-// CSRF token storage
+// Get CSRF token from Django's cookie
+const getCsrfTokenFromCookie = (): string | null => {
+  const name = 'csrftoken';
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.trim().split('=');
+    if (cookieName === name) {
+      return cookieValue;
+    }
+  }
+  return null;
+};
+
+// CSRF token storage (fallback for programmatic setting)
 let csrfToken: string | null = null;
 
 export const setCsrfToken = (token: string): void => {
@@ -11,7 +24,8 @@ export const setCsrfToken = (token: string): void => {
 };
 
 export const getCsrfToken = (): string | null => {
-  return csrfToken;
+  // Prefer cookie, fall back to stored token
+  return getCsrfTokenFromCookie() || csrfToken;
 };
 
 export const clearCsrfToken = (): void => {
@@ -36,8 +50,9 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Add CSRF token for non-GET requests
-    if (csrfToken && config.method && config.method.toLowerCase() !== 'get') {
-      config.headers['X-CSRFToken'] = csrfToken;
+    const token = getCsrfToken();
+    if (token && config.method && config.method.toLowerCase() !== 'get') {
+      config.headers['X-CSRFToken'] = token;
     }
 
     // Add cinema header for multi-tenant requests

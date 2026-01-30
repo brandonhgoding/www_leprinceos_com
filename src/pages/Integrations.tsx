@@ -5,6 +5,7 @@ import type {
   SquareCredentialsCreate,
   SquareConnectionTest,
 } from '../api/types';
+import Drawer from '../components/Drawer';
 import styles from './Integrations.module.css';
 
 type ModalType = 'credentials' | 'logs' | 'test' | null;
@@ -270,244 +271,230 @@ export default function Integrations() {
         </table>
       </div>
 
-      {/* Credentials Modal */}
-      {modalType === 'credentials' && (
-        <div className={styles.modalOverlay} onClick={() => setModalType(null)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>{credentials?.is_configured ? 'Edit' : 'Configure'} Square Integration</h2>
-              <button className={styles.closeButton} onClick={() => setModalType(null)}>
-                &times;
-              </button>
-            </div>
-            <form className={styles.form} onSubmit={handleSaveCredentials}>
-              <div className={styles.formGroup}>
-                <label>Environment</label>
-                <select
-                  className={styles.select}
-                  value={credentialsForm.environment}
-                  onChange={(e) =>
-                    setCredentialsForm({
-                      ...credentialsForm,
-                      environment: e.target.value as 'sandbox' | 'production',
-                    })
-                  }
-                >
-                  <option value="sandbox">Sandbox (Testing)</option>
-                  <option value="production">Production</option>
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label>Access Token *</label>
-                <input
-                  type="password"
-                  className={styles.input}
-                  value={credentialsForm.access_token}
-                  onChange={(e) =>
-                    setCredentialsForm({ ...credentialsForm, access_token: e.target.value })
-                  }
-                  placeholder={credentials?.token_preview || 'Enter Square access token'}
-                  required={!credentials?.is_configured}
-                />
-                {credentials?.is_configured && (
-                  <span className={styles.hint}>
-                    Leave blank to keep existing token ({credentials.token_preview})
-                  </span>
-                )}
-              </div>
-              <div className={styles.formGroup}>
-                <label>Location ID *</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  value={credentialsForm.location_id}
-                  onChange={(e) =>
-                    setCredentialsForm({ ...credentialsForm, location_id: e.target.value })
-                  }
-                  placeholder={credentials?.location_id || 'Enter Square location ID'}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Merchant ID (optional)</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  value={credentialsForm.merchant_id}
-                  onChange={(e) =>
-                    setCredentialsForm({ ...credentialsForm, merchant_id: e.target.value })
-                  }
-                  placeholder={credentials?.merchant_id || 'Enter Square merchant ID'}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Refresh Token (optional)</label>
-                <input
-                  type="password"
-                  className={styles.input}
-                  value={credentialsForm.refresh_token}
-                  onChange={(e) =>
-                    setCredentialsForm({ ...credentialsForm, refresh_token: e.target.value })
-                  }
-                  placeholder="For OAuth flow (optional)"
-                />
-              </div>
-              <div className={styles.formActions}>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={() => setModalType(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={styles.submitButton}
-                  disabled={saveCredentialsMutation.isPending}
-                >
-                  {saveCredentialsMutation.isPending ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-            </form>
+      {/* Credentials Drawer */}
+      <Drawer
+        isOpen={modalType === 'credentials'}
+        onClose={() => setModalType(null)}
+        title={`${credentials?.is_configured ? 'Edit' : 'Configure'} Square Integration`}
+        footer={
+          <>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={() => setModalType(null)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="credentials-form"
+              className={styles.submitButton}
+              disabled={saveCredentialsMutation.isPending}
+            >
+              {saveCredentialsMutation.isPending ? 'Saving...' : 'Save'}
+            </button>
+          </>
+        }
+      >
+        <form id="credentials-form" className={styles.form} onSubmit={handleSaveCredentials}>
+          <div className={styles.formGroup}>
+            <label>Environment</label>
+            <select
+              className={styles.select}
+              value={credentialsForm.environment}
+              onChange={(e) =>
+                setCredentialsForm({
+                  ...credentialsForm,
+                  environment: e.target.value as 'sandbox' | 'production',
+                })
+              }
+            >
+              <option value="sandbox">Sandbox (Testing)</option>
+              <option value="production">Production</option>
+            </select>
           </div>
-        </div>
-      )}
+          <div className={styles.formGroup}>
+            <label>Access Token *</label>
+            <input
+              type="password"
+              className={styles.input}
+              value={credentialsForm.access_token}
+              onChange={(e) =>
+                setCredentialsForm({ ...credentialsForm, access_token: e.target.value })
+              }
+              placeholder={credentials?.token_preview || 'Enter Square access token'}
+              required={!credentials?.is_configured}
+            />
+            {credentials?.is_configured && (
+              <span className={styles.hint}>
+                Leave blank to keep existing token ({credentials.token_preview})
+              </span>
+            )}
+          </div>
+          <div className={styles.formGroup}>
+            <label>Location ID *</label>
+            <input
+              type="text"
+              className={styles.input}
+              value={credentialsForm.location_id}
+              onChange={(e) =>
+                setCredentialsForm({ ...credentialsForm, location_id: e.target.value })
+              }
+              placeholder={credentials?.location_id || 'Enter Square location ID'}
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Merchant ID (optional)</label>
+            <input
+              type="text"
+              className={styles.input}
+              value={credentialsForm.merchant_id}
+              onChange={(e) =>
+                setCredentialsForm({ ...credentialsForm, merchant_id: e.target.value })
+              }
+              placeholder={credentials?.merchant_id || 'Enter Square merchant ID'}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Refresh Token (optional)</label>
+            <input
+              type="password"
+              className={styles.input}
+              value={credentialsForm.refresh_token}
+              onChange={(e) =>
+                setCredentialsForm({ ...credentialsForm, refresh_token: e.target.value })
+              }
+              placeholder="For OAuth flow (optional)"
+            />
+          </div>
+        </form>
+      </Drawer>
 
-      {/* Sync Logs Modal */}
-      {modalType === 'logs' && (
-        <div className={styles.modalOverlay} onClick={() => setModalType(null)}>
-          <div
-            className={`${styles.modal} ${styles.logsModal}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.modalHeader}>
-              <h2>Sync History</h2>
-              <button className={styles.closeButton} onClick={() => setModalType(null)}>
-                &times;
-              </button>
-            </div>
-            <div className={styles.logsContent}>
-              {loadingSyncHistory ? (
-                <div className={styles.loading}>Loading sync history...</div>
-              ) : syncHistory && syncHistory.length > 0 ? (
-                <table className={styles.logsTable}>
-                  <thead>
-                    <tr>
-                      <th>Started</th>
-                      <th>Type</th>
-                      <th>Status</th>
-                      <th>Objects</th>
-                      <th>Duration</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {syncHistory.map((log) => (
-                      <tr key={log.id}>
-                        <td>{formatDate(log.started_at)}</td>
-                        <td>
-                          <span className={styles.syncType}>{log.sync_type}</span>
-                        </td>
-                        <td>
-                          <span className={`${styles.logStatus} ${getStatusBadge(log.status)}`}>
-                            {log.status.replace('_', ' ')}
+      {/* Sync Logs Drawer */}
+      <Drawer
+        isOpen={modalType === 'logs'}
+        onClose={() => setModalType(null)}
+        title="Sync History"
+        width="lg"
+      >
+        <div className={styles.logsContent}>
+          {loadingSyncHistory ? (
+            <div className={styles.loading}>Loading sync history...</div>
+          ) : syncHistory && syncHistory.length > 0 ? (
+            <table className={styles.logsTable}>
+              <thead>
+                <tr>
+                  <th>Started</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Objects</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                {syncHistory.map((log) => (
+                  <tr key={log.id}>
+                    <td>{formatDate(log.started_at)}</td>
+                    <td>
+                      <span className={styles.syncType}>{log.sync_type}</span>
+                    </td>
+                    <td>
+                      <span className={`${styles.logStatus} ${getStatusBadge(log.status)}`}>
+                        {log.status.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={styles.objectCount}>
+                        {log.objects_synced} synced
+                        {log.objects_failed > 0 && (
+                          <span className={styles.failedCount}>
+                            , {log.objects_failed} failed
                           </span>
-                        </td>
-                        <td>
-                          <span className={styles.objectCount}>
-                            {log.objects_synced} synced
-                            {log.objects_failed > 0 && (
-                              <span className={styles.failedCount}>
-                                , {log.objects_failed} failed
-                              </span>
-                            )}
-                          </span>
-                        </td>
-                        <td>
-                          {log.completed_at
-                            ? `${Math.round(
-                                (new Date(log.completed_at).getTime() -
-                                  new Date(log.started_at).getTime()) /
-                                  1000
-                              )}s`
-                            : '-'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className={styles.empty}>No sync history available</div>
-              )}
-            </div>
-          </div>
+                        )}
+                      </span>
+                    </td>
+                    <td>
+                      {log.completed_at
+                        ? `${Math.round(
+                            (new Date(log.completed_at).getTime() -
+                              new Date(log.started_at).getTime()) /
+                              1000
+                          )}s`
+                        : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className={styles.empty}>No sync history available</div>
+          )}
         </div>
-      )}
+      </Drawer>
 
-      {/* Test Connection Modal */}
-      {modalType === 'test' && testResult && (
-        <div className={styles.modalOverlay} onClick={() => setModalType(null)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2>Connection Test</h2>
-              <button className={styles.closeButton} onClick={() => setModalType(null)}>
-                &times;
-              </button>
-            </div>
-            <div className={styles.testContent}>
-              {testResult.success ? (
-                <div className={styles.testSuccess}>
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className={styles.testIcon}
-                  >
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                  </svg>
-                  <h3>Connection Successful</h3>
-                  <div className={styles.testDetails}>
-                    {testResult.location_name && (
-                      <p>
-                        <strong>Location:</strong> {testResult.location_name}
-                      </p>
-                    )}
-                    {testResult.location_id && (
-                      <p>
-                        <strong>Location ID:</strong> {testResult.location_id}
-                      </p>
-                    )}
-                    {testResult.merchant_id && (
-                      <p>
-                        <strong>Merchant ID:</strong> {testResult.merchant_id}
-                      </p>
-                    )}
-                  </div>
+      {/* Test Connection Drawer */}
+      <Drawer
+        isOpen={modalType === 'test' && testResult !== null}
+        onClose={() => setModalType(null)}
+        title="Connection Test"
+        width="sm"
+        footer={
+          <button className={styles.cancelButton} onClick={() => setModalType(null)}>
+            Close
+          </button>
+        }
+      >
+        {testResult && (
+          <div className={styles.testContent}>
+            {testResult.success ? (
+              <div className={styles.testSuccess}>
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className={styles.testIcon}
+                >
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </svg>
+                <h3>Connection Successful</h3>
+                <div className={styles.testDetails}>
+                  {testResult.location_name && (
+                    <p>
+                      <strong>Location:</strong> {testResult.location_name}
+                    </p>
+                  )}
+                  {testResult.location_id && (
+                    <p>
+                      <strong>Location ID:</strong> {testResult.location_id}
+                    </p>
+                  )}
+                  {testResult.merchant_id && (
+                    <p>
+                      <strong>Merchant ID:</strong> {testResult.merchant_id}
+                    </p>
+                  )}
                 </div>
-              ) : (
-                <div className={styles.testError}>
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className={styles.testIcon}
-                  >
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                  </svg>
-                  <h3>Connection Failed</h3>
-                  <p className={styles.errorMessage}>{testResult.error}</p>
-                </div>
-              )}
-            </div>
-            <div className={styles.formActions}>
-              <button className={styles.cancelButton} onClick={() => setModalType(null)}>
-                Close
-              </button>
-            </div>
+              </div>
+            ) : (
+              <div className={styles.testError}>
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className={styles.testIcon}
+                >
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                </svg>
+                <h3>Connection Failed</h3>
+                <p className={styles.errorMessage}>{testResult.error}</p>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </Drawer>
     </div>
   );
 }
