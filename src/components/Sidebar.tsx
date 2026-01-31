@@ -12,6 +12,7 @@ interface NavLink {
   path: string;
   label: string;
   icon: React.ReactNode;
+  external?: boolean;
 }
 
 interface NavGroup {
@@ -85,6 +86,13 @@ const EmbedsIcon = () => (
   </svg>
 );
 
+const ApiDocsIcon = () => (
+  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="4" y="2" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M7 6h6M7 9h6M7 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
 const LogoutIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M7 17H4a1 1 0 01-1-1V4a1 1 0 011-1h3M13 14l4-4-4-4M17 10H7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -150,6 +158,7 @@ export default function Sidebar({
     },
     { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon /> },
     { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
+    { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },
   ];
 
   const handleLinkClick = () => {
@@ -233,6 +242,19 @@ export default function Sidebar({
                   </div>
                 )}
               </div>
+            ) : item.external ? (
+              <a
+                key={item.path}
+                href={item.path}
+                className={styles.sidebarLink}
+                onClick={handleLinkClick}
+                data-cy={`nav-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.icon}
+                {item.label}
+              </a>
             ) : (
               <Link
                 key={item.path}
