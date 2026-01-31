@@ -1,0 +1,23 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "Adult",
+      "price": "12.00",
+      "is_active": true,
+      "description": "Standard adult admission",
+      "cinema": 1
+    },
+    {
+      "id": 2,
+      "name": "Senior",
+      "price": "9.00",
+      "is_active": true,
+      "description": "Senior discount (65+)",
+      "cinema": 1
+    }
+  ]
+}

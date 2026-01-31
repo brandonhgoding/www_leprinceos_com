@@ -1,0 +1,23 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "Extra Butter",
+      "price": "0.50",
+      "is_active": true,
+      "description": "Add extra butter",
+      "applies_to": "snacks"
+    },
+    {
+      "id": 2,
+      "name": "Large Size Upgrade",
+      "price": "2.00",
+      "is_active": true,
+      "description": "Upgrade to large size",
+      "applies_to": "beverages"
+    }
+  ]
+}

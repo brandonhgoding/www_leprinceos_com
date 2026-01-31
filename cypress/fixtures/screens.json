@@ -1,0 +1,21 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "Screen 1",
+      "capacity": 150,
+      "cinema": 1,
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "name": "Screen 2",
+      "capacity": 100,
+      "cinema": 1,
+      "is_active": true
+    }
+  ]
+}

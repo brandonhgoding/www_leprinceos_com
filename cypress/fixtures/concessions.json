@@ -1,0 +1,34 @@
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "Medium Popcorn",
+      "price": "8.50",
+      "category": "snacks",
+      "is_active": true,
+      "description": "Freshly popped popcorn",
+      "cinema": 1
+    },
+    {
+      "id": 2,
+      "name": "Large Soda",
+      "price": "5.00",
+      "category": "beverages",
+      "is_active": true,
+      "description": "32oz fountain drink",
+      "cinema": 1
+    },
+    {
+      "id": 3,
+      "name": "Candy Bar",
+      "price": "3.50",
+      "category": "candy",
+      "is_active": true,
+      "description": "Assorted candy selection",
+      "cinema": 1
+    }
+  ]
+}

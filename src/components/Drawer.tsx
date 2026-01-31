@@ -96,7 +96,7 @@ export default function Drawer({
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} onClick={onClose} data-cy="drawer-overlay">
       <div
         ref={drawerRef}
         className={`${styles.drawer} ${styles[width]}`}
@@ -105,9 +105,10 @@ export default function Drawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-title"
+        data-cy="drawer"
       >
         <div className={styles.header}>
-          <h2 id="drawer-title" className={styles.title}>
+          <h2 id="drawer-title" className={styles.title} data-cy="drawer-title">
             {title}
           </h2>
           <button
@@ -115,6 +116,7 @@ export default function Drawer({
             className={styles.closeButton}
             onClick={onClose}
             aria-label="Close drawer"
+            data-cy="drawer-close"
           >
             <svg
               width="20"
@@ -129,8 +131,8 @@ export default function Drawer({
             </svg>
           </button>
         </div>
-        <div className={styles.content}>{children}</div>
-        {footer && <div className={styles.footer}>{footer}</div>}
+        <div className={styles.content} data-cy="drawer-content">{children}</div>
+        {footer && <div className={styles.footer} data-cy="drawer-footer">{footer}</div>}
       </div>
     </div>
   );

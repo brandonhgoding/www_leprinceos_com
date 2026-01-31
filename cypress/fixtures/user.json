@@ -1,0 +1,19 @@
+{
+  "id": 1,
+  "username": "admin",
+  "email": "admin@example.com",
+  "first_name": "Admin",
+  "last_name": "User",
+  "cinemas": [
+    {
+      "cinema_id": 1,
+      "cinema_name": "Le Prince Cinema",
+      "role": "admin"
+    },
+    {
+      "cinema_id": 2,
+      "cinema_name": "Second Screen Theater",
+      "role": "staff"
+    }
+  ]
+}

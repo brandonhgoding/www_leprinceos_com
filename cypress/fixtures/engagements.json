@@ -1,0 +1,37 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "film": {
+        "id": 1,
+        "title": "The Grand Adventure",
+        "tmdb_id": 12345,
+        "poster_path": "/poster1.jpg",
+        "release_date": "2024-01-15"
+      },
+      "cinema": 1,
+      "start_date": "2024-02-01",
+      "end_date": "2024-02-14",
+      "is_active": true,
+      "notes": "Opening week special screening"
+    },
+    {
+      "id": 2,
+      "film": {
+        "id": 2,
+        "title": "Mystery at Midnight",
+        "tmdb_id": 67890,
+        "poster_path": "/poster2.jpg",
+        "release_date": "2024-01-20"
+      },
+      "cinema": 1,
+      "start_date": "2024-02-15",
+      "end_date": "2024-02-28",
+      "is_active": true,
+      "notes": ""
+    }
+  ]
+}

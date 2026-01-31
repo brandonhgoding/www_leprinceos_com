@@ -167,20 +167,21 @@ export default function Sidebar({
       )}
 
       {/* Sidebar */}
-      <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
+      <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`} data-cy="sidebar">
         {/* Brand */}
         <div className={styles.sidebarBrand}>
-          <Link to="/" className={styles.sidebarLogo} onClick={handleLinkClick}>
+          <Link to="/" className={styles.sidebarLogo} onClick={handleLinkClick} data-cy="sidebar-logo">
             LeprinceOS
           </Link>
         </div>
 
         {/* Cinema Selector */}
         {currentCinema && cinemas.length > 1 && (
-          <div className={styles.sidebarCinemaSelector}>
+          <div className={styles.sidebarCinemaSelector} data-cy="cinema-selector">
             <button
               className={styles.cinemaSelectorToggle}
               onClick={() => setIsCinemaDropdownOpen(!isCinemaDropdownOpen)}
+              data-cy="cinema-selector-toggle"
             >
               <span className={styles.cinemaName}>{currentCinema.name}</span>
               <ChevronIcon open={isCinemaDropdownOpen} />
@@ -205,7 +206,7 @@ export default function Sidebar({
         )}
 
         {/* Navigation */}
-        <nav className={styles.sidebarNav}>
+        <nav className={styles.sidebarNav} data-cy="sidebar-nav">
           {navItems.map((item) =>
             isGroup(item) ? (
               <div key={item.label} className={styles.sidebarGroup}>
@@ -238,6 +239,7 @@ export default function Sidebar({
                 to={item.path}
                 className={`${styles.sidebarLink} ${isActive(item.path) ? styles.active : ''}`}
                 onClick={handleLinkClick}
+                data-cy={`nav-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 {item.icon}
                 {item.label}
@@ -247,11 +249,11 @@ export default function Sidebar({
         </nav>
 
         {/* User Section */}
-        <div className={styles.sidebarUser}>
+        <div className={styles.sidebarUser} data-cy="sidebar-user">
           <div className={styles.sidebarUserInfo}>
-            <span className={styles.sidebarUsername}>{username}</span>
+            <span className={styles.sidebarUsername} data-cy="username">{username}</span>
           </div>
-          <button className={styles.sidebarLogout} onClick={onLogout}>
+          <button className={styles.sidebarLogout} onClick={onLogout} data-cy="logout-button">
             <LogoutIcon />
             Log Out
           </button>
