@@ -416,10 +416,17 @@ export default function Concessions() {
       {isLoading ? (
         <div className={styles.loading}>Loading catalog...</div>
       ) : categories.length === 0 ? (
-        <div className={styles.empty}>
-          <p>No concession categories yet.</p>
-          <button className={styles.primaryButton} onClick={openCreateCategoryModal}>
-            Add your first category
+        <div className="empty-state">
+          <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+            🍿
+          </div>
+          <h3 className="empty-state-title">No Concession Categories</h3>
+          <p className="empty-state-description">
+            Build your concession catalog by creating categories like Snacks, Beverages, or Combos.
+            Each category can contain multiple items with variations and pricing.
+          </p>
+          <button className="btn btn-primary" onClick={openCreateCategoryModal}>
+            Create First Category
           </button>
         </div>
       ) : (

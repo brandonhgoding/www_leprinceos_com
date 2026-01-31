@@ -131,10 +131,17 @@ export default function Tickets() {
       {isLoading ? (
         <div className={styles.loading}>Loading ticket types...</div>
       ) : ticketTypes.length === 0 ? (
-        <div className={styles.empty}>
-          <p>No ticket types found.</p>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            Add your first ticket type
+        <div className="empty-state">
+          <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+            🎫
+          </div>
+          <h3 className="empty-state-title">No Ticket Types Defined</h3>
+          <p className="empty-state-description">
+            Create ticket types with different pricing to accommodate various customer segments
+            like adults, children, seniors, or special promotions.
+          </p>
+          <button className="btn btn-primary" onClick={openCreateModal}>
+            Create First Ticket Type
           </button>
         </div>
       ) : (

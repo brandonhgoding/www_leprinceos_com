@@ -73,6 +73,12 @@ export default function Layout() {
         <div className={styles.container}>
           <Outlet />
         </div>
+
+        {/* Keyboard Shortcut Hint */}
+        <div className={styles.keyboardHint} title="Press N to create new engagement">
+          <kbd className={styles.kbd}>N</kbd>
+          <span className={styles.hintText}>New Engagement</span>
+        </div>
       </main>
     </div>
   );

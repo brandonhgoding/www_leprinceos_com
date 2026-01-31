@@ -271,11 +271,32 @@ export default function Showtimes() {
       {showtimesLoading ? (
         <div className={styles.loading}>Loading showtimes...</div>
       ) : showtimes.length === 0 ? (
-        <div className={styles.empty}>
-          <p>No showtimes found.</p>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            Create your first showtime
-          </button>
+        <div className="empty-state">
+          <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+            🕐
+          </div>
+          <h3 className="empty-state-title">
+            {engagementFilter || dateFilter ? 'No Showtimes Found' : 'No Showtimes Scheduled'}
+          </h3>
+          <p className="empty-state-description">
+            {engagementFilter || dateFilter
+              ? 'Try adjusting your filters or create a new showtime for this selection.'
+              : 'Get started by scheduling showtimes for your active engagements. You can create individual showtimes or use bulk creation.'
+            }
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center' }}>
+            {(engagementFilter || dateFilter) && (
+              <button
+                className="btn btn-secondary"
+                onClick={() => { setEngagementFilter(''); setDateFilter(''); }}
+              >
+                Clear Filters
+              </button>
+            )}
+            <button className="btn btn-primary" onClick={openCreateModal}>
+              {engagementFilter || dateFilter ? 'Create Showtime' : 'Schedule First Showtime'}
+            </button>
+          </div>
         </div>
       ) : (
         <>

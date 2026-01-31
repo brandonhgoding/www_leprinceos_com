@@ -152,10 +152,17 @@ export default function Screens() {
       {isLoading ? (
         <div className={styles.loading}>Loading screens...</div>
       ) : screens.length === 0 ? (
-        <div className={styles.empty}>
-          <p>No screens found.</p>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            Add your first screen
+        <div className="empty-state">
+          <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+            🎭
+          </div>
+          <h3 className="empty-state-title">No Screens Configured</h3>
+          <p className="empty-state-description">
+            Define your cinema's auditoriums and screens to begin scheduling engagements and showtimes.
+            Each screen can have unique technical specifications.
+          </p>
+          <button className="btn btn-primary" onClick={openCreateModal}>
+            Add First Screen
           </button>
         </div>
       ) : (

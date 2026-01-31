@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
@@ -13,10 +14,43 @@ import SalesTaxes from './pages/SalesTaxes';
 import Embeds from './pages/Embeds';
 import Integrations from './pages/Integrations';
 
+function KeyboardShortcuts() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if user is typing in an input or textarea
+      const activeElement = document.activeElement;
+      const isTyping =
+        activeElement?.tagName === 'INPUT' ||
+        activeElement?.tagName === 'TEXTAREA' ||
+        activeElement?.hasAttribute('contenteditable');
+
+      if (isTyping) return;
+
+      // Press 'N' to create new engagement
+      if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        navigate('/engagements');
+        // Dispatch custom event to trigger drawer opening
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('open-create-engagement-drawer'));
+        }, 100);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
+  return null;
+}
+
 function App() {
   return (
     // basename="/dashboard" makes all routes relative to /dashboard
     <BrowserRouter basename="/dashboard">
+      <KeyboardShortcuts />
       <Routes>
         {/* All dashboard routes are protected by Django's @login_required */}
         {/* ProtectedRoute provides client-side session validation */}

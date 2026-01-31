@@ -146,10 +146,17 @@ export default function SalesTaxes() {
       {isLoading ? (
         <div className={styles.loading}>Loading sales taxes...</div>
       ) : salesTaxes.length === 0 ? (
-        <div className={styles.empty}>
-          <p>No sales taxes found.</p>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            Add your first sales tax
+        <div className="empty-state">
+          <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+            💰
+          </div>
+          <h3 className="empty-state-title">No Sales Taxes Configured</h3>
+          <p className="empty-state-description">
+            Configure sales taxes that apply to your ticket sales and concessions.
+            You can set up state, local, or county taxes with different rates and application rules.
+          </p>
+          <button className="btn btn-primary" onClick={openCreateModal}>
+            Add First Sales Tax
           </button>
         </div>
       ) : (

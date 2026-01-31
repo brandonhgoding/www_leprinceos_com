@@ -112,6 +112,26 @@
   to { opacity: 1; }
 }
 
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ===== Reduced Motion ===== */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -298,6 +318,10 @@ a:hover {
 .status-cancelled {
   background: var(--status-cancelled-bg);
   color: var(--status-cancelled);
+}
+
+.status-cancelled::before {
+  animation: pulse 2s infinite;
 }
 
 /* ===== Data Table Container ===== */

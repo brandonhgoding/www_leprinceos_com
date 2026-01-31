@@ -317,10 +317,17 @@ export default function Modifiers() {
       {isLoading ? (
         <div className={styles.loading}>Loading modifier groups...</div>
       ) : groups.length === 0 ? (
-        <div className={styles.empty}>
-          <p>No modifier groups yet.</p>
-          <button className={styles.primaryButton} onClick={openCreateGroupModal}>
-            Add your first modifier group
+        <div className="empty-state">
+          <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+            ➕
+          </div>
+          <h3 className="empty-state-title">No Modifier Groups</h3>
+          <p className="empty-state-description">
+            Create modifier groups to add customization options to your concession items,
+            such as drink sizes, toppings, or extra butter for popcorn.
+          </p>
+          <button className="btn btn-primary" onClick={openCreateGroupModal}>
+            Create First Modifier Group
           </button>
         </div>
       ) : (

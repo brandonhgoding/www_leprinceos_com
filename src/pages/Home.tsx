@@ -5,6 +5,8 @@ import { engagementsApi, showtimesApi, screensApi } from '../api';
 import type { Showtime } from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
 import { formatTime, getTodayInTimezone } from '../utils/timezone';
+import { useSmartAlerts } from '../hooks/useSmartAlerts';
+import AlertBanner from '../components/AlertBanner';
 import styles from './Home.module.css';
 
 interface SummaryCardProps {
@@ -13,14 +15,56 @@ interface SummaryCardProps {
   linkText?: string;
   linkTo?: string;
   isLoading?: boolean;
+  trend?: 'up' | 'down' | 'neutral';
+  trendPercentage?: number;
+  previousValue?: number;
 }
 
-function SummaryCard({ label, value, linkText, linkTo, isLoading }: SummaryCardProps) {
+function SummaryCard({
+  label,
+  value,
+  linkText,
+  linkTo,
+  isLoading,
+  trend,
+  trendPercentage,
+  previousValue
+}: SummaryCardProps) {
+  const getTrendArrow = () => {
+    if (!trend || trend === 'neutral') return null;
+    return trend === 'up' ? '↑' : '↓';
+  };
+
+  const getTrendColor = () => {
+    if (!trend || trend === 'neutral') return styles.trendNeutral;
+    return trend === 'up' ? styles.trendUp : styles.trendDown;
+  };
+
+  const formatTrendPercentage = () => {
+    if (trendPercentage === undefined) return '';
+    return Math.abs(trendPercentage).toFixed(0);
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.cardBody}>
         <p className={styles.cardLabel}>{label}</p>
         <p className={styles.cardValue}>{isLoading ? '—' : value}</p>
+
+        {!isLoading && trend && trendPercentage !== undefined && previousValue !== undefined && (
+          <p className={`${styles.cardTrend} ${getTrendColor()}`}>
+            <span
+              className={styles.trendIcon}
+              aria-label={`${trend} ${formatTrendPercentage()} percent`}
+            >
+              {getTrendArrow()}
+            </span>
+            <span className={styles.trendText}>
+              {formatTrendPercentage()}% vs. {previousValue} last week
+            </span>
+          </p>
+        )}
+
         {linkTo && linkText && (
           <Link to={linkTo} className={styles.cardLink}>
             {linkText} &rarr;
@@ -35,6 +79,17 @@ export default function Home() {
   const { user, currentCinema } = useAuth();
   const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
   const today = getTodayInTimezone(cinemaTimezone);
+
+  // Calculate tomorrow's date
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+  // Fetch all engagements for smart alerts
+  const { data: allEngagements = [] } = useQuery({
+    queryKey: ['engagements'],
+    queryFn: () => engagementsApi.list(),
+  });
 
   // Fetch screens count
   const { data: screens = [], isLoading: screensLoading } = useQuery({
@@ -54,6 +109,19 @@ export default function Home() {
     queryFn: () => showtimesApi.list({ date: today }),
   });
 
+  // Fetch tomorrow's showtimes for smart alerts
+  const { data: tomorrowShowtimes = [] } = useQuery({
+    queryKey: ['showtimes', 'tomorrow', tomorrowStr],
+    queryFn: () => showtimesApi.list({ date: tomorrowStr }),
+  });
+
+  // Generate smart alerts
+  const alerts = useSmartAlerts({
+    engagements: allEngagements,
+    todayShowtimes,
+    tomorrowShowtimes,
+  });
+
   // Sort showtimes by time
   const sortedShowtimes = [...todayShowtimes].sort(
     (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
@@ -68,6 +136,9 @@ export default function Home() {
         <h1 className={styles.pageTitle}>Dashboard</h1>
         <p className={styles.welcomeText}>Welcome back, {displayName}</p>
       </div>
+
+      {/* Smart Alerts */}
+      <AlertBanner alerts={alerts} />
 
       {/* Summary Cards */}
       <div className={styles.summaryGrid}>
@@ -167,10 +238,16 @@ export default function Home() {
             </div>
           </>
         ) : (
-          <div className={styles.emptyCard}>
-            <p className={styles.emptyText}>No showtimes scheduled for today.</p>
-            <Link to="/engagements" className={styles.emptyLink}>
-              View engagements &rarr;
+          <div className="empty-state">
+            <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+              🎬
+            </div>
+            <h3 className="empty-state-title">No Showtimes Today</h3>
+            <p className="empty-state-description">
+              Get started by creating an engagement and scheduling showtimes for your films.
+            </p>
+            <Link to="/engagements" className="btn btn-primary">
+              View Engagements
             </Link>
           </div>
         )}

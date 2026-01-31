@@ -1,10 +1,11 @@
 // src/pages/Engagements.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, filmsApi, screensApi } from '../api';
 import type { Engagement, EngagementCreate, Film, Screen } from '../api/types';
 import Drawer from '../components/Drawer';
+import StatusDropdown from '../components/StatusDropdown';
 import styles from './Engagements.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'showtimes';
@@ -35,6 +36,16 @@ export default function Engagements() {
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [statusFilter, setStatusFilter] = useState<string>('');
+
+  // Listen for keyboard shortcut to open create drawer
+  useEffect(() => {
+    const handleOpenDrawer = () => {
+      openCreateModal();
+    };
+
+    window.addEventListener('open-create-engagement-drawer', handleOpenDrawer);
+    return () => window.removeEventListener('open-create-engagement-drawer', handleOpenDrawer);
+  }, []);
 
   // Queries
   const { data: engagements = [], isLoading: engagementsLoading } = useQuery({
@@ -67,6 +78,15 @@ export default function Engagements() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['engagements'] });
       closeModal();
+    },
+  });
+
+  // Inline status update mutation (doesn't close modal)
+  const inlineUpdateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<EngagementCreate> }) =>
+      engagementsApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['engagements'] });
     },
   });
 
@@ -132,19 +152,14 @@ export default function Engagements() {
     }
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case 'CONFIRMED':
-        return 'status-confirmed';
-      case 'DRAFT':
-        return 'status-draft';
-      case 'CANCELLED':
-        return 'status-cancelled';
-      case 'ENDED':
-        return 'status-ended';
-      default:
-        return '';
-    }
+  const handleInlineStatusChange = async (
+    engagementId: number,
+    newStatus: 'DRAFT' | 'CONFIRMED' | 'CANCELLED' | 'ENDED'
+  ) => {
+    await inlineUpdateMutation.mutateAsync({
+      id: engagementId,
+      data: { status: newStatus },
+    });
   };
 
   // Count engagements by status for filter tabs
@@ -229,11 +244,29 @@ export default function Engagements() {
       {engagementsLoading ? (
         <div className={styles.loading}>Loading engagements...</div>
       ) : engagements.length === 0 ? (
-        <div className={styles.empty}>
-          <p>No engagements found.</p>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            Create your first engagement
-          </button>
+        <div className="empty-state">
+          <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
+            🎬
+          </div>
+          <h3 className="empty-state-title">
+            {statusFilter ? `No ${statusFilter.toLowerCase()} engagements` : 'No Engagements Yet'}
+          </h3>
+          <p className="empty-state-description">
+            {statusFilter
+              ? `You don't have any ${statusFilter.toLowerCase()} engagements at the moment.`
+              : "Start booking films by creating your first engagement. An engagement represents a film's run at your cinema."
+            }
+          </p>
+          {!statusFilter && (
+            <button className="btn btn-primary" onClick={openCreateModal}>
+              Create First Engagement
+            </button>
+          )}
+          {statusFilter && (
+            <button className="btn btn-secondary" onClick={() => setStatusFilter('')}>
+              View All Engagements
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -273,9 +306,10 @@ export default function Engagements() {
                       {engagement.presentation_format.toUpperCase()}
                     </td>
                     <td>
-                      <span className={`status-badge ${getStatusBadgeClass(engagement.status)}`}>
-                        {engagement.status}
-                      </span>
+                      <StatusDropdown
+                        value={engagement.status}
+                        onChange={(newStatus) => handleInlineStatusChange(engagement.id, newStatus)}
+                      />
                     </td>
                     <td>
                       <div className={styles.actions}>
@@ -320,9 +354,10 @@ export default function Engagements() {
                   <div className={styles.cardTitleSection}>
                     <h3 className={styles.cardTitle}>{engagement.film_title}</h3>
                     <div className={styles.cardBadges}>
-                      <span className={`status-badge ${getStatusBadgeClass(engagement.status)}`}>
-                        {engagement.status}
-                      </span>
+                      <StatusDropdown
+                        value={engagement.status}
+                        onChange={(newStatus) => handleInlineStatusChange(engagement.id, newStatus)}
+                      />
                       <span className={styles.formatBadge}>
                         {engagement.presentation_format.toUpperCase()}
                       </span>
