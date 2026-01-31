@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
@@ -48,7 +48,7 @@ describe('ProtectedRoute Component', () => {
   });
 
   afterEach(() => {
-    window.location = originalLocation;
+    window.location = originalLocation as Location & string;
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -81,7 +81,7 @@ describe('ProtectedRoute Component', () => {
         () => new Promise(() => {}) // Never resolves
       );
 
-      const { container } = render(
+      render(
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,

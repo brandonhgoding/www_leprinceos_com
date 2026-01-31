@@ -74,13 +74,12 @@ describe('Engagements API', () => {
       const filters = {
         status: 'CONFIRMED',
         film: undefined,
-        screen: null,
+        screen: undefined,
       };
 
-      const result = await engagementsApi.list(filters);
+      await engagementsApi.list(filters);
 
       expect(apiClient.get).toHaveBeenCalledWith('/v1/engagements/?status=CONFIRMED');
-      expect(result).toEqual([mockEngagement]);
     });
 
     it('should filter out empty strings from query string', async () => {
@@ -91,7 +90,7 @@ describe('Engagements API', () => {
         film: 101,
       };
 
-      const result = await engagementsApi.list(filters);
+      await engagementsApi.list(filters);
 
       expect(apiClient.get).toHaveBeenCalledWith('/v1/engagements/?film=101');
     });

@@ -216,7 +216,6 @@ describe('Drawer Component', () => {
 
       render(<Drawer {...defaultProps}>{children}</Drawer>);
 
-      const firstButton = screen.getByText('First');
       const thirdButton = screen.getByText('Third');
       const closeButton = screen.getByRole('button', { name: /close drawer/i });
 
