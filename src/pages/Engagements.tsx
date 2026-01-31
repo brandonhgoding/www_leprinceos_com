@@ -6,6 +6,7 @@ import { engagementsApi, filmsApi, screensApi } from '../api';
 import type { Engagement, EngagementCreate, Film, Screen } from '../api/types';
 import Drawer from '../components/Drawer';
 import StatusDropdown from '../components/StatusDropdown';
+import FilmSearch from '../components/FilmSearch';
 import styles from './Engagements.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'showtimes';
@@ -36,6 +37,7 @@ export default function Engagements() {
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [useFilmSearch, setUseFilmSearch] = useState<boolean>(false);
 
   // Listen for keyboard shortcut to open create drawer
   useEffect(() => {
@@ -101,7 +103,15 @@ export default function Engagements() {
   const openCreateModal = () => {
     setFormData(initialFormData);
     setSelectedEngagement(null);
+    setUseFilmSearch(false);
     setModalMode('create');
+  };
+
+  const handleFilmSelected = (film: Film) => {
+    setFormData({ ...formData, film: film.id });
+    setUseFilmSearch(false);
+    // Invalidate films query to ensure the new film appears in the dropdown
+    queryClient.invalidateQueries({ queryKey: ['films'] });
   };
 
   const openEditModal = (engagement: Engagement) => {
@@ -429,20 +439,70 @@ export default function Engagements() {
       >
         <form id="engagement-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Film</label>
-            <select
-              value={formData.film}
-              onChange={(e) => setFormData({ ...formData, film: e.target.value ? parseInt(e.target.value) : '' })}
-              required
-              className={styles.input}
-            >
-              <option value="">Select a film</option>
-              {films.map((film: Film) => (
-                <option key={film.id} value={film.id}>
-                  {film.title}
-                </option>
-              ))}
-            </select>
+            {!useFilmSearch ? (
+              <>
+                <div className={styles.labelRow}>
+                  <label>Film</label>
+                  <button
+                    type="button"
+                    className={styles.switchButton}
+                    onClick={() => setUseFilmSearch(true)}
+                  >
+                    Search TMDB instead
+                  </button>
+                </div>
+                <select
+                  value={formData.film}
+                  onChange={(e) => setFormData({ ...formData, film: e.target.value ? parseInt(e.target.value) : '' })}
+                  required
+                  className={styles.input}
+                >
+                  <option value="">Select a film</option>
+                  {films.map((film: Film) => (
+                    <option key={film.id} value={film.id}>
+                      {film.title}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <>
+                <div className={styles.labelRow}>
+                  <label>Search for Film</label>
+                  <button
+                    type="button"
+                    className={styles.switchButton}
+                    onClick={() => {
+                      setUseFilmSearch(false);
+                      setFormData({ ...formData, film: '' });
+                    }}
+                  >
+                    Use existing film
+                  </button>
+                </div>
+                <FilmSearch
+                  onFilmSelected={handleFilmSelected}
+                  disabled={false}
+                />
+                {formData.film && (
+                  <div className={styles.selectedFilm}>
+                    <svg
+                      className={styles.checkIcon}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>
+                      Film selected:{' '}
+                      {films.find((f) => f.id === formData.film)?.title || 'Loading...'}
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           <div className={styles.formGroup}>

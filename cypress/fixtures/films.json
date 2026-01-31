@@ -1,0 +1,37 @@
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "title": "The Grand Adventure",
+      "runtime_minutes": 120,
+      "rating": "PG-13",
+      "synopsis": "An epic journey through time and space.",
+      "poster_url": "https://image.tmdb.org/t/p/w500/poster1.jpg",
+      "tmdb_id": "12345",
+      "imdb_id": "tt1234567"
+    },
+    {
+      "id": 2,
+      "title": "Mystery at Midnight",
+      "runtime_minutes": 105,
+      "rating": "PG",
+      "synopsis": "A thrilling mystery unfolds in the darkness.",
+      "poster_url": "https://image.tmdb.org/t/p/w500/poster2.jpg",
+      "tmdb_id": "67890",
+      "imdb_id": "tt7654321"
+    },
+    {
+      "id": 100,
+      "title": "The Matrix",
+      "runtime_minutes": 136,
+      "rating": "R",
+      "synopsis": "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+      "poster_url": "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
+      "tmdb_id": "603",
+      "imdb_id": "tt0133093"
+    }
+  ]
+}

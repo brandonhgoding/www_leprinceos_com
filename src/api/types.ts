@@ -30,6 +30,24 @@ export interface Film {
   imdb_id: string | null;
 }
 
+export interface TMDBSearchResult {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string | null;
+  overview: string;
+  vote_average: number;
+}
+
+export interface CreateFilmFromTMDBRequest {
+  tmdb_id: number;
+}
+
+export interface CreateFilmFromTMDBResponse {
+  film: Film;
+  created: boolean;
+}
+
 export interface Screen {
   id: number;
   name: string;
