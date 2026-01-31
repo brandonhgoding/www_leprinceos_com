@@ -1,0 +1,25 @@
+{
+  "count": 2,
+  "results": [
+    {
+      "id": 1,
+      "name": "Maine State Tax",
+      "percentage": "5.5",
+      "tax_type": "state",
+      "inclusion_type": "additive",
+      "is_active": true,
+      "concession_items_count": 12,
+      "ticket_types_count": 3
+    },
+    {
+      "id": 2,
+      "name": "Portland City Tax",
+      "percentage": "2.0",
+      "tax_type": "city",
+      "inclusion_type": "additive",
+      "is_active": true,
+      "concession_items_count": 8,
+      "ticket_types_count": 0
+    }
+  ]
+}

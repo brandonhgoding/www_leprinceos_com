@@ -1,0 +1,41 @@
+{
+  "count": 3,
+  "results": [
+    {
+      "id": 1,
+      "engagement": 1,
+      "film_title": "The Grand Budapest Hotel",
+      "screen": 1,
+      "screen_name": "Screen 1",
+      "starts_at": "2026-02-01T14:00:00Z",
+      "is_cancelled": false,
+      "captions": "CC",
+      "presentation_format_display": "2D",
+      "is_outside_engagement_range": false
+    },
+    {
+      "id": 2,
+      "engagement": 1,
+      "film_title": "The Grand Budapest Hotel",
+      "screen": 1,
+      "screen_name": "Screen 1",
+      "starts_at": "2026-02-01T19:30:00Z",
+      "is_cancelled": false,
+      "captions": null,
+      "presentation_format_display": "2D",
+      "is_outside_engagement_range": false
+    },
+    {
+      "id": 3,
+      "engagement": 2,
+      "film_title": "Moonrise Kingdom",
+      "screen": 2,
+      "screen_name": "Screen 2",
+      "starts_at": "2026-02-01T16:15:00Z",
+      "is_cancelled": true,
+      "captions": "OC",
+      "presentation_format_display": "2D",
+      "is_outside_engagement_range": false
+    }
+  ]
+}
