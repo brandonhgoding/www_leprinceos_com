@@ -45,8 +45,8 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
   // Create film from TMDB selection
   const createFilmMutation = useMutation({
     mutationFn: (tmdbId: number) => filmsApi.createFromTMDB(tmdbId),
-    onSuccess: (response) => {
-      onFilmSelected(response.film);
+    onSuccess: (film) => {
+      onFilmSelected(film);
       setSearchQuery('');
       setDebouncedQuery('');
       setIsDropdownOpen(false);
@@ -82,7 +82,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
   }, []);
 
   const handleSelectResult = (result: TMDBSearchResult) => {
-    createFilmMutation.mutate(result.id);
+    createFilmMutation.mutate(result.tmdb_id);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -235,7 +235,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
               <>
                 {searchResults.map((result, index) => (
                   <button
-                    key={result.id}
+                    key={result.tmdb_id}
                     id={`result-${index}`}
                     type="button"
                     className={`${styles.resultItem} ${

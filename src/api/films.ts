@@ -5,7 +5,6 @@ import type {
   PaginatedResponse,
   TMDBSearchResult,
   CreateFilmFromTMDBRequest,
-  CreateFilmFromTMDBResponse
 } from './types';
 
 export const filmsApi = {
@@ -27,8 +26,8 @@ export const filmsApi = {
     return response.data;
   },
 
-  createFromTMDB: async (tmdbId: number): Promise<CreateFilmFromTMDBResponse> => {
-    const response = await apiClient.post<CreateFilmFromTMDBResponse>(
+  createFromTMDB: async (tmdbId: number): Promise<Film> => {
+    const response = await apiClient.post<Film>(
       '/v1/films/from-tmdb/',
       { tmdb_id: tmdbId } as CreateFilmFromTMDBRequest
     );
