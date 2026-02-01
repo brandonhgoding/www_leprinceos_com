@@ -353,6 +353,14 @@
   flex: 1;
 }
 
+.conditionHint {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--stone);
+  font-style: italic;
+  padding: 0.5rem 0.75rem;
+}
+
 .addConditionSubmitButton {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
@@ -366,8 +374,13 @@
   white-space: nowrap;
 }
 
-.addConditionSubmitButton:hover {
+.addConditionSubmitButton:hover:not(:disabled) {
   background: var(--brass-light);
+}
+
+.addConditionSubmitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Rule Footer */
@@ -557,6 +570,7 @@
 
   .conditionSelect,
   .conditionInput,
+  .conditionHint,
   .addConditionSubmitButton {
     width: 100%;
   }

@@ -7,6 +7,8 @@ import {
   benefitRulesApi,
   benefitConditionsApi,
 } from '../api/memberships';
+import { concessionsApi } from '../api/concessions';
+import { ticketsApi } from '../api/tickets';
 import type {
   MembershipTierCreate,
   BenefitRuleCreate,
@@ -18,6 +20,16 @@ import type {
 } from '../api/types';
 import Drawer from '../components/Drawer';
 import styles from './TierDetail.module.css';
+
+const DAYS_OF_WEEK = [
+  { value: '1', label: 'Monday' },
+  { value: '2', label: 'Tuesday' },
+  { value: '3', label: 'Wednesday' },
+  { value: '4', label: 'Thursday' },
+  { value: '5', label: 'Friday' },
+  { value: '6', label: 'Saturday' },
+  { value: '7', label: 'Sunday' },
+];
 
 type ModalMode = 'closed' | 'edit-tier' | 'create-rule' | 'edit-rule';
 
@@ -89,10 +101,70 @@ export default function TierDetail() {
     useState<ConditionFormData>(initialConditionFormData);
   const [activeRuleForCondition, setActiveRuleForCondition] = useState<number | null>(null);
 
+  // Helper to check if a condition type needs a reference value input
+  const conditionNeedsInput = (type: ConditionType | '') => {
+    return type !== '' && type !== 'BIRTHDAY_MONTH' && type !== 'COMPANION';
+  };
+
+  // Helper to format condition reference_value for display
+  const formatConditionValue = (condition: BenefitCondition): string => {
+    const { condition_type, reference_value } = condition;
+
+    // For no-input conditions
+    if (condition_type === 'BIRTHDAY_MONTH') {
+      return "Member's birthday month";
+    }
+    if (condition_type === 'COMPANION') {
+      return 'With companion';
+    }
+
+    // For day of week, show the day name
+    if (condition_type === 'DAY_OF_WEEK') {
+      const day = DAYS_OF_WEEK.find((d) => d.value === reference_value);
+      return day ? day.label : reference_value;
+    }
+
+    // For ticket type, show the ticket type name
+    if (condition_type === 'TICKET_TYPE') {
+      const ticketType = ticketTypes.find((tt) => String(tt.id) === reference_value);
+      return ticketType ? ticketType.name : reference_value;
+    }
+
+    // For concession category, show the category name
+    if (condition_type === 'CONCESSION_CATEGORY') {
+      const category = concessionCategories.find((cat) => String(cat.id) === reference_value);
+      return category ? category.name : reference_value;
+    }
+
+    // For concession item, show the item name
+    if (condition_type === 'CONCESSION_ITEM') {
+      const item = concessionItems.find((i) => String(i.id) === reference_value);
+      return item ? item.name : reference_value;
+    }
+
+    // For time values, return as-is (already in HH:MM format)
+    return reference_value;
+  };
+
   // Queries
   const { data: tier, isLoading } = useQuery({
     queryKey: ['membership-tiers', tierId],
     queryFn: () => membershipTiersApi.get(tierId),
+  });
+
+  const { data: ticketTypes = [] } = useQuery({
+    queryKey: ['ticket-types'],
+    queryFn: () => ticketsApi.list(),
+  });
+
+  const { data: concessionCategories = [] } = useQuery({
+    queryKey: ['concession-categories'],
+    queryFn: () => concessionsApi.listCategories(),
+  });
+
+  const { data: concessionItems = [] } = useQuery({
+    queryKey: ['concession-items'],
+    queryFn: () => concessionsApi.listItems(),
   });
 
   // Mutations
@@ -256,8 +328,21 @@ export default function TierDetail() {
   };
 
   const handleAddCondition = (ruleId: number) => {
-    if (!conditionFormData.condition_type || !conditionFormData.reference_value) {
-      alert('Please fill in both condition type and value');
+    if (!conditionFormData.condition_type) {
+      alert('Please select a condition type');
+      return;
+    }
+
+    // Determine the reference value based on condition type
+    let referenceValue = conditionFormData.reference_value;
+
+    // For conditions that don't need user input, set a default value
+    if (conditionFormData.condition_type === 'BIRTHDAY_MONTH') {
+      referenceValue = 'true';
+    } else if (conditionFormData.condition_type === 'COMPANION') {
+      referenceValue = 'true';
+    } else if (!referenceValue) {
+      alert('Please fill in the condition value');
       return;
     }
 
@@ -265,7 +350,7 @@ export default function TierDetail() {
       ruleId,
       data: {
         condition_type: conditionFormData.condition_type as ConditionType,
-        reference_value: conditionFormData.reference_value,
+        reference_value: referenceValue,
       },
     });
   };
@@ -423,7 +508,7 @@ export default function TierDetail() {
                           <div key={condition.id} className={styles.conditionItem}>
                             <span>
                               {condition.condition_type_display}:{' '}
-                              {condition.reference_value}
+                              {formatConditionValue(condition)}
                             </span>
                             <button
                               className={styles.deleteConditionButton}
@@ -442,8 +527,8 @@ export default function TierDetail() {
                           value={conditionFormData.condition_type}
                           onChange={(e) =>
                             setConditionFormData({
-                              ...conditionFormData,
                               condition_type: e.target.value as ConditionType,
+                              reference_value: '', // Reset value when type changes
                             })
                           }
                           className={styles.conditionSelect}
@@ -458,21 +543,128 @@ export default function TierDetail() {
                           <option value="BIRTHDAY_MONTH">Birthday Month</option>
                           <option value="COMPANION">Companion Required</option>
                         </select>
-                        <input
-                          type="text"
-                          value={conditionFormData.reference_value}
-                          onChange={(e) =>
-                            setConditionFormData({
-                              ...conditionFormData,
-                              reference_value: e.target.value,
-                            })
-                          }
-                          placeholder="Value (e.g., 18:00, 2, adult_ticket)"
-                          className={styles.conditionInput}
-                        />
+
+                        {/* Time picker for TIME_BEFORE and TIME_AFTER */}
+                        {(conditionFormData.condition_type === 'TIME_BEFORE' ||
+                          conditionFormData.condition_type === 'TIME_AFTER') && (
+                          <input
+                            type="time"
+                            value={conditionFormData.reference_value}
+                            onChange={(e) =>
+                              setConditionFormData({
+                                ...conditionFormData,
+                                reference_value: e.target.value,
+                              })
+                            }
+                            className={styles.conditionInput}
+                          />
+                        )}
+
+                        {/* Day of week selector */}
+                        {conditionFormData.condition_type === 'DAY_OF_WEEK' && (
+                          <select
+                            value={conditionFormData.reference_value}
+                            onChange={(e) =>
+                              setConditionFormData({
+                                ...conditionFormData,
+                                reference_value: e.target.value,
+                              })
+                            }
+                            className={styles.conditionInput}
+                          >
+                            <option value="">Select day...</option>
+                            {DAYS_OF_WEEK.map((day) => (
+                              <option key={day.value} value={day.value}>
+                                {day.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+
+                        {/* Ticket type selector */}
+                        {conditionFormData.condition_type === 'TICKET_TYPE' && (
+                          <select
+                            value={conditionFormData.reference_value}
+                            onChange={(e) =>
+                              setConditionFormData({
+                                ...conditionFormData,
+                                reference_value: e.target.value,
+                              })
+                            }
+                            className={styles.conditionInput}
+                          >
+                            <option value="">Select ticket type...</option>
+                            {ticketTypes.map((tt) => (
+                              <option key={tt.id} value={String(tt.id)}>
+                                {tt.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+
+                        {/* Concession category selector */}
+                        {conditionFormData.condition_type === 'CONCESSION_CATEGORY' && (
+                          <select
+                            value={conditionFormData.reference_value}
+                            onChange={(e) =>
+                              setConditionFormData({
+                                ...conditionFormData,
+                                reference_value: e.target.value,
+                              })
+                            }
+                            className={styles.conditionInput}
+                          >
+                            <option value="">Select category...</option>
+                            {concessionCategories.map((cat) => (
+                              <option key={cat.id} value={String(cat.id)}>
+                                {cat.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+
+                        {/* Concession item selector */}
+                        {conditionFormData.condition_type === 'CONCESSION_ITEM' && (
+                          <select
+                            value={conditionFormData.reference_value}
+                            onChange={(e) =>
+                              setConditionFormData({
+                                ...conditionFormData,
+                                reference_value: e.target.value,
+                              })
+                            }
+                            className={styles.conditionInput}
+                          >
+                            <option value="">Select item...</option>
+                            {concessionItems.map((item) => (
+                              <option key={item.id} value={String(item.id)}>
+                                {item.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+
+                        {/* No input needed for BIRTHDAY_MONTH and COMPANION */}
+                        {conditionFormData.condition_type === 'BIRTHDAY_MONTH' && (
+                          <span className={styles.conditionHint}>
+                            Applies during member's birthday month
+                          </span>
+                        )}
+
+                        {conditionFormData.condition_type === 'COMPANION' && (
+                          <span className={styles.conditionHint}>
+                            Applies when member has companions
+                          </span>
+                        )}
+
                         <button
                           className={styles.addConditionSubmitButton}
                           onClick={() => handleAddCondition(rule.id)}
+                          disabled={
+                            !conditionFormData.condition_type ||
+                            (conditionNeedsInput(conditionFormData.condition_type) &&
+                              !conditionFormData.reference_value)
+                          }
                         >
                           Add
                         </button>
