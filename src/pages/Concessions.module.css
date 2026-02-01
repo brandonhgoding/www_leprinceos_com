@@ -434,6 +434,14 @@
   cursor: not-allowed;
 }
 
+/* Help text */
+.helpText {
+  font-size: 0.75rem;
+  color: var(--stone);
+  margin: 0;
+  margin-top: -0.25rem;
+}
+
 /* No taxes message */
 .noTaxesMessage {
   font-size: 0.875rem;

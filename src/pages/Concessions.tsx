@@ -35,6 +35,7 @@ interface ItemFormData {
 interface VariationFormData {
   name: string;
   sku: string;
+  upc: string;
   price: string;
   cost: string;
   is_active: boolean;
@@ -58,6 +59,7 @@ const initialItemForm: ItemFormData = {
 const initialVariationForm: VariationFormData = {
   name: '',
   sku: '',
+  upc: '',
   price: '',
   cost: '',
   is_active: true,
@@ -346,6 +348,7 @@ export default function Concessions() {
     setVariationForm({
       name: variation.name,
       sku: variation.sku,
+      upc: variation.upc,
       price: variation.price,
       cost: variation.cost || '',
       is_active: variation.is_active,
@@ -359,9 +362,16 @@ export default function Concessions() {
     e.preventDefault();
     if (!variationForm.name || !variationForm.price) return;
 
+    // Validate UPC format if provided
+    if (variationForm.upc && !/^\d{12,14}$/.test(variationForm.upc)) {
+      alert('UPC must be 12-14 digits if provided');
+      return;
+    }
+
     const data: ConcessionVariationCreate = {
       name: variationForm.name,
       sku: variationForm.sku || undefined,
+      upc: variationForm.upc || undefined,
       price: variationForm.price,
       cost: variationForm.cost || undefined,
       is_active: variationForm.is_active,
@@ -552,6 +562,11 @@ export default function Concessions() {
                                               {variation.sku && (
                                                 <span className={styles.variationSku}>
                                                   SKU: {variation.sku}
+                                                </span>
+                                              )}
+                                              {variation.upc && (
+                                                <span className={styles.variationSku}>
+                                                  UPC: {variation.upc}
                                                 </span>
                                               )}
                                               <span
@@ -850,18 +865,19 @@ export default function Concessions() {
         }
       >
         <form id="variation-form" onSubmit={handleVariationSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Name</label>
+            <input
+              type="text"
+              value={variationForm.name}
+              onChange={(e) => setVariationForm({ ...variationForm, name: e.target.value })}
+              required
+              className={styles.input}
+              placeholder="e.g., Small, Medium, Large"
+            />
+          </div>
+
           <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label>Name</label>
-              <input
-                type="text"
-                value={variationForm.name}
-                onChange={(e) => setVariationForm({ ...variationForm, name: e.target.value })}
-                required
-                className={styles.input}
-                placeholder="e.g., Small, Medium, Large"
-              />
-            </div>
             <div className={styles.formGroup}>
               <label>SKU</label>
               <input
@@ -871,6 +887,21 @@ export default function Concessions() {
                 className={styles.input}
                 placeholder="Optional barcode/SKU"
               />
+            </div>
+            <div className={styles.formGroup}>
+              <label>UPC (Barcode)</label>
+              <input
+                type="text"
+                value={variationForm.upc}
+                onChange={(e) => setVariationForm({ ...variationForm, upc: e.target.value })}
+                className={styles.input}
+                placeholder="12-14 digit barcode"
+                pattern="\d{12,14}"
+                title="UPC must be 12-14 digits"
+              />
+              <small className={styles.helpText}>
+                For barcode scanner use
+              </small>
             </div>
           </div>
 

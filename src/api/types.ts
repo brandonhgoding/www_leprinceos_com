@@ -187,6 +187,7 @@ export interface ConcessionVariation {
   item: number;
   name: string;
   sku: string;
+  upc: string;
   price: string;
   cost: string | null;
   is_active: boolean;
@@ -199,6 +200,7 @@ export interface ConcessionVariation {
 export interface ConcessionVariationCreate {
   name: string;
   sku?: string;
+  upc?: string;
   price: string;
   cost?: string | null;
   is_active?: boolean;
