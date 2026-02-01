@@ -14,4 +14,6 @@ export { default as screensApi } from './screens';
 export { default as ticketsApi } from './tickets';
 export { default as salesTaxesApi } from './salestaxes';
 
+export { membersApi, membershipTiersApi, membershipsApi, benefitRulesApi, benefitConditionsApi } from './memberships';
+
 export * from './types';

@@ -453,3 +453,223 @@ export interface Integration {
   status: 'connected' | 'disconnected' | 'error';
   last_sync_at: string | null;
 }
+
+// Memberships
+export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+export type BenefitType = 'FIXED_AMOUNT' | 'PERCENTAGE' | 'FREE_ITEM';
+export type BenefitScope = 'TICKET' | 'CONCESSION' | 'RENTAL';
+export type ConditionType =
+  | 'TIME_BEFORE'
+  | 'TIME_AFTER'
+  | 'DAY_OF_WEEK'
+  | 'TICKET_TYPE'
+  | 'CONCESSION_CATEGORY'
+  | 'CONCESSION_ITEM'
+  | 'BIRTHDAY_MONTH'
+  | 'COMPANION';
+export type PeriodType = 'MONTHLY' | 'DAILY' | 'LIFETIME';
+export type AuditAction = 'CREATED' | 'ACTIVATED' | 'RENEWED' | 'CANCELLED' | 'EXPIRED';
+
+export interface Member {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  phone: string;
+  birth_month: number | null;
+  birth_day: number | null;
+  family_member_count: number;
+  member_number: string;
+  square_customer_id: string;
+  active_membership: {
+    id: number;
+    tier_name: string;
+    status: MembershipStatus;
+    end_date: string;
+  } | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MemberCreate {
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  birth_month?: number;
+  birth_day?: number;
+  family_member_count?: number;
+  member_number?: string;
+}
+
+export interface MemberLookup {
+  email?: string;
+  phone?: string;
+  member_number?: string;
+}
+
+export interface MembershipTier {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  duration_months: number;
+  is_family_tier: boolean;
+  max_family_members: number;
+  display_order: number;
+  is_active: boolean;
+  benefit_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MembershipTierCreate {
+  name: string;
+  slug?: string;
+  description?: string;
+  price: string;
+  duration_months: number;
+  is_family_tier?: boolean;
+  max_family_members?: number;
+  display_order?: number;
+  is_active?: boolean;
+}
+
+export interface MembershipTierDetail extends MembershipTier {
+  benefit_rules: BenefitRule[];
+}
+
+export interface BenefitCondition {
+  id: number;
+  condition_type: ConditionType;
+  condition_type_display: string;
+  reference_value: string;
+}
+
+export interface BenefitConditionCreate {
+  rule: number;
+  condition_type: ConditionType;
+  reference_value: string;
+}
+
+export interface BenefitRule {
+  id: number;
+  tier: number;
+  tier_name: string;
+  name: string;
+  description: string;
+  benefit_type: BenefitType;
+  benefit_type_display: string;
+  benefit_scope: BenefitScope;
+  benefit_scope_display: string;
+  value: string;
+  monthly_limit: number | null;
+  daily_limit: number | null;
+  priority: number;
+  is_active: boolean;
+  conditions: BenefitCondition[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BenefitRuleCreate {
+  tier: number;
+  name: string;
+  description?: string;
+  benefit_type: BenefitType;
+  benefit_scope: BenefitScope;
+  value: string;
+  monthly_limit?: number | null;
+  daily_limit?: number | null;
+  priority?: number;
+  is_active?: boolean;
+}
+
+export interface Membership {
+  id: number;
+  member: number;
+  member_name: string;
+  member_email: string;
+  tier: number;
+  tier_name: string;
+  status: MembershipStatus;
+  status_display: string;
+  is_active: boolean;
+  start_date: string;
+  end_date: string;
+  price_paid: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MembershipCreate {
+  member: number;
+  tier: number;
+  start_date?: string;
+  price_paid?: string;
+  auto_activate?: boolean;
+}
+
+export interface BenefitAllocation {
+  id: number;
+  benefit_rule: number;
+  benefit_name: string;
+  period_type: PeriodType;
+  period_start: string;
+  period_end: string;
+  quantity_allocated: number;
+  quantity_used: number;
+  quantity_remaining: number;
+  is_exhausted: boolean;
+}
+
+export interface BenefitRedemption {
+  id: number;
+  allocation: number;
+  benefit_name: string;
+  sale: number | null;
+  ticket: number | null;
+  concession_line_item: number | null;
+  discount_amount: string;
+  quantity_redeemed: number;
+  redeemed_at: string;
+}
+
+export interface MembershipAuditLog {
+  id: number;
+  action: AuditAction;
+  action_display: string;
+  performed_by: number | null;
+  performed_by_username: string | null;
+  performed_at: string;
+  old_value: string;
+  new_value: string;
+  notes: string;
+}
+
+export interface MemberBenefits {
+  membership: {
+    id: number;
+    tier_name: string;
+    status: MembershipStatus;
+    start_date: string;
+    end_date: string;
+  };
+  allocations: BenefitAllocation[];
+}
+
+// Filter types
+export interface MemberFilters {
+  search?: string;
+  email?: string;
+  phone?: string;
+  member_number?: string;
+}
+
+export interface MembershipFilters {
+  status?: MembershipStatus;
+  tier?: number;
+  member?: number;
+}

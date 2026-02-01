@@ -93,6 +93,14 @@ const ApiDocsIcon = () => (
   </svg>
 );
 
+const MembershipsIcon = () => (
+  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="2" y="6" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M6 6V5a1 1 0 011-1h6a1 1 0 011 1v1M10 10v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <circle cx="10" cy="11" r="1.5" fill="currentColor"/>
+  </svg>
+);
+
 const LogoutIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M7 17H4a1 1 0 01-1-1V4a1 1 0 011-1h3M13 14l4-4-4-4M17 10H7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -154,6 +162,15 @@ export default function Sidebar({
       items: [
         { path: '/concessions', label: 'Items' },
         { path: '/modifiers', label: 'Modifiers' },
+      ],
+    },
+    {
+      label: 'Memberships',
+      icon: <MembershipsIcon />,
+      items: [
+        { path: '/members', label: 'Members' },
+        { path: '/membership-tiers', label: 'Tiers' },
+        { path: '/memberships', label: 'Memberships' },
       ],
     },
     { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon /> },

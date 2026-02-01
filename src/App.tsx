@@ -13,6 +13,12 @@ import TicketDetail from './pages/TicketDetail';
 import SalesTaxes from './pages/SalesTaxes';
 import Embeds from './pages/Embeds';
 import Integrations from './pages/Integrations';
+import Members from './pages/Members';
+import MemberDetail from './pages/MemberDetail';
+import MembershipTiers from './pages/MembershipTiers';
+import TierDetail from './pages/TierDetail';
+import Memberships from './pages/Memberships';
+import MembershipDetail from './pages/MembershipDetail';
 
 function KeyboardShortcuts() {
   const navigate = useNavigate();
@@ -73,6 +79,12 @@ function App() {
           <Route path="sales-taxes" element={<SalesTaxes />} />
           <Route path="embeds" element={<Embeds />} />
           <Route path="integrations" element={<Integrations />} />
+          <Route path="members" element={<Members />} />
+          <Route path="members/:id" element={<MemberDetail />} />
+          <Route path="membership-tiers" element={<MembershipTiers />} />
+          <Route path="membership-tiers/:id" element={<TierDetail />} />
+          <Route path="memberships" element={<Memberships />} />
+          <Route path="memberships/:id" element={<MembershipDetail />} />
         </Route>
       </Routes>
     </BrowserRouter>
