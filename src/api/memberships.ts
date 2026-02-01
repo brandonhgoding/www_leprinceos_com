@@ -70,10 +70,11 @@ export const membersApi = {
   },
 
   getMemberships: async (id: number): Promise<Membership[]> => {
-    const response = await apiClient.get<PaginatedResponse<Membership>>(
+    // This endpoint returns a plain array, not paginated
+    const response = await apiClient.get<Membership[]>(
       `/v1/members/${id}/memberships/`
     );
-    return response.data.results;
+    return response.data;
   },
 
   getBenefits: async (id: number): Promise<MemberBenefits> => {
@@ -115,10 +116,11 @@ export const membershipTiersApi = {
   },
 
   getBenefitRules: async (id: number): Promise<BenefitRule[]> => {
-    const response = await apiClient.get<PaginatedResponse<BenefitRule>>(
+    // This endpoint returns a plain array, not paginated
+    const response = await apiClient.get<BenefitRule[]>(
       `/v1/membership-tiers/${id}/benefit-rules/`
     );
-    return response.data.results;
+    return response.data;
   },
 };
 
@@ -208,24 +210,27 @@ export const membershipsApi = {
   },
 
   getAllocations: async (id: number): Promise<BenefitAllocation[]> => {
-    const response = await apiClient.get<PaginatedResponse<BenefitAllocation>>(
+    // This endpoint returns a plain array, not paginated
+    const response = await apiClient.get<BenefitAllocation[]>(
       `/v1/memberships/${id}/allocations/`
     );
-    return response.data.results;
+    return response.data;
   },
 
   getRedemptions: async (id: number): Promise<BenefitRedemption[]> => {
-    const response = await apiClient.get<PaginatedResponse<BenefitRedemption>>(
+    // This endpoint returns a plain array, not paginated
+    const response = await apiClient.get<BenefitRedemption[]>(
       `/v1/memberships/${id}/redemptions/`
     );
-    return response.data.results;
+    return response.data;
   },
 
   getAuditLog: async (id: number): Promise<MembershipAuditLog[]> => {
-    const response = await apiClient.get<PaginatedResponse<MembershipAuditLog>>(
+    // This endpoint returns a plain array, not paginated
+    const response = await apiClient.get<MembershipAuditLog[]>(
       `/v1/memberships/${id}/audit-log/`
     );
-    return response.data.results;
+    return response.data;
   },
 };
 
