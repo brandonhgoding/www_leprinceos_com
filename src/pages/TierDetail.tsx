@@ -23,7 +23,6 @@ type ModalMode = 'closed' | 'edit-tier' | 'create-rule' | 'edit-rule';
 
 interface TierFormData {
   name: string;
-  slug: string;
   description: string;
   price: string;
   duration_months: string;
@@ -76,7 +75,6 @@ export default function TierDetail() {
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [tierFormData, setTierFormData] = useState<TierFormData>({
     name: '',
-    slug: '',
     description: '',
     price: '',
     duration_months: '12',
@@ -159,7 +157,6 @@ export default function TierDetail() {
     if (!tier) return;
     setTierFormData({
       name: tier.name,
-      slug: tier.slug,
       description: tier.description,
       price: tier.price,
       duration_months: String(tier.duration_months),
@@ -204,7 +201,6 @@ export default function TierDetail() {
 
     const data: Partial<MembershipTierCreate> = {
       name: tierFormData.name,
-      slug: tierFormData.slug || undefined,
       description: tierFormData.description || undefined,
       price: tierFormData.price,
       duration_months: parseInt(tierFormData.duration_months),
@@ -327,10 +323,6 @@ export default function TierDetail() {
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>Tier Information</h2>
           <div className={styles.infoGrid}>
-            <div className={styles.infoItem}>
-              <div className={styles.infoLabel}>Slug</div>
-              <div className={styles.infoValue}>{tier.slug}</div>
-            </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>Type</div>
               <div className={styles.infoValue}>
@@ -539,16 +531,6 @@ export default function TierDetail() {
               value={tierFormData.name}
               onChange={(e) => setTierFormData({ ...tierFormData, name: e.target.value })}
               required
-              className={styles.input}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Slug</label>
-            <input
-              type="text"
-              value={tierFormData.slug}
-              onChange={(e) => setTierFormData({ ...tierFormData, slug: e.target.value })}
               className={styles.input}
             />
           </div>

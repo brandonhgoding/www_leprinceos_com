@@ -512,7 +512,6 @@ export interface MemberLookup {
 export interface MembershipTier {
   id: number;
   name: string;
-  slug: string;
   description: string;
   price: string;
   duration_months: number;
@@ -527,7 +526,6 @@ export interface MembershipTier {
 
 export interface MembershipTierCreate {
   name: string;
-  slug?: string;
   description?: string;
   price: string;
   duration_months: number;

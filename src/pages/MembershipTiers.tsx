@@ -11,7 +11,6 @@ type ModalMode = 'closed' | 'create' | 'edit';
 
 interface FormData {
   name: string;
-  slug: string;
   description: string;
   price: string;
   duration_months: string;
@@ -23,7 +22,6 @@ interface FormData {
 
 const initialFormData: FormData = {
   name: '',
-  slug: '',
   description: '',
   price: '',
   duration_months: '12',
@@ -81,7 +79,6 @@ export default function MembershipTiers() {
   const openEditModal = (tier: MembershipTier) => {
     setFormData({
       name: tier.name,
-      slug: tier.slug,
       description: tier.description,
       price: tier.price,
       duration_months: String(tier.duration_months),
@@ -107,7 +104,6 @@ export default function MembershipTiers() {
 
     const data: MembershipTierCreate = {
       name: formData.name,
-      slug: formData.slug || undefined,
       description: formData.description || undefined,
       price: formData.price,
       duration_months: parseInt(formData.duration_months),
@@ -345,20 +341,6 @@ export default function MembershipTiers() {
               className={styles.input}
               placeholder="e.g., Gold, Platinum, Premium"
             />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Slug (URL-friendly name)</label>
-            <input
-              type="text"
-              value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              className={styles.input}
-              placeholder="e.g., gold-tier (auto-generated if blank)"
-            />
-            <small className={styles.helpText}>
-              Used in URLs. Leave blank to auto-generate from name.
-            </small>
           </div>
 
           <div className={styles.formGroup}>
