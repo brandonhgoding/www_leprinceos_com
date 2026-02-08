@@ -80,6 +80,13 @@ const IntegrationsIcon = () => (
   </svg>
 );
 
+const SalesTaxIcon = () => (
+  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M10 3v14M6 7h8M6 13h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+);
+
 const EmbedsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M7 6l-4 4 4 4M13 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -149,19 +156,12 @@ export default function Sidebar({
     { path: '/engagements', label: 'Engagements', icon: <EngagementsIcon /> },
     { path: '/screens', label: 'Screens', icon: <ScreensIcon /> },
     {
-      label: 'Billing',
-      icon: <BillingIcon />,
-      items: [
-        { path: '/tickets', label: 'Ticket Types' },
-        { path: '/sales-taxes', label: 'Sales Taxes' },
-      ],
-    },
-    {
       label: 'Concessions',
       icon: <ConcessionsIcon />,
       items: [
         { path: '/concessions', label: 'Items' },
         { path: '/modifiers', label: 'Modifiers' },
+        { path: '/sales-taxes', label: 'Sales Taxes' },
       ],
     },
     {
@@ -173,6 +173,7 @@ export default function Sidebar({
         { path: '/memberships', label: 'Memberships' },
       ],
     },
+    { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
     { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon /> },
     { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
     { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },
