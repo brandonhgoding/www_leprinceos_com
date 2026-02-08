@@ -1,0 +1,105 @@
+// src/widget/types.ts
+// Types matching the public ticketing API serializers
+
+export interface PublicShowtime {
+  id: number;
+  starts_at: string;
+  film_title: string;
+  film_poster_url: string | null;
+  film_rating: string;
+  film_runtime_minutes: number | null;
+  screen_name: string;
+  presentation_format: string;
+  captions: boolean;
+  tickets_remaining: number;
+}
+
+export interface TicketType {
+  id: number;
+  name: string;
+  price: string; // Decimal as string from DRF
+  description: string;
+}
+
+export interface ShowtimeAvailability {
+  showtime: PublicShowtime;
+  ticket_types: TicketType[];
+  capacity: number;
+  sold: number;
+  available: number;
+}
+
+export interface OrderItemInput {
+  ticket_type_id: number;
+  quantity: number;
+}
+
+export interface OrderCreatePayload {
+  showtime_id: number;
+  items: OrderItemInput[];
+  customer_name: string;
+  customer_email: string;
+  customer_phone?: string;
+  member_email?: string;
+}
+
+export interface OrderItemConfirmation {
+  ticket_type_name: string;
+  quantity: number;
+  unit_price: string;
+  line_total: string;
+}
+
+export interface TicketQR {
+  uuid: string;
+  ticket_type: number;
+}
+
+export interface OrderConfirmation {
+  order_id: string;
+  confirmation_number: string;
+  status: string;
+  film_title: string;
+  showtime_starts_at: string;
+  screen_name: string;
+  items: OrderItemConfirmation[];
+  subtotal: string;
+  tax_amount: string;
+  total_amount: string;
+  tickets: TicketQR[];
+}
+
+export interface CinemaConfig {
+  name: string;
+  slug: string;
+  square_app_id: string;
+  square_location_id: string;
+  square_environment: 'sandbox' | 'production';
+}
+
+/** Configuration read from the host page's data attributes */
+export interface WidgetConfig {
+  cinema: string;
+  type: string;
+  theme: 'light' | 'dark';
+  apiBaseUrl: string;
+}
+
+/** Cart state: maps ticket_type_id -> quantity */
+export type Cart = Record<number, number>;
+
+/** Application view state */
+export type WidgetView =
+  | { name: 'showtimes' }
+  | { name: 'checkout'; showtimeId: number }
+  | { name: 'payment'; orderId: string }
+  | { name: 'confirmation'; orderId: string }
+  | { name: 'error'; message: string; retry?: () => void };
+
+/** API error response shape */
+export interface ApiErrorResponse {
+  detail?: string;
+  available?: number;
+  requested?: number;
+  [key: string]: unknown;
+}

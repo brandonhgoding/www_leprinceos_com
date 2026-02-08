@@ -19,6 +19,7 @@ import MembershipTiers from './pages/MembershipTiers';
 import TierDetail from './pages/TierDetail';
 import Memberships from './pages/Memberships';
 import MembershipDetail from './pages/MembershipDetail';
+import OnlineOrders from './pages/OnlineOrders';
 import ShowtimeReport from './pages/reports/ShowtimeReport';
 import EngagementReport from './pages/reports/EngagementReport';
 import TicketDetailReport from './pages/reports/TicketDetailReport';
@@ -82,6 +83,7 @@ function App() {
           <Route path="tickets/:id" element={<TicketDetail />} />
           <Route path="sales-taxes" element={<SalesTaxes />} />
           <Route path="embeds" element={<Embeds />} />
+          <Route path="online-orders" element={<OnlineOrders />} />
           <Route path="integrations" element={<Integrations />} />
           <Route path="members" element={<Members />} />
           <Route path="members/:id" element={<MemberDetail />} />

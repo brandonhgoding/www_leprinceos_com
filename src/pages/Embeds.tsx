@@ -13,6 +13,8 @@ interface EmbedType {
   previewDescription: string;
   urlPath: string; // Backend URL path
   requiresEngagement?: boolean;
+  /** When true, the widget.js script embed is the primary/recommended option */
+  widgetPrimary?: boolean;
 }
 
 interface EmbedConfig {
@@ -74,6 +76,15 @@ const EMBED_TYPES: EmbedType[] = [
     icon: '🎟️',
     previewDescription: 'Lists all ticket types with prices and descriptions.',
     urlPath: 'tickets',
+  },
+  {
+    id: 'buy-tickets',
+    name: 'Buy Tickets',
+    description: 'Let customers browse showtimes and purchase tickets directly on your site.',
+    icon: '🛒',
+    previewDescription: 'Full ticket purchasing flow: browse films, select showtimes, choose tickets, and pay with Square.',
+    urlPath: 'buy',
+    widgetPrimary: true,
   },
 ];
 
@@ -353,41 +364,85 @@ export default function Embeds() {
             <div className={styles.configSection}>
               <h3 className={styles.sectionTitle}>Embed Code</h3>
 
-              <div className={styles.codeSection}>
-                <div className={styles.codeHeader}>
-                  <h4>Option 1: iFrame (Recommended)</h4>
-                  <p className={styles.codeDescription}>
-                    Simple and secure. Paste this code where you want the widget to appear.
-                  </p>
-                </div>
-                <div className={styles.codeBlock}>
-                  <pre>{generateIframeCode(selectedEmbed)}</pre>
-                  <button
-                    className={styles.copyButton}
-                    onClick={() => copyToClipboard(generateIframeCode(selectedEmbed))}
-                  >
-                    {copied ? 'Copied!' : 'Copy Code'}
-                  </button>
-                </div>
-              </div>
+              {selectedEmbed.widgetPrimary ? (
+                <>
+                  <div className={styles.codeSection}>
+                    <div className={styles.codeHeader}>
+                      <h4>Option 1: JavaScript Widget (Recommended)</h4>
+                      <p className={styles.codeDescription}>
+                        Embeds the full ticket purchasing experience directly into your page with
+                        isolated styles.
+                      </p>
+                    </div>
+                    <div className={styles.codeBlock}>
+                      <pre>{generateScriptCode(selectedEmbed)}</pre>
+                      <button
+                        className={styles.copyButton}
+                        onClick={() => copyToClipboard(generateScriptCode(selectedEmbed))}
+                      >
+                        {copied ? 'Copied!' : 'Copy Code'}
+                      </button>
+                    </div>
+                  </div>
 
-              <div className={styles.codeSection}>
-                <div className={styles.codeHeader}>
-                  <h4>Option 2: JavaScript Widget</h4>
-                  <p className={styles.codeDescription}>
-                    Lightweight script that injects the widget directly into your page.
-                  </p>
-                </div>
-                <div className={styles.codeBlock}>
-                  <pre>{generateScriptCode(selectedEmbed)}</pre>
-                  <button
-                    className={styles.copyButton}
-                    onClick={() => copyToClipboard(generateScriptCode(selectedEmbed))}
-                  >
-                    {copied ? 'Copied!' : 'Copy Code'}
-                  </button>
-                </div>
-              </div>
+                  <div className={styles.codeSection}>
+                    <div className={styles.codeHeader}>
+                      <h4>Option 2: iFrame</h4>
+                      <p className={styles.codeDescription}>
+                        Simple iframe embed. Works everywhere but cannot adapt to your page
+                        styles.
+                      </p>
+                    </div>
+                    <div className={styles.codeBlock}>
+                      <pre>{generateIframeCode(selectedEmbed)}</pre>
+                      <button
+                        className={styles.copyButton}
+                        onClick={() => copyToClipboard(generateIframeCode(selectedEmbed))}
+                      >
+                        {copied ? 'Copied!' : 'Copy Code'}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.codeSection}>
+                    <div className={styles.codeHeader}>
+                      <h4>Option 1: iFrame (Recommended)</h4>
+                      <p className={styles.codeDescription}>
+                        Simple and secure. Paste this code where you want the widget to appear.
+                      </p>
+                    </div>
+                    <div className={styles.codeBlock}>
+                      <pre>{generateIframeCode(selectedEmbed)}</pre>
+                      <button
+                        className={styles.copyButton}
+                        onClick={() => copyToClipboard(generateIframeCode(selectedEmbed))}
+                      >
+                        {copied ? 'Copied!' : 'Copy Code'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className={styles.codeSection}>
+                    <div className={styles.codeHeader}>
+                      <h4>Option 2: JavaScript Widget</h4>
+                      <p className={styles.codeDescription}>
+                        Lightweight script that injects the widget directly into your page.
+                      </p>
+                    </div>
+                    <div className={styles.codeBlock}>
+                      <pre>{generateScriptCode(selectedEmbed)}</pre>
+                      <button
+                        className={styles.copyButton}
+                        onClick={() => copyToClipboard(generateScriptCode(selectedEmbed))}
+                      >
+                        {copied ? 'Copied!' : 'Copy Code'}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className={styles.codeSection}>
                 <div className={styles.codeHeader}>
