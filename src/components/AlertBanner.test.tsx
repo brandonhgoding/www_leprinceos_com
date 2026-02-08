@@ -573,7 +573,7 @@ describe('AlertBanner Component', () => {
     it('should render message in paragraph element', () => {
       const alerts = [createAlert('1', 'info', 'Test message')];
 
-      const { container } = render(<AlertBanner alerts={alerts} />);
+      render(<AlertBanner alerts={alerts} />);
 
       const alert = screen.getByRole('alert');
       const paragraph = alert.querySelector('p');

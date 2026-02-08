@@ -80,13 +80,6 @@ const IntegrationsIcon = () => (
   </svg>
 );
 
-const SalesTaxIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M10 3v14M6 7h8M6 13h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/>
-  </svg>
-);
-
 const EmbedsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M7 6l-4 4 4 4M13 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -97,6 +90,13 @@ const ApiDocsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <rect x="4" y="2" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5"/>
     <path d="M7 6h6M7 9h6M7 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const ReportsIcon = () => (
+  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M7 13V9M10 13V7M13 13V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
 );
 
@@ -171,6 +171,16 @@ export default function Sidebar({
         { path: '/members', label: 'Members' },
         { path: '/membership-tiers', label: 'Tiers' },
         { path: '/memberships', label: 'Memberships' },
+      ],
+    },
+    {
+      label: 'Reports',
+      icon: <ReportsIcon />,
+      items: [
+        { path: '/reports/showtime', label: 'Showtime Report' },
+        { path: '/reports/engagement', label: 'Engagement Report' },
+        { path: '/reports/tickets', label: 'Ticket Detail' },
+        { path: '/reports/summary', label: 'Engagement Summary' },
       ],
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },

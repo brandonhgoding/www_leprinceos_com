@@ -658,6 +658,44 @@ export interface MemberBenefits {
   allocations: BenefitAllocation[];
 }
 
+// Reports
+export interface TicketTypeBreakdown {
+  ticket_type__name: string;
+  count: number;
+  revenue: string;
+}
+
+export interface ShowtimeStats {
+  total_tickets: number;
+  gross_revenue: string;
+  capacity: number;
+  occupancy_pct: number;
+  by_ticket_type: TicketTypeBreakdown[];
+  comped_count: number;
+  scanned_count: number;
+  refunded_count: number;
+}
+
+export interface ShowtimeStatsNested {
+  showtime_id: number;
+  starts_at: string;
+  screen_name: string;
+  stats: ShowtimeStats;
+}
+
+export interface EngagementStats {
+  total_tickets: number;
+  gross_revenue: string;
+  showtime_count: number;
+  showtimes: ShowtimeStatsNested[];
+}
+
+export interface ReportDateRangeParams {
+  start_date: string;
+  end_date: string;
+  engagement_id?: number;
+}
+
 // Filter types
 export interface MemberFilters {
   search?: string;

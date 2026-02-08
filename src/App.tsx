@@ -19,6 +19,10 @@ import MembershipTiers from './pages/MembershipTiers';
 import TierDetail from './pages/TierDetail';
 import Memberships from './pages/Memberships';
 import MembershipDetail from './pages/MembershipDetail';
+import ShowtimeReport from './pages/reports/ShowtimeReport';
+import EngagementReport from './pages/reports/EngagementReport';
+import TicketDetailReport from './pages/reports/TicketDetailReport';
+import EngagementSummaryReport from './pages/reports/EngagementSummaryReport';
 
 function KeyboardShortcuts() {
   const navigate = useNavigate();
@@ -85,6 +89,10 @@ function App() {
           <Route path="membership-tiers/:id" element={<TierDetail />} />
           <Route path="memberships" element={<Memberships />} />
           <Route path="memberships/:id" element={<MembershipDetail />} />
+          <Route path="reports/showtime" element={<ShowtimeReport />} />
+          <Route path="reports/engagement" element={<EngagementReport />} />
+          <Route path="reports/tickets" element={<TicketDetailReport />} />
+          <Route path="reports/summary" element={<EngagementSummaryReport />} />
         </Route>
       </Routes>
     </BrowserRouter>
