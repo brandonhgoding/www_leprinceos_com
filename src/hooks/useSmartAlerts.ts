@@ -20,21 +20,6 @@ export function useSmartAlerts({
   return useMemo(() => {
     const alerts: Alert[] = [];
 
-    // Check for high capacity showtimes (>90%)
-    todayShowtimes.forEach((showtime) => {
-      // This would require capacity data from the API
-      // Placeholder logic for demonstration
-      const capacityPercent = 95; // Would come from API
-      if (capacityPercent > 90) {
-        alerts.push({
-          id: `high-capacity-${showtime.id}`,
-          type: 'warning',
-          message: `Tonight's ${showtime.film_title} showing is at ${capacityPercent}% capacity`,
-          dismissible: true,
-        });
-      }
-    });
-
     // Check for missing showtimes tomorrow
     if (tomorrowShowtimes.length === 0 && engagements.length > 0) {
       alerts.push({

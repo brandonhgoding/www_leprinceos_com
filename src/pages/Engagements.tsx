@@ -36,7 +36,7 @@ export default function Engagements() {
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('CONFIRMED');
 
   // Listen for keyboard shortcut to open create drawer
   useEffect(() => {
@@ -164,15 +164,6 @@ export default function Engagements() {
     });
   };
 
-  // Count engagements by status for filter tabs
-  const statusCounts = {
-    all: engagements.length,
-    DRAFT: engagements.filter(e => e.status === 'DRAFT').length,
-    CONFIRMED: engagements.filter(e => e.status === 'CONFIRMED').length,
-    ENDED: engagements.filter(e => e.status === 'ENDED').length,
-    CANCELLED: engagements.filter(e => e.status === 'CANCELLED').length,
-  };
-
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
@@ -196,13 +187,12 @@ export default function Engagements() {
       {/* Filter Tabs */}
       <div className="filter-tabs" role="tablist">
         <button
-          className={`filter-tab ${statusFilter === '' ? 'active' : ''}`}
+          className={`filter-tab ${statusFilter === 'CONFIRMED' ? 'active' : ''}`}
           role="tab"
-          aria-selected={statusFilter === ''}
-          onClick={() => setStatusFilter('')}
+          aria-selected={statusFilter === 'CONFIRMED'}
+          onClick={() => setStatusFilter('CONFIRMED')}
         >
-          All
-          <span className="filter-count">{statusCounts.all}</span>
+          Confirmed
         </button>
         <button
           className={`filter-tab ${statusFilter === 'DRAFT' ? 'active' : ''}`}
@@ -211,16 +201,6 @@ export default function Engagements() {
           onClick={() => setStatusFilter('DRAFT')}
         >
           Draft
-          <span className="filter-count">{statusCounts.DRAFT}</span>
-        </button>
-        <button
-          className={`filter-tab ${statusFilter === 'CONFIRMED' ? 'active' : ''}`}
-          role="tab"
-          aria-selected={statusFilter === 'CONFIRMED'}
-          onClick={() => setStatusFilter('CONFIRMED')}
-        >
-          Confirmed
-          <span className="filter-count">{statusCounts.CONFIRMED}</span>
         </button>
         <button
           className={`filter-tab ${statusFilter === 'ENDED' ? 'active' : ''}`}
@@ -229,7 +209,6 @@ export default function Engagements() {
           onClick={() => setStatusFilter('ENDED')}
         >
           Ended
-          <span className="filter-count">{statusCounts.ENDED}</span>
         </button>
         <button
           className={`filter-tab ${statusFilter === 'CANCELLED' ? 'active' : ''}`}
@@ -238,7 +217,6 @@ export default function Engagements() {
           onClick={() => setStatusFilter('CANCELLED')}
         >
           Cancelled
-          <span className="filter-count">{statusCounts.CANCELLED}</span>
         </button>
       </div>
 
