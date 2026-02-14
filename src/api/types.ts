@@ -393,7 +393,7 @@ export interface SquareConnectionTest {
   error?: string;
 }
 
-export type SquareSyncType = 'full' | 'categories' | 'items' | 'modifiers';
+export type SquareSyncType = 'full' | 'clear_and_sync' | 'categories' | 'items' | 'modifiers';
 export type SquareSyncStatus = 'pending' | 'in_progress' | 'success' | 'partial' | 'failed';
 
 export interface SquareSyncLog {
