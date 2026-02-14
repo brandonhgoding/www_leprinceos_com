@@ -254,6 +254,22 @@
   border-color: var(--brass-light);
 }
 
+.clearSyncButton {
+  width: auto;
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: transparent;
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.clearSyncButton:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: #b91c1c;
+  color: #b91c1c;
+}
+
 /* Form */
 .form {
   display: flex;

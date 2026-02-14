@@ -99,6 +99,17 @@ export default function Integrations() {
     triggerSyncMutation.mutate({ sync_type: 'full' });
   };
 
+  const handleClearAndSync = () => {
+    if (
+      confirm(
+        'This will delete all catalog items from Square and re-sync from scratch. ' +
+          'Active POS terminals will be temporarily disrupted. Continue?'
+      )
+    ) {
+      triggerSyncMutation.mutate({ sync_type: 'clear_and_sync' });
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Never';
     return new Date(dateString).toLocaleString();
@@ -260,6 +271,14 @@ export default function Integrations() {
                           title="Sync now"
                         >
                           {triggerSyncMutation.isPending ? 'Syncing...' : 'Sync'}
+                        </button>
+                        <button
+                          className={`${styles.actionButton} ${styles.clearSyncButton}`}
+                          onClick={handleClearAndSync}
+                          disabled={triggerSyncMutation.isPending}
+                          title="Delete all catalog items from Square and re-sync from scratch"
+                        >
+                          Clear & Re-sync
                         </button>
                       </>
                     )}
