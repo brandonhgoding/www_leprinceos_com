@@ -102,8 +102,9 @@ export default function Integrations() {
   const handleClearAndSync = () => {
     if (
       confirm(
-        'This will delete all catalog items from Square and re-sync from scratch. ' +
-          'Active POS terminals will be temporarily disrupted. Continue?'
+        'This will delete all ticket and discount items managed by this system from Square ' +
+          'and re-sync them from scratch. Items you manage directly in Square (concessions, etc.) ' +
+          'will not be affected. Continue?'
       )
     ) {
       triggerSyncMutation.mutate({ sync_type: 'clear_and_sync' });
@@ -276,7 +277,7 @@ export default function Integrations() {
                           className={`${styles.actionButton} ${styles.clearSyncButton}`}
                           onClick={handleClearAndSync}
                           disabled={triggerSyncMutation.isPending}
-                          title="Delete all catalog items from Square and re-sync from scratch"
+                          title="Delete system-managed ticket and discount items from Square and re-sync"
                         >
                           Clear & Re-sync
                         </button>
