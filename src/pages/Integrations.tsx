@@ -131,7 +131,7 @@ export default function Integrations() {
     {
       id: 'square',
       name: 'Square',
-      description: 'Sync your concessions catalog to Square POS',
+      description: 'Sync tickets and member discounts to Square POS',
       icon: (
         <svg viewBox="0 0 24 24" fill="currentColor" className={styles.integrationIcon}>
           <path d="M3 3h18v18H3V3zm16.5 16.5v-15h-15v15h15zM8.25 8.25h7.5v7.5h-7.5v-7.5z" />

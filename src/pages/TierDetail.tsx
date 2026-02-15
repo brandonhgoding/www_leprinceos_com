@@ -7,7 +7,6 @@ import {
   benefitRulesApi,
   benefitConditionsApi,
 } from '../api/memberships';
-import { concessionsApi } from '../api/concessions';
 import { ticketsApi } from '../api/tickets';
 import type {
   MembershipTierCreate,
@@ -130,18 +129,6 @@ export default function TierDetail() {
       return ticketType ? ticketType.name : reference_value;
     }
 
-    // For concession category, show the category name
-    if (condition_type === 'CONCESSION_CATEGORY') {
-      const category = concessionCategories.find((cat) => String(cat.id) === reference_value);
-      return category ? category.name : reference_value;
-    }
-
-    // For concession item, show the item name
-    if (condition_type === 'CONCESSION_ITEM') {
-      const item = concessionItems.find((i) => String(i.id) === reference_value);
-      return item ? item.name : reference_value;
-    }
-
     // For time values, return as-is (already in HH:MM format)
     return reference_value;
   };
@@ -155,16 +142,6 @@ export default function TierDetail() {
   const { data: ticketTypes = [] } = useQuery({
     queryKey: ['ticket-types'],
     queryFn: () => ticketsApi.list(),
-  });
-
-  const { data: concessionCategories = [] } = useQuery({
-    queryKey: ['concession-categories'],
-    queryFn: () => concessionsApi.listCategories(),
-  });
-
-  const { data: concessionItems = [] } = useQuery({
-    queryKey: ['concession-items'],
-    queryFn: () => concessionsApi.listItems(),
   });
 
   // Mutations
@@ -538,8 +515,6 @@ export default function TierDetail() {
                           <option value="TIME_AFTER">Time After</option>
                           <option value="DAY_OF_WEEK">Day of Week</option>
                           <option value="TICKET_TYPE">Ticket Type</option>
-                          <option value="CONCESSION_CATEGORY">Concession Category</option>
-                          <option value="CONCESSION_ITEM">Concession Item</option>
                           <option value="BIRTHDAY_MONTH">Birthday Month</option>
                           <option value="COMPANION">Companion Required</option>
                         </select>
@@ -597,48 +572,6 @@ export default function TierDetail() {
                             {ticketTypes.map((tt) => (
                               <option key={tt.id} value={String(tt.id)}>
                                 {tt.name}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-
-                        {/* Concession category selector */}
-                        {conditionFormData.condition_type === 'CONCESSION_CATEGORY' && (
-                          <select
-                            value={conditionFormData.reference_value}
-                            onChange={(e) =>
-                              setConditionFormData({
-                                ...conditionFormData,
-                                reference_value: e.target.value,
-                              })
-                            }
-                            className={styles.conditionInput}
-                          >
-                            <option value="">Select category...</option>
-                            {concessionCategories.map((cat) => (
-                              <option key={cat.id} value={String(cat.id)}>
-                                {cat.name}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-
-                        {/* Concession item selector */}
-                        {conditionFormData.condition_type === 'CONCESSION_ITEM' && (
-                          <select
-                            value={conditionFormData.reference_value}
-                            onChange={(e) =>
-                              setConditionFormData({
-                                ...conditionFormData,
-                                reference_value: e.target.value,
-                              })
-                            }
-                            className={styles.conditionInput}
-                          >
-                            <option value="">Select item...</option>
-                            {concessionItems.map((item) => (
-                              <option key={item.id} value={String(item.id)}>
-                                {item.name}
                               </option>
                             ))}
                           </select>
@@ -856,7 +789,7 @@ export default function TierDetail() {
               onChange={(e) => setRuleFormData({ ...ruleFormData, name: e.target.value })}
               required
               className={styles.input}
-              placeholder="e.g., 10% Off Concessions"
+              placeholder="e.g., Matinee Discount"
             />
           </div>
 
@@ -908,7 +841,6 @@ export default function TierDetail() {
               >
                 <option value="">Select scope...</option>
                 <option value="TICKET">Ticket</option>
-                <option value="CONCESSION">Concession</option>
                 <option value="RENTAL">Rental</option>
               </select>
             </div>

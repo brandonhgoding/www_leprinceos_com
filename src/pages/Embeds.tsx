@@ -62,14 +62,6 @@ const EMBED_TYPES: EmbedType[] = [
     requiresEngagement: true,
   },
   {
-    id: 'concessions',
-    name: 'Concessions Menu',
-    description: 'Display your concession items and pricing.',
-    icon: '🍿',
-    previewDescription: 'Browse your food and beverage menu with categories and prices.',
-    urlPath: 'concessions',
-  },
-  {
     id: 'ticket-prices',
     name: 'Ticket Prices',
     description: 'Show your ticket types and pricing.',

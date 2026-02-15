@@ -147,25 +147,6 @@ export const mockTicketType = {
   updated_at: '2026-01-15T10:00:00Z',
 };
 
-// Mock concession item data
-export const mockConcessionItem = {
-  id: 1,
-  category: 1,
-  category_name: 'Snacks',
-  name: 'Popcorn',
-  description: 'Fresh popped popcorn',
-  image_url: 'https://example.com/popcorn.jpg',
-  is_active: true,
-  square_id: 'sq_123',
-  variations_count: 3,
-  price_range: { min: '5.00', max: '9.00' },
-  modifier_groups: [],
-  modifier_assignments: [],
-  sales_taxes: [],
-  created_at: '2026-01-15T10:00:00Z',
-  updated_at: '2026-01-15T10:00:00Z',
-};
-
 // Wait for loading states to resolve
 export const waitForLoadingToFinish = () =>
   new Promise((resolve) => setTimeout(resolve, 0));

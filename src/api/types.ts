@@ -181,187 +181,6 @@ export interface TicketTypeCreate {
   description?: string;
 }
 
-// Concessions
-export interface ConcessionVariation {
-  id: number;
-  item: number;
-  name: string;
-  sku: string;
-  upc: string;
-  price: string;
-  cost: string | null;
-  is_active: boolean;
-  square_id: string;
-  margin: number | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ConcessionVariationCreate {
-  name: string;
-  sku?: string;
-  upc?: string;
-  price: string;
-  cost?: string | null;
-  is_active?: boolean;
-  square_id?: string;
-}
-
-export interface ModifierGroupBasic {
-  id: number;
-  name: string;
-  selection_type: 'SINGLE' | 'MULTIPLE';
-  is_required: boolean;
-  modifiers_count: number;
-}
-
-// Item-to-ModifierGroup assignment (through model for per-item settings)
-export interface ItemModifierAssignment {
-  id: number;
-  modifier_group: ModifierGroupBasic;
-  min_selected_modifiers: number;  // -1 = use group default
-  max_selected_modifiers: number;  // -1 = use group default
-  effective_min_selections: number;
-  effective_max_selections: number | null;
-  enabled: boolean;
-  ordinal: number;
-  modifier_overrides: ModifierOverride[];
-}
-
-export interface ModifierOverride {
-  modifier_id: string;
-  on_by_default?: boolean;
-  hidden_online?: boolean;
-}
-
-export interface ItemModifierAssignmentCreate {
-  modifier_group_id: number;
-  min_selected_modifiers?: number;
-  max_selected_modifiers?: number;
-  enabled?: boolean;
-  ordinal?: number;
-  modifier_overrides?: ModifierOverride[];
-}
-
-export interface SalesTaxBasic {
-  id: number;
-  name: string;
-  percentage: string;
-  tax_type: TaxType;
-  inclusion_type: InclusionType;
-}
-
-export interface ConcessionItem {
-  id: number;
-  category: number;
-  category_name: string;
-  name: string;
-  description: string;
-  image_url: string;
-  is_active: boolean;
-  square_id: string;
-  variations_count: number;
-  price_range: { min: string; max: string } | null;
-  modifier_groups: ModifierGroupBasic[];
-  modifier_assignments: ItemModifierAssignment[];
-  sales_taxes: SalesTaxBasic[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ConcessionItemDetail extends ConcessionItem {
-  variations: ConcessionVariation[];
-}
-
-export interface ConcessionItemCreate {
-  category: number;
-  name: string;
-  description?: string;
-  image_url?: string;
-  is_active?: boolean;
-  square_id?: string;
-  modifier_group_ids?: number[];  // Simple mode: just IDs (creates default assignments)
-  modifier_assignments?: ItemModifierAssignmentCreate[];  // Advanced mode: per-item settings
-  sales_tax_ids?: number[];
-}
-
-export interface ConcessionCategory {
-  id: number;
-  name: string;
-  description: string;
-  is_active: boolean;
-  square_id: string;
-  items_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ConcessionCategoryDetail extends ConcessionCategory {
-  items: ConcessionItemDetail[];
-}
-
-export interface ConcessionCategoryCreate {
-  name: string;
-  description?: string;
-  is_active?: boolean;
-  square_id?: string;
-}
-
-// Modifiers
-export interface Modifier {
-  id: number;
-  group: number;
-  name: string;
-  price_adjustment: string;
-  ordinal: number;
-  on_by_default: boolean;
-  is_active: boolean;
-  square_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ModifierCreate {
-  name: string;
-  price_adjustment?: string;
-  ordinal?: number;
-  on_by_default?: boolean;
-  is_active?: boolean;
-  square_id?: string;
-}
-
-export interface ModifierGroup {
-  id: number;
-  name: string;
-  internal_name: string;
-  selection_type: 'SINGLE' | 'MULTIPLE';
-  min_selections: number;
-  max_selections: number | null;
-  is_required: boolean;
-  ordinal: number;
-  is_active: boolean;
-  square_id: string;
-  modifiers_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ModifierGroupDetail extends ModifierGroup {
-  modifiers: Modifier[];
-}
-
-export interface ModifierGroupCreate {
-  name: string;
-  internal_name?: string;
-  selection_type?: 'SINGLE' | 'MULTIPLE';
-  min_selections?: number;
-  max_selections?: number | null;
-  is_required?: boolean;
-  ordinal?: number;
-  is_active?: boolean;
-  square_id?: string;
-}
-
 // Square Integration
 export interface SquareCredentials {
   id: number;
@@ -393,7 +212,7 @@ export interface SquareConnectionTest {
   error?: string;
 }
 
-export type SquareSyncType = 'full' | 'clear_and_sync' | 'categories' | 'items' | 'modifiers';
+export type SquareSyncType = 'full' | 'clear_and_sync' | 'tickets' | 'discounts' | 'customers' | 'customer_groups';
 export type SquareSyncStatus = 'pending' | 'in_progress' | 'success' | 'partial' | 'failed';
 
 export interface SquareSyncLog {
@@ -411,37 +230,6 @@ export interface SquareSyncRequest {
   sync_type?: SquareSyncType;
 }
 
-// Sales Taxes
-export type TaxType = 'state' | 'local' | 'county' | 'city' | 'other';
-export type InclusionType = 'additive' | 'inclusive';
-
-export interface SalesTax {
-  id: number;
-  name: string;
-  percentage: string;
-  tax_type: TaxType;
-  inclusion_type: InclusionType;
-  is_active: boolean;
-  square_id: string;
-  concession_items_count: number;
-  ticket_types_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SalesTaxDetail extends SalesTax {
-  concession_items: { id: number; name: string }[];
-  ticket_types: { id: number; name: string }[];
-}
-
-export interface SalesTaxCreate {
-  name: string;
-  percentage: string;
-  tax_type?: TaxType;
-  inclusion_type?: InclusionType;
-  is_active?: boolean;
-}
-
 // Integration types for the Integrations page
 export interface Integration {
   id: string;
@@ -457,14 +245,12 @@ export interface Integration {
 // Memberships
 export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 export type BenefitType = 'FIXED_AMOUNT' | 'PERCENTAGE' | 'FREE_ITEM';
-export type BenefitScope = 'TICKET' | 'CONCESSION' | 'RENTAL';
+export type BenefitScope = 'TICKET' | 'RENTAL';
 export type ConditionType =
   | 'TIME_BEFORE'
   | 'TIME_AFTER'
   | 'DAY_OF_WEEK'
   | 'TICKET_TYPE'
-  | 'CONCESSION_CATEGORY'
-  | 'CONCESSION_ITEM'
   | 'BIRTHDAY_MONTH'
   | 'COMPANION';
 export type PeriodType = 'MONTHLY' | 'DAILY' | 'LIFETIME';
@@ -629,7 +415,6 @@ export interface BenefitRedemption {
   benefit_name: string;
   sale: number | null;
   ticket: number | null;
-  concession_line_item: number | null;
   discount_amount: string;
   quantity_redeemed: number;
   redeemed_at: string;

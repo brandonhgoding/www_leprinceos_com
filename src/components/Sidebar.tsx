@@ -65,14 +65,6 @@ const BillingIcon = () => (
   </svg>
 );
 
-const ConcessionsIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M6 3v2M14 3v2M6 17v-2M14 17v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <rect x="4" y="5" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-    <circle cx="10" cy="10" r="2" stroke="currentColor" strokeWidth="1.5"/>
-  </svg>
-);
-
 const IntegrationsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5"/>
@@ -163,15 +155,6 @@ export default function Sidebar({
     { path: '/', label: 'Home', icon: <HomeIcon /> },
     { path: '/engagements', label: 'Engagements', icon: <EngagementsIcon /> },
     { path: '/screens', label: 'Screens', icon: <ScreensIcon /> },
-    {
-      label: 'Concessions',
-      icon: <ConcessionsIcon />,
-      items: [
-        { path: '/concessions', label: 'Items' },
-        { path: '/modifiers', label: 'Modifiers' },
-        { path: '/sales-taxes', label: 'Sales Taxes' },
-      ],
-    },
     {
       label: 'Memberships',
       icon: <MembershipsIcon />,
