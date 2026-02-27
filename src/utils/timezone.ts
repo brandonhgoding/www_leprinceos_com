@@ -67,7 +67,8 @@ export function formatTime(dateStr: string, timezone: string): string {
  * Format a date string for display (e.g., "Mon, Jan 21, 2026")
  */
 export function formatDate(dateStr: string, timezone: string): string {
-  return formatInTimezone(new Date(dateStr), timezone, {
+    let [year, month, day] = dateStr.split('-');
+  return formatInTimezone(new Date(year, month - 1, day), timezone, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
