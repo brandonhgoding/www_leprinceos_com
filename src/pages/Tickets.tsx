@@ -29,11 +29,12 @@ export default function Tickets() {
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [showArchived, setShowArchived] = useState(false);
 
   // Queries
   const { data: ticketTypes = [], isLoading } = useQuery({
-    queryKey: ['ticket-types'],
-    queryFn: () => ticketsApi.list(),
+    queryKey: ['ticket-types', { showArchived }],
+    queryFn: () => ticketsApi.list(showArchived ? { include_archived: true } : undefined),
   });
 
   // Mutations
@@ -56,6 +57,20 @@ export default function Tickets() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => ticketsApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
+    },
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: (id: number) => ticketsApi.archive(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
+    },
+  });
+
+  const unarchiveMutation = useMutation({
+    mutationFn: (id: number) => ticketsApi.unarchive(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
     },
@@ -110,6 +125,14 @@ export default function Tickets() {
     }
   };
 
+  const handleToggleArchive = (ticket: TicketType) => {
+    if (ticket.is_archived) {
+      unarchiveMutation.mutate(ticket.id);
+    } else {
+      archiveMutation.mutate(ticket.id);
+    }
+  };
+
   const formatPrice = (price: string) => {
     const num = parseFloat(price);
     return isNaN(num) ? price : `$${num.toFixed(2)}`;
@@ -122,9 +145,19 @@ export default function Tickets() {
           <h1 className={styles.title}>Ticket Types</h1>
           <p className={styles.subtitle}>Manage ticket pricing and availability.</p>
         </div>
-        <button className={styles.primaryButton} onClick={openCreateModal}>
-          + New Ticket Type
-        </button>
+        <div className={styles.headerActions}>
+          <label className={styles.archiveToggle}>
+            <input
+              type="checkbox"
+              checked={showArchived}
+              onChange={(e) => setShowArchived(e.target.checked)}
+            />
+            Show archived
+          </label>
+          <button className={styles.primaryButton} onClick={openCreateModal}>
+            + New Ticket Type
+          </button>
+        </div>
       </div>
 
       {/* Ticket Types List */}
@@ -164,9 +197,15 @@ export default function Tickets() {
                     <td className={styles.ticketName}>{ticket.name}</td>
                     <td className={styles.price}>{formatPrice(ticket.price)}</td>
                     <td>
-                      <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
-                        {ticket.is_active ? 'Active' : 'Inactive'}
-                      </span>
+                      {ticket.is_archived ? (
+                        <span className={`${styles.statusBadge} ${styles.statusArchived}`}>
+                          Archived
+                        </span>
+                      ) : (
+                        <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
+                          {ticket.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      )}
                     </td>
                     <td>
                       <span className={styles.rulesCount}>
@@ -186,6 +225,12 @@ export default function Tickets() {
                           onClick={() => openEditModal(ticket)}
                         >
                           Edit
+                        </button>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => handleToggleArchive(ticket)}
+                        >
+                          {ticket.is_archived ? 'Unarchive' : 'Archive'}
                         </button>
                         <button
                           className={`${styles.actionButton} ${styles.deleteButton}`}
@@ -211,9 +256,15 @@ export default function Tickets() {
                     <span className={styles.cardPrice}>{formatPrice(ticket.price)}</span>
                   </div>
                   <div className={styles.cardBadges}>
-                    <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
-                      {ticket.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                    {ticket.is_archived ? (
+                      <span className={`${styles.statusBadge} ${styles.statusArchived}`}>
+                        Archived
+                      </span>
+                    ) : (
+                      <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
+                        {ticket.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    )}
                     <span className={styles.rulesCount}>
                       {ticket.rules_count} {ticket.rules_count === 1 ? 'rule' : 'rules'}
                     </span>
@@ -231,6 +282,12 @@ export default function Tickets() {
                     onClick={() => openEditModal(ticket)}
                   >
                     Edit
+                  </button>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => handleToggleArchive(ticket)}
+                  >
+                    {ticket.is_archived ? 'Unarchive' : 'Archive'}
                   </button>
                   <button
                     className={`${styles.actionButton} ${styles.deleteButton}`}

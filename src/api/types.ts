@@ -164,6 +164,7 @@ export interface TicketType {
   name: string;
   price: string;
   is_active: boolean;
+  is_archived: boolean;
   description: string;
   rules_count: number;
   created_at: string;

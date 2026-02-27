@@ -11,8 +11,10 @@ import type {
 
 export const ticketsApi = {
   // Ticket Types
-  list: async (): Promise<TicketType[]> => {
-    const response = await apiClient.get<PaginatedResponse<TicketType>>('/v1/ticket-types/');
+  list: async (params?: { include_archived?: boolean }): Promise<TicketType[]> => {
+    const response = await apiClient.get<PaginatedResponse<TicketType>>('/v1/ticket-types/', {
+      params,
+    });
     return response.data.results;
   },
 
@@ -33,6 +35,16 @@ export const ticketsApi = {
 
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`/v1/ticket-types/${id}/`);
+  },
+
+  archive: async (id: number): Promise<TicketType> => {
+    const response = await apiClient.post<TicketType>(`/v1/ticket-types/${id}/archive/`);
+    return response.data;
+  },
+
+  unarchive: async (id: number): Promise<TicketType> => {
+    const response = await apiClient.post<TicketType>(`/v1/ticket-types/${id}/unarchive/`);
+    return response.data;
   },
 
   // Ticket Type Rules
