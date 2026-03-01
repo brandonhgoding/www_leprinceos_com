@@ -26,7 +26,8 @@ export default function TicketDetailReport() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const canGenerate = startDate !== '' && endDate !== '';
+  const dateError = startDate !== '' && endDate !== '' && endDate < startDate;
+  const canGenerate = startDate !== '' && endDate !== '' && !dateError;
 
   const buildParams = (): ReportDateRangeParams => {
     const params: ReportDateRangeParams = {
@@ -120,6 +121,7 @@ export default function TicketDetailReport() {
             type="date"
             className={styles.dateInput}
             value={endDate}
+            min={startDate}
             onChange={(e) => {
               setEndDate(e.target.value);
               setGenerated(false);
@@ -159,6 +161,12 @@ export default function TicketDetailReport() {
           </button>
         </div>
       </div>
+
+      {dateError && (
+        <div className={styles.errorMessage}>
+          End date cannot be before start date.
+        </div>
+      )}
 
       {generated ? (
         <div className={styles.emptyState}>
