@@ -325,8 +325,9 @@ export default function Integrations() {
       >
         <form id="credentials-form" className={styles.form} onSubmit={handleSaveCredentials}>
           <div className={styles.formGroup}>
-            <label>Environment</label>
+            <label htmlFor="square-environment">Environment</label>
             <select
+              id="square-environment"
               className={styles.select}
               value={credentialsForm.environment}
               onChange={(e) =>
@@ -341,8 +342,9 @@ export default function Integrations() {
             </select>
           </div>
           <div className={styles.formGroup}>
-            <label>Access Token *</label>
+            <label htmlFor="square-access-token">Access Token *</label>
             <input
+              id="square-access-token"
               type="password"
               className={styles.input}
               value={credentialsForm.access_token}
@@ -359,8 +361,9 @@ export default function Integrations() {
             )}
           </div>
           <div className={styles.formGroup}>
-            <label>Location ID *</label>
+            <label htmlFor="square-location-id">Location ID *</label>
             <input
+              id="square-location-id"
               type="text"
               className={styles.input}
               value={credentialsForm.location_id}
@@ -372,8 +375,9 @@ export default function Integrations() {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>Merchant ID (optional)</label>
+            <label htmlFor="square-merchant-id">Merchant ID (optional)</label>
             <input
+              id="square-merchant-id"
               type="text"
               className={styles.input}
               value={credentialsForm.merchant_id}
@@ -384,8 +388,9 @@ export default function Integrations() {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>Refresh Token (optional)</label>
+            <label htmlFor="square-refresh-token">Refresh Token (optional)</label>
             <input
+              id="square-refresh-token"
               type="password"
               className={styles.input}
               value={credentialsForm.refresh_token}

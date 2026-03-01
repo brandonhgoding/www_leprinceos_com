@@ -302,8 +302,9 @@ export default function Screens() {
         <form id="screen-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Screen Name</label>
+              <label htmlFor="screen-name">Screen Name</label>
               <input
+                id="screen-name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -313,8 +314,9 @@ export default function Screens() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Capacity (seats)</label>
+              <label htmlFor="screen-capacity">Capacity (seats)</label>
               <input
+                id="screen-capacity"
                 type="number"
                 value={formData.capacity}
                 onChange={(e) => setFormData({ ...formData, capacity: e.target.value ? parseInt(e.target.value) : '' })}
@@ -328,8 +330,9 @@ export default function Screens() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Screen Type</label>
+              <label htmlFor="screen-type">Screen Type</label>
               <select
+                id="screen-type"
                 value={formData.screen_type}
                 onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as FormData['screen_type'] })}
                 className={styles.input}
@@ -340,8 +343,9 @@ export default function Screens() {
               </select>
             </div>
             <div className={styles.formGroup}>
-              <label>Aspect Ratio</label>
+              <label htmlFor="screen-aspect-ratio">Aspect Ratio</label>
               <select
+                id="screen-aspect-ratio"
                 value={formData.aspect_ratio}
                 onChange={(e) => setFormData({ ...formData, aspect_ratio: e.target.value as FormData['aspect_ratio'] })}
                 className={styles.input}
@@ -356,8 +360,9 @@ export default function Screens() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Sound System</label>
+              <label htmlFor="screen-sound-system">Sound System</label>
               <select
+                id="screen-sound-system"
                 value={formData.sound_system}
                 onChange={(e) => setFormData({ ...formData, sound_system: e.target.value as FormData['sound_system'] })}
                 className={styles.input}

@@ -338,8 +338,9 @@ export default function Tickets() {
         <form id="ticket-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Name</label>
+              <label htmlFor="ticket-name">Name</label>
               <input
+                id="ticket-name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -349,9 +350,12 @@ export default function Tickets() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Price</label>
+              <label htmlFor="ticket-price">Price</label>
               <input
-                type="text"
+                id="ticket-price"
+                type="number"
+                min="0"
+                step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
@@ -373,8 +377,9 @@ export default function Tickets() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Description</label>
+            <label htmlFor="ticket-description">Description</label>
             <textarea
+              id="ticket-description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className={styles.textarea}

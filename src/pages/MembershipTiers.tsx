@@ -338,8 +338,9 @@ export default function MembershipTiers() {
       >
         <form id="tier-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Tier Name *</label>
+            <label htmlFor="tier-name">Tier Name *</label>
             <input
+              id="tier-name"
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -350,8 +351,9 @@ export default function MembershipTiers() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Description</label>
+            <label htmlFor="tier-description">Description</label>
             <textarea
+              id="tier-description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className={styles.textarea}
@@ -362,9 +364,12 @@ export default function MembershipTiers() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Price *</label>
+              <label htmlFor="tier-price">Price *</label>
               <input
-                type="text"
+                id="tier-price"
+                type="number"
+                min="0"
+                step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
@@ -373,8 +378,9 @@ export default function MembershipTiers() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Duration (months) *</label>
+              <label htmlFor="tier-duration">Duration (months) *</label>
               <input
+                id="tier-duration"
                 type="number"
                 min="1"
                 value={formData.duration_months}
@@ -405,8 +411,9 @@ export default function MembershipTiers() {
 
           {formData.is_family_tier && (
             <div className={styles.formGroup}>
-              <label>Maximum Family Members</label>
+              <label htmlFor="tier-max-family">Maximum Family Members</label>
               <input
+                id="tier-max-family"
                 type="number"
                 min="1"
                 value={formData.max_family_members}
@@ -420,8 +427,9 @@ export default function MembershipTiers() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Display Order</label>
+              <label htmlFor="tier-display-order">Display Order</label>
               <input
+                id="tier-display-order"
                 type="number"
                 min="0"
                 value={formData.display_order}

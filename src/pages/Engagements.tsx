@@ -417,7 +417,7 @@ export default function Engagements() {
       >
         <form id="engagement-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Film</label>
+            <label htmlFor="film-search">Film</label>
             <FilmSearchCombo
               onFilmSelected={handleFilmSelected}
               disabled={createMutation.isPending || updateMutation.isPending}
@@ -426,8 +426,9 @@ export default function Engagements() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Screen</label>
+            <label htmlFor="engagement-screen">Screen</label>
             <select
+              id="engagement-screen"
               value={formData.screen}
               onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
               required
@@ -444,8 +445,9 @@ export default function Engagements() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Start Date</label>
+              <label htmlFor="engagement-start-date">Start Date</label>
               <input
+                id="engagement-start-date"
                 type="date"
                 value={formData.start_date}
                 onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
@@ -454,8 +456,9 @@ export default function Engagements() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>End Date</label>
+              <label htmlFor="engagement-end-date">End Date</label>
               <input
+                id="engagement-end-date"
                 type="date"
                 value={formData.end_date}
                 onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
@@ -467,8 +470,9 @@ export default function Engagements() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Format</label>
+              <label htmlFor="engagement-format">Format</label>
               <select
+                id="engagement-format"
                 value={formData.presentation_format}
                 onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as '2d' | '3d' })}
                 className={styles.input}
@@ -478,8 +482,9 @@ export default function Engagements() {
               </select>
             </div>
             <div className={styles.formGroup}>
-              <label>Status</label>
+              <label htmlFor="engagement-status">Status</label>
               <select
+                id="engagement-status"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as FormData['status'] })}
                 className={styles.input}
@@ -493,8 +498,9 @@ export default function Engagements() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Notes</label>
+            <label htmlFor="engagement-notes">Notes</label>
             <textarea
+              id="engagement-notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               className={styles.textarea}

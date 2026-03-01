@@ -146,8 +146,9 @@ export default function OnlineOrders() {
       {/* Filters */}
       <div className={styles.filters}>
         <div className={styles.filterGroup}>
-          <label>Search</label>
+          <label htmlFor="orders-search">Search</label>
           <input
+            id="orders-search"
             type="text"
             placeholder="Name, email, or confirmation #"
             value={searchTerm}
@@ -156,8 +157,9 @@ export default function OnlineOrders() {
           />
         </div>
         <div className={styles.filterGroup}>
-          <label>Status</label>
+          <label htmlFor="orders-status">Status</label>
           <select
+            id="orders-status"
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value as OrderStatus | ''); setPage(1); }}
             className={styles.filterSelect}
@@ -168,8 +170,9 @@ export default function OnlineOrders() {
           </select>
         </div>
         <div className={styles.filterGroup}>
-          <label>From</label>
+          <label htmlFor="orders-date-from">From</label>
           <input
+            id="orders-date-from"
             type="date"
             value={dateAfter}
             onChange={(e) => { setDateAfter(e.target.value); setPage(1); }}
@@ -177,8 +180,9 @@ export default function OnlineOrders() {
           />
         </div>
         <div className={styles.filterGroup}>
-          <label>To</label>
+          <label htmlFor="orders-date-to">To</label>
           <input
+            id="orders-date-to"
             type="date"
             value={dateBefore}
             onChange={(e) => { setDateBefore(e.target.value); setPage(1); }}

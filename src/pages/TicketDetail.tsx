@@ -408,8 +408,9 @@ export default function TicketDetail() {
         <form id="rule-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Rule Name</label>
+              <label htmlFor="rule-name">Rule Name</label>
               <input
+                id="rule-name"
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -419,8 +420,9 @@ export default function TicketDetail() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Priority</label>
+              <label htmlFor="rule-priority">Priority</label>
               <input
+                id="rule-priority"
                 type="number"
                 value={formData.priority}
                 onChange={(e) => setFormData({ ...formData, priority: e.target.value ? parseInt(e.target.value) : '' })}
@@ -450,8 +452,9 @@ export default function TicketDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Matinee Cutoff Time</label>
+              <label htmlFor="rule-matinee-cutoff">Matinee Cutoff Time</label>
               <input
+                id="rule-matinee-cutoff"
                 type="time"
                 value={formData.matinee_cutoff_time}
                 onChange={(e) => setFormData({ ...formData, matinee_cutoff_time: e.target.value })}
@@ -460,8 +463,9 @@ export default function TicketDetail() {
               <span className={styles.fieldHint}>Applies to showtimes before this time</span>
             </div>
             <div className={styles.formGroup}>
-              <label>Presentation Format</label>
+              <label htmlFor="rule-presentation-format">Presentation Format</label>
               <select
+                id="rule-presentation-format"
                 value={formData.presentation_format}
                 onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as RuleFormData['presentation_format'] })}
                 className={styles.input}
@@ -475,8 +479,9 @@ export default function TicketDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Screen Type</label>
+              <label htmlFor="rule-screen-type">Screen Type</label>
               <select
+                id="rule-screen-type"
                 value={formData.screen_type}
                 onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as RuleFormData['screen_type'] })}
                 className={styles.input}
@@ -488,8 +493,9 @@ export default function TicketDetail() {
               </select>
             </div>
             <div className={styles.formGroup}>
-              <label>Requires 3D Screen</label>
+              <label htmlFor="rule-requires-3d">Requires 3D Screen</label>
               <select
+                id="rule-requires-3d"
                 value={formData.requires_3d_screen === '' ? '' : formData.requires_3d_screen ? 'true' : 'false'}
                 onChange={(e) => setFormData({ ...formData, requires_3d_screen: e.target.value === '' ? '' : e.target.value === 'true' })}
                 className={styles.input}

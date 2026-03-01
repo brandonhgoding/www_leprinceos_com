@@ -444,8 +444,9 @@ export default function Showtimes() {
       >
         <form id="showtime-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Engagement</label>
+            <label htmlFor="showtime-engagement">Engagement</label>
             <select
+              id="showtime-engagement"
               value={formData.engagement}
               onChange={(e) => setFormData({ ...formData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
               required
@@ -461,8 +462,9 @@ export default function Showtimes() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Screen (optional, defaults to engagement's screen)</label>
+            <label htmlFor="showtime-screen">Screen (optional, defaults to engagement's screen)</label>
             <select
+              id="showtime-screen"
               value={formData.screen}
               onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
               className={styles.input}
@@ -478,8 +480,9 @@ export default function Showtimes() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Date</label>
+              <label htmlFor="showtime-date">Date</label>
               <input
+                id="showtime-date"
                 type="date"
                 value={formData.starts_at_date}
                 onChange={(e) => setFormData({ ...formData, starts_at_date: e.target.value })}
@@ -488,8 +491,9 @@ export default function Showtimes() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Time</label>
+              <label htmlFor="showtime-time">Time</label>
               <input
+                id="showtime-time"
                 type="time"
                 value={formData.starts_at_time}
                 onChange={(e) => setFormData({ ...formData, starts_at_time: e.target.value })}
@@ -501,8 +505,9 @@ export default function Showtimes() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Captions</label>
+              <label htmlFor="showtime-captions">Captions</label>
               <select
+                id="showtime-captions"
                 value={formData.captions}
                 onChange={(e) => setFormData({ ...formData, captions: e.target.value as FormData['captions'] })}
                 className={styles.input}
@@ -549,8 +554,9 @@ export default function Showtimes() {
       >
         <form id="bulk-showtime-form" onSubmit={handleBulkSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Engagement</label>
+            <label htmlFor="bulk-showtime-engagement">Engagement</label>
             <select
+              id="bulk-showtime-engagement"
               value={bulkFormData.engagement}
               onChange={(e) => setBulkFormData({ ...bulkFormData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
               required
@@ -566,8 +572,9 @@ export default function Showtimes() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Screen (optional)</label>
+            <label htmlFor="bulk-showtime-screen">Screen (optional)</label>
             <select
+              id="bulk-showtime-screen"
               value={bulkFormData.screen}
               onChange={(e) => setBulkFormData({ ...bulkFormData, screen: e.target.value ? parseInt(e.target.value) : '' })}
               className={styles.input}
@@ -583,8 +590,9 @@ export default function Showtimes() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Start Date</label>
+              <label htmlFor="bulk-showtime-start-date">Start Date</label>
               <input
+                id="bulk-showtime-start-date"
                 type="date"
                 value={bulkFormData.start_date}
                 onChange={(e) => setBulkFormData({ ...bulkFormData, start_date: e.target.value })}
@@ -593,8 +601,9 @@ export default function Showtimes() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>End Date</label>
+              <label htmlFor="bulk-showtime-end-date">End Date</label>
               <input
+                id="bulk-showtime-end-date"
                 type="date"
                 value={bulkFormData.end_date}
                 onChange={(e) => setBulkFormData({ ...bulkFormData, end_date: e.target.value })}
@@ -634,8 +643,9 @@ export default function Showtimes() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Captions</label>
+            <label htmlFor="bulk-showtime-captions">Captions</label>
             <select
+              id="bulk-showtime-captions"
               value={bulkFormData.captions}
               onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as BulkFormData['captions'] })}
               className={styles.input}

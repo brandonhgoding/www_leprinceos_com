@@ -480,8 +480,9 @@ export default function EngagementDetail() {
         <form id="showtime-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Date</label>
+              <label htmlFor="engagement-detail-showtime-date">Date</label>
               <input
+                id="engagement-detail-showtime-date"
                 type="date"
                 value={formData.starts_at_date}
                 onChange={(e) => setFormData({ ...formData, starts_at_date: e.target.value })}
@@ -492,8 +493,9 @@ export default function EngagementDetail() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Time</label>
+              <label htmlFor="engagement-detail-showtime-time">Time</label>
               <input
+                id="engagement-detail-showtime-time"
                 type="time"
                 value={formData.starts_at_time}
                 onChange={(e) => setFormData({ ...formData, starts_at_time: e.target.value })}
@@ -505,8 +507,9 @@ export default function EngagementDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Captions</label>
+              <label htmlFor="engagement-detail-showtime-captions">Captions</label>
               <select
+                id="engagement-detail-showtime-captions"
                 value={formData.captions || ''}
                 onChange={(e) => setFormData({ ...formData, captions: e.target.value as 'CC' | 'OC' | null || null })}
                 className={styles.input}
@@ -560,8 +563,9 @@ export default function EngagementDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Start Date</label>
+              <label htmlFor="engagement-detail-bulk-start-date">Start Date</label>
               <input
+                id="engagement-detail-bulk-start-date"
                 type="date"
                 value={bulkFormData.start_date}
                 onChange={(e) => setBulkFormData({ ...bulkFormData, start_date: e.target.value })}
@@ -572,8 +576,9 @@ export default function EngagementDetail() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>End Date</label>
+              <label htmlFor="engagement-detail-bulk-end-date">End Date</label>
               <input
+                id="engagement-detail-bulk-end-date"
                 type="date"
                 value={bulkFormData.end_date}
                 onChange={(e) => setBulkFormData({ ...bulkFormData, end_date: e.target.value })}
@@ -619,8 +624,9 @@ export default function EngagementDetail() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Captions (optional)</label>
+            <label htmlFor="engagement-detail-bulk-captions">Captions (optional)</label>
             <select
+              id="engagement-detail-bulk-captions"
               value={bulkFormData.captions || ''}
               onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as 'CC' | 'OC' | null || null })}
               className={styles.input}

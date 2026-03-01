@@ -232,8 +232,9 @@ export default function Embeds() {
 
               <div className={styles.configGrid}>
                 <div className={styles.configField}>
-                  <label>Width</label>
+                  <label htmlFor="embed-width">Width</label>
                   <input
+                    id="embed-width"
                     type="text"
                     value={config.width}
                     onChange={(e) => setConfig({ ...config, width: e.target.value })}
@@ -242,8 +243,9 @@ export default function Embeds() {
                   />
                 </div>
                 <div className={styles.configField}>
-                  <label>Height (px)</label>
+                  <label htmlFor="embed-height">Height (px)</label>
                   <input
+                    id="embed-height"
                     type="text"
                     value={config.height}
                     onChange={(e) => setConfig({ ...config, height: e.target.value })}
@@ -252,8 +254,9 @@ export default function Embeds() {
                   />
                 </div>
                 <div className={styles.configField}>
-                  <label>Theme</label>
+                  <label htmlFor="embed-theme">Theme</label>
                   <select
+                    id="embed-theme"
                     value={config.theme}
                     onChange={(e) => setConfig({ ...config, theme: e.target.value as 'light' | 'dark' | 'auto' })}
                     className={styles.select}
@@ -264,8 +267,9 @@ export default function Embeds() {
                   </select>
                 </div>
                 <div className={styles.configField}>
-                  <label>Max Items</label>
+                  <label htmlFor="embed-max-items">Max Items</label>
                   <input
+                    id="embed-max-items"
                     type="number"
                     value={config.maxItems}
                     onChange={(e) => setConfig({ ...config, maxItems: parseInt(e.target.value) || 10 })}
@@ -279,8 +283,9 @@ export default function Embeds() {
               {/* Engagement selector for single-film embed */}
               {selectedEmbed.requiresEngagement && (
                 <div className={styles.configField} style={{ marginBottom: 'var(--space-md)' }}>
-                  <label>Select Film</label>
+                  <label htmlFor="embed-film">Select Film</label>
                   <select
+                    id="embed-film"
                     value={config.engagementId || ''}
                     onChange={(e) =>
                       setConfig({ ...config, engagementId: e.target.value ? parseInt(e.target.value) : null })

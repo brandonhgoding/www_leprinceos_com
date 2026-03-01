@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
@@ -21,6 +21,22 @@ import ShowtimeReport from './pages/reports/ShowtimeReport';
 import EngagementReport from './pages/reports/EngagementReport';
 import TicketDetailReport from './pages/reports/TicketDetailReport';
 import EngagementSummaryReport from './pages/reports/EngagementSummaryReport';
+
+function NotFound() {
+  return (
+    <div style={{ padding: 'var(--space-xl)', textAlign: 'center' }}>
+      <h1 style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)', marginBottom: 'var(--space-md)' }}>
+        404 — Page Not Found
+      </h1>
+      <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-lg)' }}>
+        The page you are looking for does not exist.
+      </p>
+      <Link to="/" style={{ color: 'var(--color-accent)', textDecoration: 'underline' }}>
+        Return to dashboard
+      </Link>
+    </div>
+  );
+}
 
 function KeyboardShortcuts() {
   const navigate = useNavigate();
@@ -89,6 +105,7 @@ function App() {
           <Route path="reports/engagement" element={<EngagementReport />} />
           <Route path="reports/tickets" element={<TicketDetailReport />} />
           <Route path="reports/summary" element={<EngagementSummaryReport />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

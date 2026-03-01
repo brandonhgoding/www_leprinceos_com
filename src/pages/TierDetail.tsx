@@ -659,8 +659,9 @@ export default function TierDetail() {
       >
         <form id="tier-form" onSubmit={handleTierSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Tier Name *</label>
+            <label htmlFor="tier-detail-name">Tier Name *</label>
             <input
+              id="tier-detail-name"
               type="text"
               value={tierFormData.name}
               onChange={(e) => setTierFormData({ ...tierFormData, name: e.target.value })}
@@ -670,8 +671,9 @@ export default function TierDetail() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Description</label>
+            <label htmlFor="tier-detail-description">Description</label>
             <textarea
+              id="tier-detail-description"
               value={tierFormData.description}
               onChange={(e) =>
                 setTierFormData({ ...tierFormData, description: e.target.value })
@@ -683,9 +685,12 @@ export default function TierDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Price *</label>
+              <label htmlFor="tier-detail-price">Price *</label>
               <input
-                type="text"
+                id="tier-detail-price"
+                type="number"
+                min="0"
+                step="0.01"
                 value={tierFormData.price}
                 onChange={(e) => setTierFormData({ ...tierFormData, price: e.target.value })}
                 required
@@ -693,8 +698,9 @@ export default function TierDetail() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Duration (months) *</label>
+              <label htmlFor="tier-detail-duration">Duration (months) *</label>
               <input
+                id="tier-detail-duration"
                 type="number"
                 min="1"
                 value={tierFormData.duration_months}
@@ -722,8 +728,9 @@ export default function TierDetail() {
 
           {tierFormData.is_family_tier && (
             <div className={styles.formGroup}>
-              <label>Maximum Family Members</label>
+              <label htmlFor="tier-detail-max-family">Maximum Family Members</label>
               <input
+                id="tier-detail-max-family"
                 type="number"
                 min="1"
                 value={tierFormData.max_family_members}
@@ -737,8 +744,9 @@ export default function TierDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Display Order</label>
+              <label htmlFor="tier-detail-display-order">Display Order</label>
               <input
+                id="tier-detail-display-order"
                 type="number"
                 min="0"
                 value={tierFormData.display_order}
@@ -791,8 +799,9 @@ export default function TierDetail() {
       >
         <form id="rule-form" onSubmit={handleRuleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Rule Name *</label>
+            <label htmlFor="benefit-rule-name">Rule Name *</label>
             <input
+              id="benefit-rule-name"
               type="text"
               value={ruleFormData.name}
               onChange={(e) => setRuleFormData({ ...ruleFormData, name: e.target.value })}
@@ -803,8 +812,9 @@ export default function TierDetail() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Description</label>
+            <label htmlFor="benefit-rule-description">Description</label>
             <textarea
+              id="benefit-rule-description"
               value={ruleFormData.description}
               onChange={(e) =>
                 setRuleFormData({ ...ruleFormData, description: e.target.value })
@@ -817,8 +827,9 @@ export default function TierDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Benefit Type *</label>
+              <label htmlFor="benefit-rule-type">Benefit Type *</label>
               <select
+                id="benefit-rule-type"
                 value={ruleFormData.benefit_type}
                 onChange={(e) =>
                   setRuleFormData({
@@ -836,8 +847,9 @@ export default function TierDetail() {
               </select>
             </div>
             <div className={styles.formGroup}>
-              <label>Benefit Scope *</label>
+              <label htmlFor="benefit-rule-scope">Benefit Scope *</label>
               <select
+                id="benefit-rule-scope"
                 value={ruleFormData.benefit_scope}
                 onChange={(e) =>
                   setRuleFormData({
@@ -856,9 +868,12 @@ export default function TierDetail() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Value *</label>
+            <label htmlFor="benefit-rule-value">Value *</label>
             <input
-              type="text"
+              id="benefit-rule-value"
+              type="number"
+              min="0"
+              step="0.01"
               value={ruleFormData.value}
               onChange={(e) => setRuleFormData({ ...ruleFormData, value: e.target.value })}
               required
@@ -872,8 +887,9 @@ export default function TierDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Monthly Limit</label>
+              <label htmlFor="benefit-rule-monthly-limit">Monthly Limit</label>
               <input
+                id="benefit-rule-monthly-limit"
                 type="number"
                 min="0"
                 value={ruleFormData.monthly_limit}
@@ -885,8 +901,9 @@ export default function TierDetail() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Daily Limit</label>
+              <label htmlFor="benefit-rule-daily-limit">Daily Limit</label>
               <input
+                id="benefit-rule-daily-limit"
                 type="number"
                 min="0"
                 value={ruleFormData.daily_limit}
@@ -901,8 +918,9 @@ export default function TierDetail() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Priority</label>
+              <label htmlFor="benefit-rule-priority">Priority</label>
               <input
+                id="benefit-rule-priority"
                 type="number"
                 min="0"
                 value={ruleFormData.priority}

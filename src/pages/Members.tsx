@@ -301,8 +301,9 @@ export default function Members() {
         <form id="member-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>First Name *</label>
+              <label htmlFor="member-first-name">First Name *</label>
               <input
+                id="member-first-name"
                 type="text"
                 value={formData.first_name}
                 onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
@@ -311,8 +312,9 @@ export default function Members() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Last Name *</label>
+              <label htmlFor="member-last-name">Last Name *</label>
               <input
+                id="member-last-name"
                 type="text"
                 value={formData.last_name}
                 onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
@@ -323,8 +325,9 @@ export default function Members() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Email *</label>
+            <label htmlFor="member-email">Email *</label>
             <input
+              id="member-email"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -334,8 +337,9 @@ export default function Members() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Phone</label>
+            <label htmlFor="member-phone">Phone</label>
             <input
+              id="member-phone"
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -346,8 +350,9 @@ export default function Members() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Birth Month</label>
+              <label htmlFor="member-birth-month">Birth Month</label>
               <select
+                id="member-birth-month"
                 value={formData.birth_month}
                 onChange={(e) => setFormData({ ...formData, birth_month: e.target.value })}
                 className={styles.input}
@@ -361,8 +366,9 @@ export default function Members() {
               </select>
             </div>
             <div className={styles.formGroup}>
-              <label>Birth Day</label>
+              <label htmlFor="member-birth-day">Birth Day</label>
               <input
+                id="member-birth-day"
                 type="number"
                 min="1"
                 max="31"
@@ -375,8 +381,9 @@ export default function Members() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Family Member Count</label>
+            <label htmlFor="member-family-count">Family Member Count</label>
             <input
+              id="member-family-count"
               type="number"
               min="0"
               value={formData.family_member_count}

@@ -201,8 +201,9 @@ export default function Memberships() {
       {/* Filters */}
       <div className={styles.filters}>
         <div className={styles.filterGroup}>
-          <label>Status</label>
+          <label htmlFor="memberships-filter-status">Status</label>
           <select
+            id="memberships-filter-status"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
             className={styles.filterSelect}
@@ -215,8 +216,9 @@ export default function Memberships() {
           </select>
         </div>
         <div className={styles.filterGroup}>
-          <label>Tier</label>
+          <label htmlFor="memberships-filter-tier">Tier</label>
           <select
+            id="memberships-filter-tier"
             value={filterTier}
             onChange={(e) => setFilterTier(e.target.value)}
             className={styles.filterSelect}
@@ -410,8 +412,9 @@ export default function Memberships() {
       >
         <form id="membership-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label>Member *</label>
+            <label htmlFor="membership-member">Member *</label>
             <select
+              id="membership-member"
               value={formData.member}
               onChange={(e) => setFormData({ ...formData, member: e.target.value })}
               required
@@ -427,8 +430,9 @@ export default function Memberships() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Membership Tier *</label>
+            <label htmlFor="membership-tier">Membership Tier *</label>
             <select
+              id="membership-tier"
               value={formData.tier}
               onChange={(e) => handleTierChange(e.target.value)}
               required
@@ -446,8 +450,9 @@ export default function Memberships() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Start Date</label>
+            <label htmlFor="membership-start-date">Start Date</label>
             <input
+              id="membership-start-date"
               type="date"
               value={formData.start_date}
               onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
@@ -457,9 +462,12 @@ export default function Memberships() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Price Paid</label>
+            <label htmlFor="membership-price-paid">Price Paid</label>
             <input
-              type="text"
+              id="membership-price-paid"
+              type="number"
+              min="0"
+              step="0.01"
               value={formData.price_paid}
               onChange={(e) => setFormData({ ...formData, price_paid: e.target.value })}
               className={styles.input}
