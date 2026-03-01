@@ -5,6 +5,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ticketsApi } from '../api';
 import type { TicketTypeRule, TicketTypeRuleCreate } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './TicketDetail.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -62,6 +64,7 @@ export default function TicketDetail() {
   const { id } = useParams<{ id: string }>();
   const ticketTypeId = parseInt(id || '0');
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedRule, setSelectedRule] = useState<TicketTypeRule | null>(null);
@@ -81,6 +84,7 @@ export default function TicketDetail() {
       queryClient.invalidateQueries({ queryKey: ['ticket-type', ticketTypeId] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create pricing rule.')),
   });
 
   const updateRuleMutation = useMutation({
@@ -90,6 +94,7 @@ export default function TicketDetail() {
       queryClient.invalidateQueries({ queryKey: ['ticket-type', ticketTypeId] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update pricing rule.')),
   });
 
   const deleteRuleMutation = useMutation({
@@ -97,6 +102,7 @@ export default function TicketDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ticket-type', ticketTypeId] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete pricing rule.')),
   });
 
   // Handlers

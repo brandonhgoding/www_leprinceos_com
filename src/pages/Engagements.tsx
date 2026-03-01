@@ -7,6 +7,8 @@ import type { Engagement, EngagementCreate, Film, Screen } from '../api/types';
 import Drawer from '../components/Drawer';
 import StatusDropdown from '../components/StatusDropdown';
 import FilmSearchCombo from '../components/FilmSearchCombo';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Engagements.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'showtimes';
@@ -33,6 +35,7 @@ const initialFormData: FormData = {
 
 export default function Engagements() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -66,6 +69,7 @@ export default function Engagements() {
       queryClient.invalidateQueries({ queryKey: ['engagements'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create engagement.')),
   });
 
   const updateMutation = useMutation({
@@ -75,6 +79,7 @@ export default function Engagements() {
       queryClient.invalidateQueries({ queryKey: ['engagements'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update engagement.')),
   });
 
   // Inline status update mutation (doesn't close modal)
@@ -84,6 +89,7 @@ export default function Engagements() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['engagements'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update engagement status.')),
   });
 
   const deleteMutation = useMutation({
@@ -91,6 +97,7 @@ export default function Engagements() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['engagements'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete engagement.')),
   });
 
   // Handlers

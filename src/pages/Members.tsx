@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { membersApi } from '../api/memberships';
 import type { Member, MemberCreate } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Members.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -31,6 +33,7 @@ const initialFormData: FormData = {
 
 export default function Members() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
@@ -50,6 +53,7 @@ export default function Members() {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create member.')),
   });
 
   const updateMutation = useMutation({
@@ -59,6 +63,7 @@ export default function Members() {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update member.')),
   });
 
   // Handlers

@@ -18,6 +18,8 @@ import type {
   BenefitCondition,
 } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './TierDetail.module.css';
 
 const DAYS_OF_WEEK = [
@@ -81,6 +83,7 @@ export default function TierDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const tierId = parseInt(id!);
 
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
@@ -153,6 +156,7 @@ export default function TierDetail() {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update tier.')),
   });
 
   const createRuleMutation = useMutation({
@@ -161,6 +165,7 @@ export default function TierDetail() {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers', tierId] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create benefit rule.')),
   });
 
   const updateRuleMutation = useMutation({
@@ -170,6 +175,7 @@ export default function TierDetail() {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers', tierId] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update benefit rule.')),
   });
 
   const deleteRuleMutation = useMutation({
@@ -177,6 +183,7 @@ export default function TierDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers', tierId] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete benefit rule.')),
   });
 
   const addConditionMutation = useMutation({
@@ -192,6 +199,7 @@ export default function TierDetail() {
       setConditionFormData(initialConditionFormData);
       setActiveRuleForCondition(null);
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to add condition.')),
   });
 
   const deleteConditionMutation = useMutation({
@@ -199,6 +207,7 @@ export default function TierDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers', tierId] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete condition.')),
   });
 
   // Handlers

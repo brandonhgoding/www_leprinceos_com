@@ -3,12 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { membershipsApi } from '../api/memberships';
 import type { MembershipStatus } from '../api/types';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './MembershipDetail.module.css';
 
 export default function MembershipDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const membershipId = parseInt(id!);
 
   // Queries
@@ -43,6 +46,7 @@ export default function MembershipDetail() {
       queryClient.invalidateQueries({ queryKey: ['memberships'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to activate membership.')),
   });
 
   const renewMutation = useMutation({
@@ -52,6 +56,7 @@ export default function MembershipDetail() {
       queryClient.invalidateQueries({ queryKey: ['memberships'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to renew membership.')),
   });
 
   const cancelMutation = useMutation({
@@ -61,6 +66,7 @@ export default function MembershipDetail() {
       queryClient.invalidateQueries({ queryKey: ['memberships'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to cancel membership.')),
   });
 
   // Handlers

@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import onlineOrdersApi from '../api/onlineOrders';
 import type { OnlineOrderSummary, OnlineOrderDetail, OrderStatus, OnlineOrderFilters } from '../api/onlineOrders';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './OnlineOrders.module.css';
 
 const STATUS_OPTIONS: { value: OrderStatus | ''; label: string }[] = [
@@ -56,6 +58,7 @@ function formatShowtime(iso: string): { date: string; time: string } {
 
 export default function OnlineOrders() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<OrderStatus | ''>('');
@@ -100,6 +103,7 @@ export default function OnlineOrders() {
       setShowRefundConfirm(false);
       setRefundReason('');
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to process refund.')),
   });
 
   const orders = ordersData?.results ?? [];

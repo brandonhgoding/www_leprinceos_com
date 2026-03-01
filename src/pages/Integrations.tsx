@@ -6,12 +6,15 @@ import type {
   SquareConnectionTest,
 } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Integrations.module.css';
 
 type ModalType = 'credentials' | 'logs' | 'test' | null;
 
 export default function Integrations() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const [modalType, setModalType] = useState<ModalType>(null);
   const [testResult, setTestResult] = useState<SquareConnectionTest | null>(null);
 
@@ -45,6 +48,7 @@ export default function Integrations() {
       setModalType(null);
       resetForm();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to save Square credentials.')),
   });
 
   const deleteCredentialsMutation = useMutation({
@@ -52,6 +56,7 @@ export default function Integrations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['square-credentials'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to disconnect Square.')),
   });
 
   const testConnectionMutation = useMutation({
@@ -60,6 +65,7 @@ export default function Integrations() {
       setTestResult(data);
       setModalType('test');
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to test Square connection.')),
   });
 
   const triggerSyncMutation = useMutation({
@@ -68,6 +74,7 @@ export default function Integrations() {
       queryClient.invalidateQueries({ queryKey: ['square-sync-history'] });
       queryClient.invalidateQueries({ queryKey: ['square-credentials'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to trigger Square sync.')),
   });
 
   const resetForm = () => {

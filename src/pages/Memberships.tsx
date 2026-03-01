@@ -9,6 +9,8 @@ import type {
   MembershipStatus,
 } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Memberships.module.css';
 
 type ModalMode = 'closed' | 'create';
@@ -32,6 +34,7 @@ const initialFormData: FormData = {
 
 export default function Memberships() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -62,6 +65,7 @@ export default function Memberships() {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create membership.')),
   });
 
   const activateMutation = useMutation({
@@ -70,6 +74,7 @@ export default function Memberships() {
       queryClient.invalidateQueries({ queryKey: ['memberships'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to activate membership.')),
   });
 
   const renewMutation = useMutation({
@@ -78,6 +83,7 @@ export default function Memberships() {
       queryClient.invalidateQueries({ queryKey: ['memberships'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to renew membership.')),
   });
 
   const cancelMutation = useMutation({
@@ -87,6 +93,7 @@ export default function Memberships() {
       queryClient.invalidateQueries({ queryKey: ['memberships'] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to cancel membership.')),
   });
 
   // Handlers

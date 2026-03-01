@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { ticketsApi } from '../api';
 import type { TicketType, TicketTypeCreate } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Tickets.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -25,6 +27,7 @@ const initialFormData: FormData = {
 
 export default function Tickets() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
@@ -44,6 +47,7 @@ export default function Tickets() {
       queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create ticket type.')),
   });
 
   const updateMutation = useMutation({
@@ -53,6 +57,7 @@ export default function Tickets() {
       queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update ticket type.')),
   });
 
   const deleteMutation = useMutation({
@@ -60,6 +65,7 @@ export default function Tickets() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete ticket type.')),
   });
 
   const archiveMutation = useMutation({
@@ -67,6 +73,7 @@ export default function Tickets() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to archive ticket type.')),
   });
 
   const unarchiveMutation = useMutation({
@@ -74,6 +81,7 @@ export default function Tickets() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ticket-types'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to unarchive ticket type.')),
   });
 
   // Handlers

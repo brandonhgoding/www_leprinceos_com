@@ -7,6 +7,8 @@ import type { Showtime, ShowtimeCreate, BulkShowtimeCreate } from '../api/types'
 import { useAuth } from '../contexts/AuthContext';
 import { formatDateTime, formatDate, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './EngagementDetail.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
@@ -43,6 +45,7 @@ export default function EngagementDetail() {
   const { id } = useParams<{ id: string }>();
   const engagementId = parseInt(id || '0');
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const { currentCinema } = useAuth();
   const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
 
@@ -79,6 +82,7 @@ export default function EngagementDetail() {
       queryClient.invalidateQueries({ queryKey: ['showtimes', 'engagement', engagementId] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create showtime.')),
   });
 
   const updateMutation = useMutation({
@@ -88,6 +92,7 @@ export default function EngagementDetail() {
       queryClient.invalidateQueries({ queryKey: ['showtimes', 'engagement', engagementId] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update showtime.')),
   });
 
   const deleteMutation = useMutation({
@@ -95,6 +100,7 @@ export default function EngagementDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['showtimes', 'engagement', engagementId] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete showtime.')),
   });
 
   const bulkCreateMutation = useMutation({
@@ -103,6 +109,7 @@ export default function EngagementDetail() {
       queryClient.invalidateQueries({ queryKey: ['showtimes', 'engagement', engagementId] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create showtimes.')),
   });
 
   // Handlers

@@ -3,6 +3,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { filmsApi } from '../../api';
 import type { Film, TMDBSearchResult } from '../../api/types';
+import { useToast } from '../../contexts/ToastContext';
+import { getErrorMessage } from '../../utils/errorMessage';
 import styles from './FilmSearchCombo.module.css';
 
 interface FilmSearchComboProps {
@@ -20,6 +22,7 @@ export default function FilmSearchCombo({
   selectedFilmId,
 }: FilmSearchComboProps) {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -101,6 +104,7 @@ export default function FilmSearchCombo({
       setShowTMDBResults(false);
       queryClient.invalidateQueries({ queryKey: ['films'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to add film from TMDB.')),
   });
 
   // Close dropdown when clicking outside

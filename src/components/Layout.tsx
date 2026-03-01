@@ -2,11 +2,14 @@
 import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import AlertBanner from './AlertBanner';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import styles from './Layout.module.css';
 
 export default function Layout() {
   const { user, currentCinema, selectCinema } = useAuth();
+  const { toasts, dismissToast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Transform cinema memberships for Sidebar component
@@ -71,6 +74,9 @@ export default function Layout() {
       {/* Main Content */}
       <main className={styles.main}>
         <div className={styles.container}>
+          {toasts.length > 0 && (
+            <AlertBanner alerts={toasts} onDismiss={dismissToast} />
+          )}
           <Outlet />
         </div>
 

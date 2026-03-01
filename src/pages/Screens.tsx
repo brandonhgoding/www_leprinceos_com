@@ -5,6 +5,8 @@ import { screensApi } from '../api';
 import type { Screen } from '../api/types';
 import type { ScreenCreate } from '../api/screens';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Screens.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -48,6 +50,7 @@ const SOUND_SYSTEM_LABELS: Record<string, string> = {
 
 export default function Screens() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedScreen, setSelectedScreen] = useState<Screen | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -65,6 +68,7 @@ export default function Screens() {
       queryClient.invalidateQueries({ queryKey: ['screens'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create screen.')),
   });
 
   const updateMutation = useMutation({
@@ -74,6 +78,7 @@ export default function Screens() {
       queryClient.invalidateQueries({ queryKey: ['screens'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update screen.')),
   });
 
   const deleteMutation = useMutation({
@@ -81,6 +86,7 @@ export default function Screens() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['screens'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete screen.')),
   });
 
   // Handlers

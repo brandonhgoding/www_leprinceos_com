@@ -6,6 +6,8 @@ import type { Showtime, ShowtimeCreate, BulkShowtimeCreate, Engagement, Screen }
 import { useAuth } from '../contexts/AuthContext';
 import { formatDateTime, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Showtimes.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
@@ -48,6 +50,7 @@ const initialBulkFormData: BulkFormData = {
 
 export default function Showtimes() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const { currentCinema } = useAuth();
   const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
@@ -83,6 +86,7 @@ export default function Showtimes() {
       queryClient.invalidateQueries({ queryKey: ['showtimes'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create showtime.')),
   });
 
   const updateMutation = useMutation({
@@ -92,6 +96,7 @@ export default function Showtimes() {
       queryClient.invalidateQueries({ queryKey: ['showtimes'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update showtime.')),
   });
 
   const deleteMutation = useMutation({
@@ -99,6 +104,7 @@ export default function Showtimes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['showtimes'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete showtime.')),
   });
 
   const bulkCreateMutation = useMutation({
@@ -107,6 +113,7 @@ export default function Showtimes() {
       queryClient.invalidateQueries({ queryKey: ['showtimes'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create showtimes.')),
   });
 
   // Handlers

@@ -5,6 +5,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { membersApi, membershipTiersApi, membershipsApi } from '../api/memberships';
 import type { MemberCreate, MembershipCreate } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './MemberDetail.module.css';
 
 type ModalMode = 'closed' | 'edit' | 'create-membership';
@@ -30,6 +32,7 @@ export default function MemberDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const memberId = parseInt(id!);
 
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
@@ -80,6 +83,7 @@ export default function MemberDetail() {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update member.')),
   });
 
   const createMembershipMutation = useMutation({
@@ -91,6 +95,7 @@ export default function MemberDetail() {
       queryClient.invalidateQueries({ queryKey: ['memberships'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create membership.')),
   });
 
   // Handlers

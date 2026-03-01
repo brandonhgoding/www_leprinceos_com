@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { filmsApi } from '../../api';
 import type { TMDBSearchResult, Film } from '../../api/types';
+import { useToast } from '../../contexts/ToastContext';
+import { getErrorMessage } from '../../utils/errorMessage';
 import styles from './FilmSearch.module.css';
 
 interface FilmSearchProps {
@@ -14,6 +16,7 @@ const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
 const DEBOUNCE_MS = 300;
 
 export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSearchProps) {
+  const { addToast } = useToast();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -52,6 +55,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
       setIsDropdownOpen(false);
       setSelectedIndex(-1);
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to add film from TMDB.')),
   });
 
   // Show dropdown when we have results or are loading/errored

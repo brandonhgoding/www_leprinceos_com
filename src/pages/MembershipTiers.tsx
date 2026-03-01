@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { membershipTiersApi } from '../api/memberships';
 import type { MembershipTier, MembershipTierCreate } from '../api/types';
 import Drawer from '../components/Drawer';
+import { useToast } from '../contexts/ToastContext';
+import { getErrorMessage } from '../utils/errorMessage';
 import styles from './MembershipTiers.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit';
@@ -33,6 +35,7 @@ const initialFormData: FormData = {
 
 export default function MembershipTiers() {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedTier, setSelectedTier] = useState<MembershipTier | null>(null);
@@ -51,6 +54,7 @@ export default function MembershipTiers() {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to create membership tier.')),
   });
 
   const updateMutation = useMutation({
@@ -60,6 +64,7 @@ export default function MembershipTiers() {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers'] });
       closeModal();
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to update membership tier.')),
   });
 
   const deleteMutation = useMutation({
@@ -67,6 +72,7 @@ export default function MembershipTiers() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers'] });
     },
+    onError: (error) => addToast(getErrorMessage(error, 'Failed to delete membership tier.')),
   });
 
   // Handlers
