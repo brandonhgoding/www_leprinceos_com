@@ -30,6 +30,7 @@ describe('Tickets API', () => {
     name: 'Adult',
     price: '12.50',
     is_active: true,
+    is_archived: false,
     description: 'Standard adult admission',
     rules_count: 2,
     created_at: '2026-01-15T10:00:00Z',
