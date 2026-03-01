@@ -96,7 +96,7 @@ export default function Drawer({
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} data-cy="drawer-overlay">
+    <div className={styles.overlay} data-cy="drawer-overlay" onClick={onClose}>
       <div
         ref={drawerRef}
         className={`${styles.drawer} ${styles[width]}`}

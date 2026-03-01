@@ -52,8 +52,8 @@ function KeyboardShortcuts() {
 
       if (isTyping) return;
 
-      // Press 'N' to create new engagement
-      if (e.key === 'n' || e.key === 'N') {
+      // Press Alt+N to create new engagement
+      if (e.altKey && (e.key === 'n' || e.key === 'N')) {
         e.preventDefault();
         navigate('/engagements');
         // Dispatch custom event to trigger drawer opening

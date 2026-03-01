@@ -81,8 +81,8 @@ export default function Layout() {
         </div>
 
         {/* Keyboard Shortcut Hint */}
-        <div className={styles.keyboardHint} title="Press N to create new engagement">
-          <kbd className={styles.kbd}>N</kbd>
+        <div className={styles.keyboardHint} title="Press Alt+N to create new engagement">
+          <kbd className={styles.kbd}>Alt+N</kbd>
           <span className={styles.hintText}>New Engagement</span>
         </div>
       </main>
