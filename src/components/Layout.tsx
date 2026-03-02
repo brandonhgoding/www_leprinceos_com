@@ -8,7 +8,7 @@ import { useToast } from '../contexts/ToastContext';
 import styles from './Layout.module.css';
 
 export default function Layout() {
-  const { user, currentCinema, selectCinema } = useAuth();
+  const { user, currentCinema, isManager, selectCinema } = useAuth();
   const { toasts, dismissToast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -68,6 +68,7 @@ export default function Layout() {
         currentCinema={currentCinemaForSidebar}
         cinemas={cinemas}
         username={user?.username || ''}
+        isManager={isManager}
         onCinemaChange={handleCinemaChange}
         onLogout={handleLogout}
         isOpen={isSidebarOpen}

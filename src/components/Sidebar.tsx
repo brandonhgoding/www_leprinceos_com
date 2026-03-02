@@ -13,12 +13,14 @@ interface NavLink {
   label: string;
   icon: React.ReactNode;
   external?: boolean;
+  managerOnly?: boolean;
 }
 
 interface NavGroup {
   label: string;
   icon: React.ReactNode;
   items: { path: string; label: string }[];
+  managerOnly?: boolean;
 }
 
 type NavItem = NavLink | NavGroup;
@@ -31,6 +33,7 @@ interface SidebarProps {
   currentCinema?: Cinema | null;
   cinemas?: Cinema[];
   username?: string;
+  isManager?: boolean;
   onCinemaChange?: (cinemaId: number) => void;
   onLogout?: () => void;
   isOpen: boolean;
@@ -168,6 +171,7 @@ export default function Sidebar({
   currentCinema,
   cinemas = [],
   username,
+  isManager = false,
   onCinemaChange,
   onLogout,
   isOpen,
@@ -211,6 +215,7 @@ export default function Sidebar({
     {
       label: 'Reports',
       icon: <ReportsIcon />,
+      managerOnly: true,
       items: [
         { path: '/reports/showtime', label: 'Showtime Report' },
         { path: '/reports/engagement', label: 'Engagement Report' },
@@ -219,11 +224,13 @@ export default function Sidebar({
       ],
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
-    { path: '/online-orders', label: 'Online Orders', icon: <OnlineOrdersIcon /> },
-    { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon /> },
+    { path: '/online-orders', label: 'Online Orders', icon: <OnlineOrdersIcon />, managerOnly: true },
+    { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon />, managerOnly: true },
     { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
     { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },
   ];
+
+  const visibleNavItems = navItems.filter((item) => !item.managerOnly || isManager);
 
   const handleLinkClick = () => {
     onClose();
@@ -282,7 +289,7 @@ export default function Sidebar({
 
         {/* Navigation */}
         <nav className={styles.sidebarNav} data-cy="sidebar-nav">
-          {navItems.map((item) =>
+          {visibleNavItems.map((item) =>
             isGroup(item) ? (
               <div key={item.label} className={styles.sidebarGroup}>
                 <button

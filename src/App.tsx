@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
+import ManagerRoute from './components/ManagerRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Engagements from './pages/Engagements';
@@ -99,18 +100,18 @@ function App() {
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
           <Route path="embeds" element={<Embeds />} />
-          <Route path="online-orders" element={<OnlineOrders />} />
-          <Route path="integrations" element={<Integrations />} />
+          <Route path="online-orders" element={<ManagerRoute><OnlineOrders /></ManagerRoute>} />
+          <Route path="integrations" element={<ManagerRoute><Integrations /></ManagerRoute>} />
           <Route path="members" element={<Members />} />
           <Route path="members/:id" element={<MemberDetail />} />
           <Route path="membership-tiers" element={<MembershipTiers />} />
           <Route path="membership-tiers/:id" element={<TierDetail />} />
           <Route path="memberships" element={<Memberships />} />
           <Route path="memberships/:id" element={<MembershipDetail />} />
-          <Route path="reports/showtime" element={<ShowtimeReport />} />
-          <Route path="reports/engagement" element={<EngagementReport />} />
-          <Route path="reports/tickets" element={<TicketDetailReport />} />
-          <Route path="reports/summary" element={<EngagementSummaryReport />} />
+          <Route path="reports/showtime" element={<ManagerRoute><ShowtimeReport /></ManagerRoute>} />
+          <Route path="reports/engagement" element={<ManagerRoute><EngagementReport /></ManagerRoute>} />
+          <Route path="reports/tickets" element={<ManagerRoute><TicketDetailReport /></ManagerRoute>} />
+          <Route path="reports/summary" element={<ManagerRoute><EngagementSummaryReport /></ManagerRoute>} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

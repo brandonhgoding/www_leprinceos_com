@@ -82,6 +82,13 @@ export default function CheckoutView({
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
 
+  // Price mismatch state
+  const [priceMismatch, setPriceMismatch] = useState<{
+    clientTotal: number;
+    serverTotal: number;
+  } | null>(null);
+  const [pendingOrder, setPendingOrder] = useState<OrderConfirmation | null>(null);
+
   // Refs
   const squareCardRef = useRef<SquareCard | null>(null);
   const cardContainerRef = useRef<HTMLDivElement | null>(null);
@@ -213,11 +220,32 @@ export default function CheckoutView({
     }, 0);
   }, [initSquarePayments]);
 
+  // Tokenize and pay for a given order
+  const tokenizeAndPay = useCallback(
+    async (order: OrderConfirmation) => {
+      if (!squareCardRef.current) {
+        throw new Error('Payment form not ready. Please try again.');
+      }
+
+      const tokenResult = await squareCardRef.current.tokenize();
+      if (tokenResult.status !== 'OK' || !tokenResult.token) {
+        const messages = tokenResult.errors?.map((e) => e.message).join('. ');
+        throw new Error(messages ?? 'Payment failed. Please check your card details.');
+      }
+
+      await payOrder(config.apiBaseUrl, order.order_id, tokenResult.token);
+      onComplete(order.order_id);
+    },
+    [config.apiBaseUrl, onComplete],
+  );
+
   // Handle form submission
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setPaymentError(null);
+      setPriceMismatch(null);
+      setPendingOrder(null);
 
       if (!customerName.trim()) {
         setPaymentError('Please enter your name.');
@@ -259,22 +287,20 @@ export default function CheckoutView({
           throw err;
         }
 
-        // Step 2: Tokenize card with Square
-        if (!squareCardRef.current) {
-          throw new Error('Payment form not ready. Please try again.');
+        // Step 2: Compare server total with client subtotal (integer cents to avoid float drift)
+        const serverTotal = parseFloat(order.total_amount);
+        const serverCents = Math.round(serverTotal * 100);
+        const clientCents = Math.round(subtotal * 100);
+        if (Math.abs(serverCents - clientCents) > 0) {
+          // Price mismatch — pause and let customer confirm
+          setPriceMismatch({ clientTotal: subtotal, serverTotal });
+          setPendingOrder(order);
+          setProcessing(false);
+          return;
         }
 
-        const tokenResult = await squareCardRef.current.tokenize();
-        if (tokenResult.status !== 'OK' || !tokenResult.token) {
-          const messages = tokenResult.errors?.map((e) => e.message).join('. ');
-          throw new Error(messages ?? 'Payment failed. Please check your card details.');
-        }
-
-        // Step 3: Submit payment
-        await payOrder(config.apiBaseUrl, order.order_id, tokenResult.token);
-
-        // Success
-        onComplete(order.order_id);
+        // Step 3: Tokenize and pay
+        await tokenizeAndPay(order);
       } catch (err: unknown) {
         const message =
           err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
@@ -290,10 +316,32 @@ export default function CheckoutView({
       customerName,
       customerPhone,
       memberEmail,
-      onComplete,
       showtimeId,
+      subtotal,
+      tokenizeAndPay,
     ],
   );
+
+  // Handle confirmation after price mismatch
+  const handleConfirmMismatch = useCallback(async () => {
+    if (!pendingOrder) return;
+    setProcessing(true);
+    setPriceMismatch(null);
+    try {
+      await tokenizeAndPay(pendingOrder);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+      setPaymentError(message);
+      setProcessing(false);
+    }
+  }, [pendingOrder, tokenizeAndPay]);
+
+  const handleCancelMismatch = useCallback(() => {
+    setPriceMismatch(null);
+    setPendingOrder(null);
+    setStep('tickets');
+  }, []);
 
   if (loading) {
     return (
@@ -520,6 +568,28 @@ export default function CheckoutView({
           </h3>
           <div className="lpo-card-container" ref={cardContainerRef} />
 
+          {priceMismatch && (
+            <div className="lpo-error-msg" role="alert">
+              <p>
+                The total has changed from {formatCurrency(priceMismatch.clientTotal)} to{' '}
+                {formatCurrency(priceMismatch.serverTotal)}.
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+                <button
+                  type="button"
+                  className="lpo-btn-primary"
+                  onClick={handleConfirmMismatch}
+                  disabled={processing}
+                >
+                  Pay {formatCurrency(priceMismatch.serverTotal)}
+                </button>
+                <button type="button" className="lpo-btn-secondary" onClick={handleCancelMismatch}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
           {paymentError && (
             <div className="lpo-error-msg" role="alert">
               {paymentError}
@@ -529,7 +599,7 @@ export default function CheckoutView({
           <button
             type="submit"
             className="lpo-btn-primary"
-            disabled={processing || !squareCardRef.current}
+            disabled={processing || !squareCardRef.current || !!priceMismatch}
           >
             {processing ? (
               <>
@@ -545,7 +615,7 @@ export default function CheckoutView({
             type="button"
             className="lpo-btn-link"
             onClick={() => {
-              setStep('tickets');
+              handleCancelMismatch();
               setPaymentError(null);
             }}
           >

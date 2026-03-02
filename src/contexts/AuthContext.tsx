@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isManager: boolean;
   currentCinema: CinemaMembership | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -79,10 +80,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user],
   );
 
+  const isManager = !!(currentCinema?.is_manager || user?.is_superuser);
+
   const value: AuthContextType = {
     user,
     isLoading,
     isAuthenticated: !!user,
+    isManager,
     currentCinema,
     login,
     logout,
