@@ -22,7 +22,8 @@ import type {
   MembershipFilters,
 } from './types';
 
-const buildQueryString = (filters: Record<string, unknown>): string => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- accepts various filter interfaces
+const buildQueryString = (filters: Record<string, any>): string => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
