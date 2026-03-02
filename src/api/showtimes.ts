@@ -1,6 +1,12 @@
 // src/api/showtimes.ts
 import apiClient from './client';
-import type { Showtime, ShowtimeCreate, ShowtimeFilters, BulkShowtimeCreate, PaginatedResponse } from './types';
+import type {
+  Showtime,
+  ShowtimeCreate,
+  ShowtimeFilters,
+  BulkShowtimeCreate,
+  PaginatedResponse,
+} from './types';
 
 const buildQueryString = (filters: ShowtimeFilters): string => {
   const params = new URLSearchParams();

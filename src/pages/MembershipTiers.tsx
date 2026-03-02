@@ -131,7 +131,7 @@ export default function MembershipTiers() {
   const handleDelete = (tier: MembershipTier) => {
     if (
       window.confirm(
-        `Are you sure you want to delete "${tier.name}"? This will affect existing memberships.`
+        `Are you sure you want to delete "${tier.name}"? This will affect existing memberships.`,
       )
     ) {
       deleteMutation.mutate(tier.id);
@@ -151,9 +151,7 @@ export default function MembershipTiers() {
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Membership Tiers</h1>
-          <p className={styles.subtitle}>
-            Define membership levels with pricing and duration.
-          </p>
+          <p className={styles.subtitle}>Define membership levels with pricing and duration.</p>
         </div>
         <button className={styles.primaryButton} onClick={openCreateModal}>
           + New Tier
@@ -218,7 +216,9 @@ export default function MembershipTiers() {
                     </td>
                     <td>
                       <span
-                        className={`${styles.statusBadge} ${tier.is_active ? styles.statusActive : styles.statusInactive}`}
+                        className={`${styles.statusBadge} ${
+                          tier.is_active ? styles.statusActive : styles.statusInactive
+                        }`}
                       >
                         {tier.is_active ? 'Active' : 'Inactive'}
                       </span>
@@ -231,10 +231,7 @@ export default function MembershipTiers() {
                         >
                           Benefits
                         </button>
-                        <button
-                          className={styles.actionButton}
-                          onClick={() => openEditModal(tier)}
-                        >
+                        <button className={styles.actionButton} onClick={() => openEditModal(tier)}>
                           Edit
                         </button>
                         <button
@@ -279,7 +276,9 @@ export default function MembershipTiers() {
                       {tier.benefit_count} {tier.benefit_count === 1 ? 'benefit' : 'benefits'}
                     </span>
                     <span
-                      className={`${styles.statusBadge} ${tier.is_active ? styles.statusActive : styles.statusInactive}`}
+                      className={`${styles.statusBadge} ${
+                        tier.is_active ? styles.statusActive : styles.statusInactive
+                      }`}
                     >
                       {tier.is_active ? 'Active' : 'Inactive'}
                     </span>
@@ -292,10 +291,7 @@ export default function MembershipTiers() {
                   >
                     Benefits
                   </button>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => openEditModal(tier)}
-                  >
+                  <button className={styles.actionButton} onClick={() => openEditModal(tier)}>
                     Edit
                   </button>
                   <button
@@ -330,8 +326,8 @@ export default function MembershipTiers() {
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Create Tier'
-                : 'Save Changes'}
+                  ? 'Create Tier'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -384,9 +380,7 @@ export default function MembershipTiers() {
                 type="number"
                 min="1"
                 value={formData.duration_months}
-                onChange={(e) =>
-                  setFormData({ ...formData, duration_months: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, duration_months: e.target.value })}
                 required
                 className={styles.input}
               />
@@ -398,9 +392,7 @@ export default function MembershipTiers() {
               <input
                 type="checkbox"
                 checked={formData.is_family_tier}
-                onChange={(e) =>
-                  setFormData({ ...formData, is_family_tier: e.target.checked })
-                }
+                onChange={(e) => setFormData({ ...formData, is_family_tier: e.target.checked })}
               />
               Family Tier
             </label>
@@ -417,9 +409,7 @@ export default function MembershipTiers() {
                 type="number"
                 min="1"
                 value={formData.max_family_members}
-                onChange={(e) =>
-                  setFormData({ ...formData, max_family_members: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, max_family_members: e.target.value })}
                 className={styles.input}
               />
             </div>

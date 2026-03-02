@@ -3,11 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { membershipsApi, membersApi, membershipTiersApi } from '../api/memberships';
-import type {
-  Membership,
-  MembershipCreate,
-  MembershipStatus,
-} from '../api/types';
+import type { Membership, MembershipCreate, MembershipStatus } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
 import { getErrorMessage } from '../utils/errorMessage';
@@ -137,7 +133,7 @@ export default function Memberships() {
 
   const handleCancel = (membership: Membership) => {
     const notes = window.prompt(
-      `Cancel membership for ${membership.member_name}?\n\nOptional cancellation notes:`
+      `Cancel membership for ${membership.member_name}?\n\nOptional cancellation notes:`,
     );
     if (notes !== null) {
       cancelMutation.mutate({ id: membership.id, notes: notes || undefined });
@@ -282,7 +278,9 @@ export default function Memberships() {
                     </td>
                     <td className={styles.tierName}>{membership.tier_name}</td>
                     <td>
-                      <span className={`${styles.statusBadge} ${getStatusClass(membership.status)}`}>
+                      <span
+                        className={`${styles.statusBadge} ${getStatusClass(membership.status)}`}
+                      >
                         {membership.status_display}
                       </span>
                     </td>

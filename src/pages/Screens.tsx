@@ -137,7 +137,11 @@ export default function Screens() {
   };
 
   const handleDelete = (screen: Screen) => {
-    if (window.confirm(`Are you sure you want to delete "${screen.name}"? This may affect existing engagements and showtimes.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${screen.name}"? This may affect existing engagements and showtimes.`,
+      )
+    ) {
       deleteMutation.mutate(screen.id);
     }
   };
@@ -164,8 +168,8 @@ export default function Screens() {
           </div>
           <h3 className="empty-state-title">No Screens Configured</h3>
           <p className="empty-state-description">
-            Define your cinema's auditoriums and screens to begin scheduling engagements and showtimes.
-            Each screen can have unique technical specifications.
+            Define your cinema's auditoriums and screens to begin scheduling engagements and
+            showtimes. Each screen can have unique technical specifications.
           </p>
           <button className="btn btn-primary" onClick={openCreateModal}>
             Add First Screen
@@ -193,7 +197,9 @@ export default function Screens() {
                     <td className={styles.screenName}>{screen.name}</td>
                     <td>{screen.capacity} seats</td>
                     <td>
-                      <span className={`${styles.typeBadge} ${styles[`type${screen.screen_type}`]}`}>
+                      <span
+                        className={`${styles.typeBadge} ${styles[`type${screen.screen_type}`]}`}
+                      >
                         {SCREEN_TYPE_LABELS[screen.screen_type]}
                       </span>
                     </td>
@@ -247,18 +253,19 @@ export default function Screens() {
                 <div className={styles.cardBody}>
                   <div className={styles.cardDetail}>
                     <span className={styles.cardLabel}>Aspect Ratio</span>
-                    <span className={styles.cardValue}>{ASPECT_RATIO_LABELS[screen.aspect_ratio]}</span>
+                    <span className={styles.cardValue}>
+                      {ASPECT_RATIO_LABELS[screen.aspect_ratio]}
+                    </span>
                   </div>
                   <div className={styles.cardDetail}>
                     <span className={styles.cardLabel}>Sound</span>
-                    <span className={styles.cardValue}>{SOUND_SYSTEM_LABELS[screen.sound_system]}</span>
+                    <span className={styles.cardValue}>
+                      {SOUND_SYSTEM_LABELS[screen.sound_system]}
+                    </span>
                   </div>
                 </div>
                 <div className={styles.cardActions}>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => openEditModal(screen)}
-                  >
+                  <button className={styles.actionButton} onClick={() => openEditModal(screen)}>
                     Edit
                   </button>
                   <button
@@ -293,8 +300,8 @@ export default function Screens() {
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Create Screen'
-                : 'Save Changes'}
+                  ? 'Create Screen'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -319,7 +326,12 @@ export default function Screens() {
                 id="screen-capacity"
                 type="number"
                 value={formData.capacity}
-                onChange={(e) => setFormData({ ...formData, capacity: e.target.value ? parseInt(e.target.value) : '' })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    capacity: e.target.value ? parseInt(e.target.value) : '',
+                  })
+                }
                 required
                 min="1"
                 className={styles.input}
@@ -334,7 +346,12 @@ export default function Screens() {
               <select
                 id="screen-type"
                 value={formData.screen_type}
-                onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as FormData['screen_type'] })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    screen_type: e.target.value as FormData['screen_type'],
+                  })
+                }
                 className={styles.input}
               >
                 <option value="standard">Standard</option>
@@ -347,7 +364,12 @@ export default function Screens() {
               <select
                 id="screen-aspect-ratio"
                 value={formData.aspect_ratio}
-                onChange={(e) => setFormData({ ...formData, aspect_ratio: e.target.value as FormData['aspect_ratio'] })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    aspect_ratio: e.target.value as FormData['aspect_ratio'],
+                  })
+                }
                 className={styles.input}
               >
                 <option value="flat">Flat (1.85:1)</option>
@@ -364,7 +386,12 @@ export default function Screens() {
               <select
                 id="screen-sound-system"
                 value={formData.sound_system}
-                onChange={(e) => setFormData({ ...formData, sound_system: e.target.value as FormData['sound_system'] })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    sound_system: e.target.value as FormData['sound_system'],
+                  })
+                }
                 className={styles.input}
               >
                 <option value="standard">Standard</option>

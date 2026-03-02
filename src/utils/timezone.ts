@@ -8,7 +8,7 @@
 export function formatInTimezone(
   date: Date,
   timezone: string,
-  options: Intl.DateTimeFormatOptions
+  options: Intl.DateTimeFormatOptions,
 ): string {
   return new Intl.DateTimeFormat('en-US', { ...options, timeZone: timezone }).format(date);
 }
@@ -67,7 +67,7 @@ export function formatTime(dateStr: string, timezone: string): string {
  * Format a date string for display (e.g., "Mon, Jan 21, 2026")
  */
 export function formatDate(dateStr: string, timezone: string): string {
-    const [year, month, day] = dateStr.split('-').map(Number);
+  const [year, month, day] = dateStr.split('-').map(Number);
   return formatInTimezone(new Date(year, month - 1, day), timezone, {
     weekday: 'short',
     month: 'short',

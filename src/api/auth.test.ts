@@ -65,9 +65,9 @@ describe('Auth API', () => {
       const error = new Error('Invalid credentials');
       vi.mocked(apiClient.post).mockRejectedValue(error);
 
-      await expect(
-        authApi.login({ username: 'wrong', password: 'wrong' })
-      ).rejects.toThrow('Invalid credentials');
+      await expect(authApi.login({ username: 'wrong', password: 'wrong' })).rejects.toThrow(
+        'Invalid credentials',
+      );
 
       expect(setCsrfToken).not.toHaveBeenCalled();
     });
@@ -77,7 +77,7 @@ describe('Auth API', () => {
       vi.mocked(apiClient.post).mockRejectedValue(networkError);
 
       await expect(
-        authApi.login({ username: 'testuser', password: 'password123' })
+        authApi.login({ username: 'testuser', password: 'password123' }),
       ).rejects.toThrow('Network Error');
     });
   });

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // src/contexts/AuthContext.tsx
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { authApi, type User, type CinemaMembership } from '../api';
@@ -30,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Restore selected cinema from localStorage or use first cinema
         const savedCinemaId = localStorage.getItem('selected_cinema_id');
         if (savedCinemaId) {
-          const cinema = userData.cinemas.find(c => c.cinema_id === parseInt(savedCinemaId));
+          const cinema = userData.cinemas.find((c) => c.cinema_id === parseInt(savedCinemaId));
           setCurrentCinema(cinema || userData.cinemas[0] || null);
         } else if (userData.cinemas.length > 0) {
           setCurrentCinema(userData.cinemas[0]);
@@ -65,15 +66,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCurrentCinema(null);
   }, []);
 
-  const selectCinema = useCallback((cinemaId: number) => {
-    if (!user) return;
+  const selectCinema = useCallback(
+    (cinemaId: number) => {
+      if (!user) return;
 
-    const cinema = user.cinemas.find(c => c.cinema_id === cinemaId);
-    if (cinema) {
-      setCurrentCinema(cinema);
-      localStorage.setItem('selected_cinema_id', String(cinemaId));
-    }
-  }, [user]);
+      const cinema = user.cinemas.find((c) => c.cinema_id === cinemaId);
+      if (cinema) {
+        setCurrentCinema(cinema);
+        localStorage.setItem('selected_cinema_id', String(cinemaId));
+      }
+    },
+    [user],
+  );
 
   const value: AuthContextType = {
     user,

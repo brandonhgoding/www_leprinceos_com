@@ -50,7 +50,7 @@ export const ticketsApi = {
   // Ticket Type Rules
   listRules: async (ticketTypeId: number): Promise<TicketTypeRule[]> => {
     const response = await apiClient.get<TicketTypeRule[]>(
-      `/v1/ticket-types/${ticketTypeId}/rules/`
+      `/v1/ticket-types/${ticketTypeId}/rules/`,
     );
     // Rules endpoint returns array directly (custom action, not paginated)
     return response.data;
@@ -59,7 +59,7 @@ export const ticketsApi = {
   createRule: async (ticketTypeId: number, data: TicketTypeRuleCreate): Promise<TicketTypeRule> => {
     const response = await apiClient.post<TicketTypeRule>(
       `/v1/ticket-types/${ticketTypeId}/rules/`,
-      data
+      data,
     );
     return response.data;
   },
@@ -69,10 +69,13 @@ export const ticketsApi = {
     return response.data;
   },
 
-  updateRule: async (ruleId: number, data: Partial<TicketTypeRuleCreate>): Promise<TicketTypeRule> => {
+  updateRule: async (
+    ruleId: number,
+    data: Partial<TicketTypeRuleCreate>,
+  ): Promise<TicketTypeRule> => {
     const response = await apiClient.patch<TicketTypeRule>(
       `/v1/ticket-type-rules/${ruleId}/`,
-      data
+      data,
     );
     return response.data;
   },

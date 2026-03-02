@@ -40,83 +40,127 @@ interface SidebarProps {
 // SVG Icons
 const HomeIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M3 10.5L10 4l7 6.5V17a1 1 0 01-1 1h-4v-5H8v5H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path
+      d="M3 10.5L10 4l7 6.5V17a1 1 0 01-1 1h-4v-5H8v5H4a1 1 0 01-1-1v-6.5z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const EngagementsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M7 8h6M7 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M7 8h6M7 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
 const ScreensIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="2" y="3" width="16" height="11" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M7 17h6M10 14v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <rect x="2" y="3" width="16" height="11" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M7 17h6M10 14v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
 const BillingIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M3 8h14M7 12h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M3 8h14M7 12h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
 const IntegrationsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.05 5.05l1.41 1.41M13.54 13.54l1.41 1.41M5.05 14.95l1.41-1.41M13.54 6.46l1.41-1.41" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M10 3v2M10 15v2M3 10h2M15 10h2M5.05 5.05l1.41 1.41M13.54 13.54l1.41 1.41M5.05 14.95l1.41-1.41M13.54 6.46l1.41-1.41"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const OnlineOrdersIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <circle cx="8" cy="16" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
-    <circle cx="15" cy="16" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M2 3h2l2.5 9h9l2-6H7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="8" cy="16" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="15" cy="16" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M2 3h2l2.5 9h9l2-6H7"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const EmbedsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M7 6l-4 4 4 4M13 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path
+      d="M7 6l-4 4 4 4M13 6l4 4-4 4"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const ApiDocsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="4" y="2" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M7 6h6M7 9h6M7 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <rect x="4" y="2" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M7 6h6M7 9h6M7 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
 const ReportsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M7 13V9M10 13V7M13 13V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M7 13V9M10 13V7M13 13V10"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const MembershipsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="2" y="6" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M6 6V5a1 1 0 011-1h6a1 1 0 011 1v1M10 10v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <circle cx="10" cy="11" r="1.5" fill="currentColor"/>
+    <rect x="2" y="6" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M6 6V5a1 1 0 011-1h6a1 1 0 011 1v1M10 10v3"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <circle cx="10" cy="11" r="1.5" fill="currentColor" />
   </svg>
 );
 
 const LogoutIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M7 17H4a1 1 0 01-1-1V4a1 1 0 011-1h3M13 14l4-4-4-4M17 10H7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path
+      d="M7 17H4a1 1 0 01-1-1V4a1 1 0 011-1h3M13 14l4-4-4-4M17 10H7"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const ChevronIcon = ({ open }: { open?: boolean }) => (
-  <svg className={`${styles.sidebarGroupArrow} ${open ? styles.rotated : ''}`} width="12" height="12" viewBox="0 0 12 12">
-    <path d="M3 5l3 3 3-3" stroke="currentColor" fill="none" strokeWidth="1.5"/>
+  <svg
+    className={`${styles.sidebarGroupArrow} ${open ? styles.rotated : ''}`}
+    width="12"
+    height="12"
+    viewBox="0 0 12 12"
+  >
+    <path d="M3 5l3 3 3-3" stroke="currentColor" fill="none" strokeWidth="1.5" />
   </svg>
 );
 
@@ -138,10 +182,10 @@ export default function Sidebar({
     location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'));
 
   const isGroupActive = (items: { path: string; label: string }[]) =>
-    items.some(item => isActive(item.path));
+    items.some((item) => isActive(item.path));
 
   const toggleGroup = (label: string) => {
-    setExpandedGroups(prev => ({ ...prev, [label]: !prev[label] }));
+    setExpandedGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   };
 
   // Auto-expand groups with active items
@@ -188,18 +232,18 @@ export default function Sidebar({
   return (
     <>
       {/* Sidebar Overlay (mobile) */}
-      {isOpen && (
-        <div
-          className={styles.sidebarOverlay}
-          onClick={onClose}
-        />
-      )}
+      {isOpen && <div className={styles.sidebarOverlay} onClick={onClose} />}
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`} data-cy="sidebar">
         {/* Brand */}
         <div className={styles.sidebarBrand}>
-          <Link to="/" className={styles.sidebarLogo} onClick={handleLinkClick} data-cy="sidebar-logo">
+          <Link
+            to="/"
+            className={styles.sidebarLogo}
+            onClick={handleLinkClick}
+            data-cy="sidebar-logo"
+          >
             LeprinceOS
           </Link>
         </div>
@@ -220,7 +264,9 @@ export default function Sidebar({
                 {cinemas.map((cinema) => (
                   <button
                     key={cinema.id}
-                    className={`${styles.cinemaSelectorItem} ${cinema.id === currentCinema.id ? styles.active : ''}`}
+                    className={`${styles.cinemaSelectorItem} ${
+                      cinema.id === currentCinema.id ? styles.active : ''
+                    }`}
                     onClick={() => {
                       onCinemaChange?.(cinema.id);
                       setIsCinemaDropdownOpen(false);
@@ -240,7 +286,9 @@ export default function Sidebar({
             isGroup(item) ? (
               <div key={item.label} className={styles.sidebarGroup}>
                 <button
-                  className={`${styles.sidebarGroupToggle} ${isGroupActive(item.items) ? styles.active : ''}`}
+                  className={`${styles.sidebarGroupToggle} ${
+                    isGroupActive(item.items) ? styles.active : ''
+                  }`}
                   onClick={() => toggleGroup(item.label)}
                 >
                   {item.icon}
@@ -253,7 +301,9 @@ export default function Sidebar({
                       <Link
                         key={subItem.path}
                         to={subItem.path}
-                        className={`${styles.sidebarSublink} ${isActive(subItem.path) ? styles.active : ''}`}
+                        className={`${styles.sidebarSublink} ${
+                          isActive(subItem.path) ? styles.active : ''
+                        }`}
                         onClick={handleLinkClick}
                       >
                         {subItem.label}
@@ -286,14 +336,16 @@ export default function Sidebar({
                 {item.icon}
                 {item.label}
               </Link>
-            )
+            ),
           )}
         </nav>
 
         {/* User Section */}
         <div className={styles.sidebarUser} data-cy="sidebar-user">
           <div className={styles.sidebarUserInfo}>
-            <span className={styles.sidebarUsername} data-cy="username">{username}</span>
+            <span className={styles.sidebarUsername} data-cy="username">
+              {username}
+            </span>
           </div>
           <button className={styles.sidebarLogout} onClick={onLogout} data-cy="logout-button">
             <LogoutIcon />

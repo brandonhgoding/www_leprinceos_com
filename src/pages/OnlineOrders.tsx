@@ -2,7 +2,12 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import onlineOrdersApi from '../api/onlineOrders';
-import type { OnlineOrderSummary, OnlineOrderDetail, OrderStatus, OnlineOrderFilters } from '../api/onlineOrders';
+import type {
+  OnlineOrderSummary,
+  OnlineOrderDetail,
+  OrderStatus,
+  OnlineOrderFilters,
+} from '../api/onlineOrders';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
 import { getErrorMessage } from '../utils/errorMessage';
@@ -152,7 +157,10 @@ export default function OnlineOrders() {
             type="text"
             placeholder="Name, email, or confirmation #"
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
             className={styles.filterInput}
           />
         </div>
@@ -161,11 +169,16 @@ export default function OnlineOrders() {
           <select
             id="orders-status"
             value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value as OrderStatus | ''); setPage(1); }}
+            onChange={(e) => {
+              setStatusFilter(e.target.value as OrderStatus | '');
+              setPage(1);
+            }}
             className={styles.filterSelect}
           >
             {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
         </div>
@@ -175,7 +188,10 @@ export default function OnlineOrders() {
             id="orders-date-from"
             type="date"
             value={dateAfter}
-            onChange={(e) => { setDateAfter(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setDateAfter(e.target.value);
+              setPage(1);
+            }}
             className={styles.filterDate}
           />
         </div>
@@ -185,7 +201,10 @@ export default function OnlineOrders() {
             id="orders-date-to"
             type="date"
             value={dateBefore}
-            onChange={(e) => { setDateBefore(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setDateBefore(e.target.value);
+              setPage(1);
+            }}
             className={styles.filterDate}
           />
         </div>
@@ -255,7 +274,9 @@ export default function OnlineOrders() {
 
             {/* Pagination */}
             <div className={styles.pagination}>
-              <span>{totalCount} order{totalCount !== 1 ? 's' : ''}</span>
+              <span>
+                {totalCount} order{totalCount !== 1 ? 's' : ''}
+              </span>
               <div className={styles.paginationButtons}>
                 <button
                   className={styles.pageButton}
@@ -407,18 +428,24 @@ export default function OnlineOrders() {
               <h4 className={styles.detailSectionTitle}>Timeline</h4>
               <div className={styles.timelineItem}>
                 <span className={styles.timelineLabel}>Created</span>
-                <span className={styles.timelineValue}>{formatDateTime(orderDetail.created_at)}</span>
+                <span className={styles.timelineValue}>
+                  {formatDateTime(orderDetail.created_at)}
+                </span>
               </div>
               {orderDetail.updated_at !== orderDetail.created_at && (
                 <div className={styles.timelineItem}>
                   <span className={styles.timelineLabel}>Last Updated</span>
-                  <span className={styles.timelineValue}>{formatDateTime(orderDetail.updated_at)}</span>
+                  <span className={styles.timelineValue}>
+                    {formatDateTime(orderDetail.updated_at)}
+                  </span>
                 </div>
               )}
               {orderDetail.expires_at && (
                 <div className={styles.timelineItem}>
                   <span className={styles.timelineLabel}>Expires</span>
-                  <span className={styles.timelineValue}>{formatDateTime(orderDetail.expires_at)}</span>
+                  <span className={styles.timelineValue}>
+                    {formatDateTime(orderDetail.expires_at)}
+                  </span>
                 </div>
               )}
             </div>
@@ -445,8 +472,8 @@ export default function OnlineOrders() {
                   <div className={styles.refundConfirm}>
                     <p className={styles.refundConfirmTitle}>Confirm Refund</p>
                     <p className={styles.refundConfirmText}>
-                      This will refund ${orderDetail.total_amount} to the customer's card via Square.
-                      This action cannot be undone.
+                      This will refund ${orderDetail.total_amount} to the customer's card via
+                      Square. This action cannot be undone.
                     </p>
                     <input
                       type="text"
@@ -465,7 +492,10 @@ export default function OnlineOrders() {
                       </button>
                       <button
                         className={styles.refundCancelButton}
-                        onClick={() => { setShowRefundConfirm(false); setRefundReason(''); }}
+                        onClick={() => {
+                          setShowRefundConfirm(false);
+                          setRefundReason('');
+                        }}
                       >
                         Cancel
                       </button>

@@ -63,7 +63,7 @@ describe('Engagements API', () => {
       const result = await engagementsApi.list(filters);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/v1/engagements/?status=CONFIRMED&film=101&screen=1'
+        '/v1/engagements/?status=CONFIRMED&film=101&screen=1',
       );
       expect(result).toEqual([mockEngagement]);
     });
@@ -106,7 +106,7 @@ describe('Engagements API', () => {
       const result = await engagementsApi.list(filters);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/v1/engagements/?start_date_after=2026-02-01&end_date_before=2026-02-28'
+        '/v1/engagements/?start_date_after=2026-02-01&end_date_before=2026-02-28',
       );
       expect(result).toEqual([mockEngagement]);
     });
@@ -244,9 +244,7 @@ describe('Engagements API', () => {
       const error = new Error('Not Found');
       vi.mocked(apiClient.patch).mockRejectedValue(error);
 
-      await expect(engagementsApi.update(999, { notes: 'test' })).rejects.toThrow(
-        'Not Found'
-      );
+      await expect(engagementsApi.update(999, { notes: 'test' })).rejects.toThrow('Not Found');
     });
   });
 

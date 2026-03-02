@@ -182,7 +182,7 @@ describe('timezone utilities', () => {
   });
 
   describe('getTodayInTimezone', () => {
-    it('should return today\'s date in YYYY-MM-DD format', () => {
+    it("should return today's date in YYYY-MM-DD format", () => {
       const timezone = 'America/New_York';
 
       const result = getTodayInTimezone(timezone);
@@ -216,9 +216,7 @@ describe('timezone utilities', () => {
       const date = new Date('2026-01-30T14:30:00Z');
       const invalidTimezone = 'Invalid/Timezone';
 
-      expect(() =>
-        formatInTimezone(date, invalidTimezone, { hour: 'numeric' })
-      ).toThrow();
+      expect(() => formatInTimezone(date, invalidTimezone, { hour: 'numeric' })).toThrow();
     });
 
     it('should handle daylight saving time transitions', () => {

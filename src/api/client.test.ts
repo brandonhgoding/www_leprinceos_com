@@ -1,10 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  getCsrfToken,
-  setCsrfToken,
-  clearCsrfToken,
-  getCurrentCinemaId,
-} from './client';
+import { getCsrfToken, setCsrfToken, clearCsrfToken, getCurrentCinemaId } from './client';
 
 describe('API Client Helper Functions', () => {
   beforeEach(() => {

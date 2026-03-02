@@ -50,9 +50,12 @@ export interface OnlineOrderFilters {
 
 const onlineOrdersApi = {
   list: async (filters?: OnlineOrderFilters): Promise<PaginatedResponse<OnlineOrderSummary>> => {
-    const response = await apiClient.get<PaginatedResponse<OnlineOrderSummary>>('/v1/online-orders/', {
-      params: filters,
-    });
+    const response = await apiClient.get<PaginatedResponse<OnlineOrderSummary>>(
+      '/v1/online-orders/',
+      {
+        params: filters,
+      },
+    );
     return response.data;
   },
 

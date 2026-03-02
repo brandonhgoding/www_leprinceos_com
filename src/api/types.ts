@@ -213,7 +213,13 @@ export interface SquareConnectionTest {
   error?: string;
 }
 
-export type SquareSyncType = 'full' | 'clear_and_sync' | 'tickets' | 'discounts' | 'customers' | 'customer_groups';
+export type SquareSyncType =
+  | 'full'
+  | 'clear_and_sync'
+  | 'tickets'
+  | 'discounts'
+  | 'customers'
+  | 'customer_groups';
 export type SquareSyncStatus = 'pending' | 'in_progress' | 'success' | 'partial' | 'failed';
 
 export interface SquareSyncLog {
@@ -222,7 +228,7 @@ export interface SquareSyncLog {
   status: SquareSyncStatus;
   objects_synced: number;
   objects_failed: number;
-  error_details: Record<string, any> | null;
+  error_details: Record<string, unknown> | null;
   started_at: string;
   completed_at: string | null;
 }

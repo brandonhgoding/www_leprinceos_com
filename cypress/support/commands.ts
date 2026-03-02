@@ -4,8 +4,8 @@
  * Custom command to get element by data-cy attribute
  */
 Cypress.Commands.add('dataCy', (value: string) => {
-  return cy.get(`[data-cy="${value}"]`)
-})
+  return cy.get(`[data-cy="${value}"]`);
+});
 
 /**
  * Custom command to log in via API
@@ -21,15 +21,15 @@ Cypress.Commands.add('login', (username: string, password: string) => {
         body: { username, password },
         failOnStatusCode: false,
       }).then((response) => {
-        expect(response.status).to.eq(200)
+        expect(response.status).to.eq(200);
         // Store user data in localStorage if needed
         if (response.body.cinemas && response.body.cinemas.length > 0) {
           window.localStorage.setItem(
             'selected_cinema_id',
-            String(response.body.cinemas[0].cinema_id)
-          )
+            String(response.body.cinemas[0].cinema_id),
+          );
         }
-      })
+      });
     },
     {
       validate() {
@@ -39,12 +39,12 @@ Cypress.Commands.add('login', (username: string, password: string) => {
           url: '/api/v1/auth/me/',
           failOnStatusCode: false,
         }).then((response) => {
-          expect(response.status).to.eq(200)
-        })
+          expect(response.status).to.eq(200);
+        });
       },
-    }
-  )
-})
+    },
+  );
+});
 
 /**
  * Custom command to log out
@@ -56,9 +56,9 @@ Cypress.Commands.add('logout', () => {
     failOnStatusCode: false,
   }).then(() => {
     // Clear any stored cinema selection
-    window.localStorage.removeItem('selected_cinema_id')
-  })
-})
+    window.localStorage.removeItem('selected_cinema_id');
+  });
+});
 
 /**
  * Custom command to set up authenticated session with mock user data
@@ -78,41 +78,38 @@ Cypress.Commands.add('mockAuthSession', (userData = null) => {
         role: 'admin',
       },
     ],
-  }
+  };
 
-  const user = userData || defaultUserData
+  const user = userData || defaultUserData;
 
   // Intercept auth endpoints
   cy.intercept('GET', '/api/v1/auth/me/', {
     statusCode: 200,
     body: user,
-  }).as('getCurrentUser')
+  }).as('getCurrentUser');
 
   // Set selected cinema in localStorage
   if (user.cinemas && user.cinemas.length > 0) {
-    window.localStorage.setItem(
-      'selected_cinema_id',
-      String(user.cinemas[0].cinema_id)
-    )
+    window.localStorage.setItem('selected_cinema_id', String(user.cinemas[0].cinema_id));
   }
-})
+});
 
 /**
  * Custom command to select a cinema
  */
 Cypress.Commands.add('selectCinema', (cinemaId: number) => {
-  window.localStorage.setItem('selected_cinema_id', String(cinemaId))
-})
+  window.localStorage.setItem('selected_cinema_id', String(cinemaId));
+});
 
 /**
  * Custom command to wait for API call and check response
  */
 Cypress.Commands.add('waitForApi', (alias: string, expectedStatus = 200) => {
   return cy.wait(alias).then((interception) => {
-    expect(interception.response?.statusCode).to.eq(expectedStatus)
-    return interception
-  })
-})
+    expect(interception.response?.statusCode).to.eq(expectedStatus);
+    return interception;
+  });
+});
 
 // Prevent TypeScript errors
-export {}
+export {};

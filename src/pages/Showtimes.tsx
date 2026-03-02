@@ -2,7 +2,13 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { showtimesApi, engagementsApi, screensApi } from '../api';
-import type { Showtime, ShowtimeCreate, BulkShowtimeCreate, Engagement, Screen } from '../api/types';
+import type {
+  Showtime,
+  ShowtimeCreate,
+  BulkShowtimeCreate,
+  Engagement,
+  Screen,
+} from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDateTime, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
 import Drawer from '../components/Drawer';
@@ -63,10 +69,11 @@ export default function Showtimes() {
   // Queries
   const { data: showtimes = [], isLoading: showtimesLoading } = useQuery({
     queryKey: ['showtimes', engagementFilter, dateFilter],
-    queryFn: () => showtimesApi.list({
-      engagement: engagementFilter ? parseInt(engagementFilter) : undefined,
-      date: dateFilter || undefined,
-    }),
+    queryFn: () =>
+      showtimesApi.list({
+        engagement: engagementFilter ? parseInt(engagementFilter) : undefined,
+        date: dateFilter || undefined,
+      }),
   });
 
   const { data: engagements = [] } = useQuery({
@@ -178,14 +185,14 @@ export default function Showtimes() {
 
   const handleBulkSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (bulkFormData.engagement === '' || bulkFormData.times.filter(t => t).length === 0) return;
+    if (bulkFormData.engagement === '' || bulkFormData.times.filter((t) => t).length === 0) return;
 
     const data: BulkShowtimeCreate = {
       engagement: bulkFormData.engagement as number,
       screen: bulkFormData.screen ? (bulkFormData.screen as number) : null,
       start_date: bulkFormData.start_date,
       end_date: bulkFormData.end_date,
-      times: bulkFormData.times.filter(t => t),
+      times: bulkFormData.times.filter((t) => t),
       captions: bulkFormData.captions || null,
     };
 
@@ -288,14 +295,16 @@ export default function Showtimes() {
           <p className="empty-state-description">
             {engagementFilter || dateFilter
               ? 'Try adjusting your filters or create a new showtime for this selection.'
-              : 'Get started by scheduling showtimes for your active engagements. You can create individual showtimes or use bulk creation.'
-            }
+              : 'Get started by scheduling showtimes for your active engagements. You can create individual showtimes or use bulk creation.'}
           </p>
           <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center' }}>
             {(engagementFilter || dateFilter) && (
               <button
                 className="btn btn-secondary"
-                onClick={() => { setEngagementFilter(''); setDateFilter(''); }}
+                onClick={() => {
+                  setEngagementFilter('');
+                  setDateFilter('');
+                }}
               >
                 Clear Filters
               </button>
@@ -322,7 +331,10 @@ export default function Showtimes() {
               </thead>
               <tbody>
                 {showtimes.map((showtime) => (
-                  <tr key={showtime.id} className={showtime.is_cancelled ? styles.cancelledRow : ''}>
+                  <tr
+                    key={showtime.id}
+                    className={showtime.is_cancelled ? styles.cancelledRow : ''}
+                  >
                     <td>
                       <span className={styles.filmTitle}>{showtime.film_title}</span>
                       {showtime.is_outside_engagement_range && (
@@ -366,13 +378,18 @@ export default function Showtimes() {
           {/* Mobile Card View */}
           <div className={styles.cardList}>
             {showtimes.map((showtime) => (
-              <div key={showtime.id} className={`${styles.card} ${showtime.is_cancelled ? styles.cardCancelled : ''}`}>
+              <div
+                key={showtime.id}
+                className={`${styles.card} ${showtime.is_cancelled ? styles.cardCancelled : ''}`}
+              >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitleRow}>
                     <h3 className={styles.cardTitle}>
                       {showtime.film_title}
                       {showtime.is_outside_engagement_range && (
-                        <span className={styles.warningBadge} title="Outside engagement date range">!</span>
+                        <span className={styles.warningBadge} title="Outside engagement date range">
+                          !
+                        </span>
                       )}
                     </h3>
                   </div>
@@ -390,7 +407,9 @@ export default function Showtimes() {
                 <div className={styles.cardBody}>
                   <div className={styles.cardDetail}>
                     <span className={styles.cardLabel}>Date & Time</span>
-                    <span className={styles.cardValue}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</span>
+                    <span className={styles.cardValue}>
+                      {formatDateTime(showtime.starts_at, cinemaTimezone)}
+                    </span>
                   </div>
                   <div className={styles.cardDetail}>
                     <span className={styles.cardLabel}>Screen</span>
@@ -398,10 +417,7 @@ export default function Showtimes() {
                   </div>
                 </div>
                 <div className={styles.cardActions}>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => openEditModal(showtime)}
-                  >
+                  <button className={styles.actionButton} onClick={() => openEditModal(showtime)}>
                     Edit
                   </button>
                   <button
@@ -436,8 +452,8 @@ export default function Showtimes() {
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Create Showtime'
-                : 'Save Changes'}
+                  ? 'Create Showtime'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -448,7 +464,12 @@ export default function Showtimes() {
             <select
               id="showtime-engagement"
               value={formData.engagement}
-              onChange={(e) => setFormData({ ...formData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  engagement: e.target.value ? parseInt(e.target.value) : '',
+                })
+              }
               required
               className={styles.input}
             >
@@ -462,11 +483,15 @@ export default function Showtimes() {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="showtime-screen">Screen (optional, defaults to engagement's screen)</label>
+            <label htmlFor="showtime-screen">
+              Screen (optional, defaults to engagement's screen)
+            </label>
             <select
               id="showtime-screen"
               value={formData.screen}
-              onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
+              onChange={(e) =>
+                setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })
+              }
               className={styles.input}
             >
               <option value="">Use engagement default</option>
@@ -509,7 +534,9 @@ export default function Showtimes() {
               <select
                 id="showtime-captions"
                 value={formData.captions}
-                onChange={(e) => setFormData({ ...formData, captions: e.target.value as FormData['captions'] })}
+                onChange={(e) =>
+                  setFormData({ ...formData, captions: e.target.value as FormData['captions'] })
+                }
                 className={styles.input}
               >
                 <option value="">None</option>
@@ -558,7 +585,12 @@ export default function Showtimes() {
             <select
               id="bulk-showtime-engagement"
               value={bulkFormData.engagement}
-              onChange={(e) => setBulkFormData({ ...bulkFormData, engagement: e.target.value ? parseInt(e.target.value) : '' })}
+              onChange={(e) =>
+                setBulkFormData({
+                  ...bulkFormData,
+                  engagement: e.target.value ? parseInt(e.target.value) : '',
+                })
+              }
               required
               className={styles.input}
             >
@@ -576,7 +608,12 @@ export default function Showtimes() {
             <select
               id="bulk-showtime-screen"
               value={bulkFormData.screen}
-              onChange={(e) => setBulkFormData({ ...bulkFormData, screen: e.target.value ? parseInt(e.target.value) : '' })}
+              onChange={(e) =>
+                setBulkFormData({
+                  ...bulkFormData,
+                  screen: e.target.value ? parseInt(e.target.value) : '',
+                })
+              }
               className={styles.input}
             >
               <option value="">Use engagement default</option>
@@ -647,7 +684,12 @@ export default function Showtimes() {
             <select
               id="bulk-showtime-captions"
               value={bulkFormData.captions}
-              onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as BulkFormData['captions'] })}
+              onChange={(e) =>
+                setBulkFormData({
+                  ...bulkFormData,
+                  captions: e.target.value as BulkFormData['captions'],
+                })
+              }
               className={styles.input}
             >
               <option value="">None</option>
@@ -657,15 +699,25 @@ export default function Showtimes() {
           </div>
 
           <div className={styles.bulkInfo}>
-            {bulkFormData.start_date && bulkFormData.end_date && bulkFormData.times.filter(t => t).length > 0 && (
-              <p>
-                This will create{' '}
-                <strong>
-                  {Math.max(0, Math.ceil((new Date(bulkFormData.end_date).getTime() - new Date(bulkFormData.start_date).getTime()) / (1000 * 60 * 60 * 24) + 1) * bulkFormData.times.filter(t => t).length)}
-                </strong>{' '}
-                showtimes.
-              </p>
-            )}
+            {bulkFormData.start_date &&
+              bulkFormData.end_date &&
+              bulkFormData.times.filter((t) => t).length > 0 && (
+                <p>
+                  This will create{' '}
+                  <strong>
+                    {Math.max(
+                      0,
+                      Math.ceil(
+                        (new Date(bulkFormData.end_date).getTime() -
+                          new Date(bulkFormData.start_date).getTime()) /
+                          (1000 * 60 * 60 * 24) +
+                          1,
+                      ) * bulkFormData.times.filter((t) => t).length,
+                    )}
+                  </strong>{' '}
+                  showtimes.
+                </p>
+              )}
           </div>
         </form>
       </Drawer>

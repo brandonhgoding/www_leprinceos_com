@@ -57,7 +57,7 @@ function formatPrice(price: string): string {
 function getDaysLabel(days: number[]): string {
   if (days.length === 0) return 'All days';
   if (days.length === 7) return 'Every day';
-  return days.map(d => DAYS_OF_WEEK.find(day => day.value === d)?.label.slice(0, 3)).join(', ');
+  return days.map((d) => DAYS_OF_WEEK.find((day) => day.value === d)?.label.slice(0, 3)).join(', ');
 }
 
 export default function TicketDetail() {
@@ -136,7 +136,7 @@ export default function TicketDetail() {
   const handleDayToggle = (day: number) => {
     const currentDays = formData.days_of_week_list;
     if (currentDays.includes(day)) {
-      setFormData({ ...formData, days_of_week_list: currentDays.filter(d => d !== day) });
+      setFormData({ ...formData, days_of_week_list: currentDays.filter((d) => d !== day) });
     } else {
       setFormData({ ...formData, days_of_week_list: [...currentDays, day].sort() });
     }
@@ -150,11 +150,13 @@ export default function TicketDetail() {
     const data: TicketTypeRuleCreate = {
       name: formData.name,
       is_active: formData.is_active,
-      priority: formData.priority === '' ? undefined : formData.priority as number,
+      priority: formData.priority === '' ? undefined : (formData.priority as number),
       matinee_cutoff_time: formData.matinee_cutoff_time || null,
-      days_of_week_list: formData.days_of_week_list.length > 0 ? formData.days_of_week_list : undefined,
+      days_of_week_list:
+        formData.days_of_week_list.length > 0 ? formData.days_of_week_list : undefined,
       presentation_format: formData.presentation_format || null,
-      requires_3d_screen: formData.requires_3d_screen === '' ? null : formData.requires_3d_screen as boolean,
+      requires_3d_screen:
+        formData.requires_3d_screen === '' ? null : (formData.requires_3d_screen as boolean),
       screen_type: formData.screen_type || null,
     };
 
@@ -213,7 +215,11 @@ export default function TicketDetail() {
           </div>
           <div className={styles.infoItem}>
             <span className={styles.label}>Status</span>
-            <span className={`${styles.statusBadge} ${ticketType.is_active ? styles.statusActive : styles.statusInactive}`}>
+            <span
+              className={`${styles.statusBadge} ${
+                ticketType.is_active ? styles.statusActive : styles.statusInactive
+              }`}
+            >
               {ticketType.is_active ? 'Active' : 'Inactive'}
             </span>
           </div>
@@ -240,8 +246,9 @@ export default function TicketDetail() {
         </div>
 
         <div className={styles.rulesInfo}>
-          Rules determine when this ticket type is available. Rules are evaluated in priority order (lower number = higher priority).
-          A showtime must match all non-null conditions of a rule to use this ticket type.
+          Rules determine when this ticket type is available. Rules are evaluated in priority order
+          (lower number = higher priority). A showtime must match all non-null conditions of a rule
+          to use this ticket type.
         </div>
 
         {sortedRules.length === 0 ? (
@@ -283,7 +290,9 @@ export default function TicketDetail() {
                       </td>
                       <td>
                         {rule.presentation_format ? (
-                          <span className={styles.formatBadge}>{rule.presentation_format.toUpperCase()}</span>
+                          <span className={styles.formatBadge}>
+                            {rule.presentation_format.toUpperCase()}
+                          </span>
                         ) : (
                           <span className={styles.anyValue}>Any</span>
                         )}
@@ -296,7 +305,11 @@ export default function TicketDetail() {
                         )}
                       </td>
                       <td>
-                        <span className={`${styles.statusBadge} ${rule.is_active ? styles.statusActive : styles.statusInactive}`}>
+                        <span
+                          className={`${styles.statusBadge} ${
+                            rule.is_active ? styles.statusActive : styles.statusInactive
+                          }`}
+                        >
                           {rule.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
@@ -325,20 +338,29 @@ export default function TicketDetail() {
             {/* Mobile Card View */}
             <div className={styles.cardList}>
               {sortedRules.map((rule) => (
-                <div key={rule.id} className={`${styles.card} ${!rule.is_active ? styles.cardInactive : ''}`}>
+                <div
+                  key={rule.id}
+                  className={`${styles.card} ${!rule.is_active ? styles.cardInactive : ''}`}
+                >
                   <div className={styles.cardHeader}>
                     <div className={styles.cardTitleRow}>
                       <span className={styles.cardPriority}>#{rule.priority}</span>
                       <h3 className={styles.cardTitle}>{rule.name}</h3>
                     </div>
-                    <span className={`${styles.statusBadge} ${rule.is_active ? styles.statusActive : styles.statusInactive}`}>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        rule.is_active ? styles.statusActive : styles.statusInactive
+                      }`}
+                    >
                       {rule.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </div>
                   <div className={styles.cardBody}>
                     <div className={styles.cardDetail}>
                       <span className={styles.cardLabel}>Days</span>
-                      <span className={styles.cardValue}>{getDaysLabel(rule.days_of_week_list)}</span>
+                      <span className={styles.cardValue}>
+                        {getDaysLabel(rule.days_of_week_list)}
+                      </span>
                     </div>
                     <div className={styles.cardDetail}>
                       <span className={styles.cardLabel}>Matinee</span>
@@ -360,10 +382,7 @@ export default function TicketDetail() {
                     </div>
                   </div>
                   <div className={styles.cardActions}>
-                    <button
-                      className={styles.actionButton}
-                      onClick={() => openEditModal(rule)}
-                    >
+                    <button className={styles.actionButton} onClick={() => openEditModal(rule)}>
                       Edit
                     </button>
                     <button
@@ -399,8 +418,8 @@ export default function TicketDetail() {
               {createRuleMutation.isPending || updateRuleMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Add Rule'
-                : 'Save Changes'}
+                  ? 'Add Rule'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -425,7 +444,12 @@ export default function TicketDetail() {
                 id="rule-priority"
                 type="number"
                 value={formData.priority}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value ? parseInt(e.target.value) : '' })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    priority: e.target.value ? parseInt(e.target.value) : '',
+                  })
+                }
                 min="0"
                 className={styles.input}
                 placeholder="Lower = higher priority"
@@ -467,7 +491,12 @@ export default function TicketDetail() {
               <select
                 id="rule-presentation-format"
                 value={formData.presentation_format}
-                onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as RuleFormData['presentation_format'] })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    presentation_format: e.target.value as RuleFormData['presentation_format'],
+                  })
+                }
                 className={styles.input}
               >
                 <option value="">Any</option>
@@ -483,7 +512,12 @@ export default function TicketDetail() {
               <select
                 id="rule-screen-type"
                 value={formData.screen_type}
-                onChange={(e) => setFormData({ ...formData, screen_type: e.target.value as RuleFormData['screen_type'] })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    screen_type: e.target.value as RuleFormData['screen_type'],
+                  })
+                }
                 className={styles.input}
               >
                 <option value="">Any</option>
@@ -496,8 +530,19 @@ export default function TicketDetail() {
               <label htmlFor="rule-requires-3d">Requires 3D Screen</label>
               <select
                 id="rule-requires-3d"
-                value={formData.requires_3d_screen === '' ? '' : formData.requires_3d_screen ? 'true' : 'false'}
-                onChange={(e) => setFormData({ ...formData, requires_3d_screen: e.target.value === '' ? '' : e.target.value === 'true' })}
+                value={
+                  formData.requires_3d_screen === ''
+                    ? ''
+                    : formData.requires_3d_screen
+                      ? 'true'
+                      : 'false'
+                }
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    requires_3d_screen: e.target.value === '' ? '' : e.target.value === 'true',
+                  })
+                }
                 className={styles.input}
               >
                 <option value="">Any</option>

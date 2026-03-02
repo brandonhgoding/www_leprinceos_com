@@ -5,7 +5,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, showtimesApi, filmsApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate } from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
-import { formatDateTime, formatDate, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
+import {
+  formatDateTime,
+  formatDate,
+  getDateInTimezone,
+  getTimeInTimezone,
+} from '../utils/timezone';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
 import { getErrorMessage } from '../utils/errorMessage';
@@ -169,7 +174,7 @@ export default function EngagementDetail() {
   const handleBulkSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validTimes = bulkFormData.times.filter(t => t.trim() !== '');
+    const validTimes = bulkFormData.times.filter((t) => t.trim() !== '');
     if (!bulkFormData.start_date || !bulkFormData.end_date || validTimes.length === 0) return;
 
     const data: BulkShowtimeCreate = {
@@ -212,7 +217,7 @@ export default function EngagementDetail() {
 
   // Sort showtimes by date/time
   const sortedShowtimes = [...showtimes].sort(
-    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
   );
 
   const getStatusBadgeClass = (status: string) => {
@@ -285,9 +290,7 @@ export default function EngagementDetail() {
                       <span className={styles.label}>Rating:</span> {film.rating}
                     </p>
                   )}
-                  {film.synopsis && (
-                    <p className={styles.synopsis}>{film.synopsis}</p>
-                  )}
+                  {film.synopsis && <p className={styles.synopsis}>{film.synopsis}</p>}
                 </>
               )}
             </div>
@@ -369,8 +372,13 @@ export default function EngagementDetail() {
                 </thead>
                 <tbody>
                   {sortedShowtimes.map((showtime) => (
-                    <tr key={showtime.id} className={showtime.is_cancelled ? styles.cancelledRow : ''}>
-                      <td className={styles.dateTimeCell}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</td>
+                    <tr
+                      key={showtime.id}
+                      className={showtime.is_cancelled ? styles.cancelledRow : ''}
+                    >
+                      <td className={styles.dateTimeCell}>
+                        {formatDateTime(showtime.starts_at, cinemaTimezone)}
+                      </td>
                       <td>{showtime.screen_name}</td>
                       <td>
                         {showtime.captions ? (
@@ -411,9 +419,14 @@ export default function EngagementDetail() {
             {/* Mobile Card View */}
             <div className={styles.cardList}>
               {sortedShowtimes.map((showtime) => (
-                <div key={showtime.id} className={`${styles.card} ${showtime.is_cancelled ? styles.cardCancelled : ''}`}>
+                <div
+                  key={showtime.id}
+                  className={`${styles.card} ${showtime.is_cancelled ? styles.cardCancelled : ''}`}
+                >
                   <div className={styles.cardHeader}>
-                    <div className={styles.cardDateTime}>{formatDateTime(showtime.starts_at, cinemaTimezone)}</div>
+                    <div className={styles.cardDateTime}>
+                      {formatDateTime(showtime.starts_at, cinemaTimezone)}
+                    </div>
                     <div className={styles.cardBadges}>
                       {showtime.is_cancelled ? (
                         <span className={styles.cancelledBadge}>Cancelled</span>
@@ -432,10 +445,7 @@ export default function EngagementDetail() {
                     </div>
                   </div>
                   <div className={styles.cardActions}>
-                    <button
-                      className={styles.actionButton}
-                      onClick={() => openEditModal(showtime)}
-                    >
+                    <button className={styles.actionButton} onClick={() => openEditModal(showtime)}>
                       Edit
                     </button>
                     <button
@@ -471,8 +481,8 @@ export default function EngagementDetail() {
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Add Showtime'
-                : 'Save Changes'}
+                  ? 'Add Showtime'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -511,7 +521,12 @@ export default function EngagementDetail() {
               <select
                 id="engagement-detail-showtime-captions"
                 value={formData.captions || ''}
-                onChange={(e) => setFormData({ ...formData, captions: e.target.value as 'CC' | 'OC' | null || null })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    captions: (e.target.value as 'CC' | 'OC' | null) || null,
+                  })
+                }
                 className={styles.input}
               >
                 <option value="">None</option>
@@ -613,11 +628,7 @@ export default function EngagementDetail() {
                   )}
                 </div>
               ))}
-              <button
-                type="button"
-                className={styles.addTimeButton}
-                onClick={addTimeSlot}
-              >
+              <button type="button" className={styles.addTimeButton} onClick={addTimeSlot}>
                 + Add another time
               </button>
             </div>
@@ -628,7 +639,12 @@ export default function EngagementDetail() {
             <select
               id="engagement-detail-bulk-captions"
               value={bulkFormData.captions || ''}
-              onChange={(e) => setBulkFormData({ ...bulkFormData, captions: e.target.value as 'CC' | 'OC' | null || null })}
+              onChange={(e) =>
+                setBulkFormData({
+                  ...bulkFormData,
+                  captions: (e.target.value as 'CC' | 'OC' | null) || null,
+                })
+              }
               className={styles.input}
             >
               <option value="">None</option>

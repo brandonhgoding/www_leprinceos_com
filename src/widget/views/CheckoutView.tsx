@@ -162,7 +162,9 @@ export default function CheckoutView({
     try {
       await loadSquareSDK();
 
-      const Square = (window as unknown as Record<string, unknown>)['Square'] as SquareGlobal | undefined;
+      const Square = (window as unknown as Record<string, unknown>)['Square'] as
+        | SquareGlobal
+        | undefined;
       if (!Square) {
         setPaymentError('Payment system is loading. Please wait a moment and try again.');
         squareInitializedRef.current = false;
@@ -240,7 +242,8 @@ export default function CheckoutView({
           customer_name: customerName.trim(),
           customer_email: customerEmail.trim(),
           customer_phone: customerPhone.trim() || undefined,
-          member_email: memberEmail.trim() && isValidEmail(memberEmail.trim()) ? memberEmail.trim() : undefined,
+          member_email:
+            memberEmail.trim() && isValidEmail(memberEmail.trim()) ? memberEmail.trim() : undefined,
           items,
         };
 
@@ -273,7 +276,8 @@ export default function CheckoutView({
         // Success
         onComplete(order.order_id);
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
+        const message =
+          err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
         setPaymentError(message);
         setProcessing(false);
       }
@@ -305,7 +309,12 @@ export default function CheckoutView({
       <div className="lpo-empty" role="alert">
         <p className="lpo-empty-title">Unable to load showtime</p>
         <p>{error ?? 'Showtime not found'}</p>
-        <button className="lpo-btn-secondary" onClick={onBack} type="button" style={{ marginTop: '1rem' }}>
+        <button
+          className="lpo-btn-secondary"
+          onClick={onBack}
+          type="button"
+          style={{ marginTop: '1rem' }}
+        >
           Back to showtimes
         </button>
       </div>
@@ -314,7 +323,11 @@ export default function CheckoutView({
 
   const { showtime, ticket_types } = availability;
   const showtimeDate = new Date(showtime.starts_at);
-  const dateStr = showtimeDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const dateStr = showtimeDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
   const timeStr = showtimeDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
   return (
@@ -322,7 +335,17 @@ export default function CheckoutView({
       {/* Header with back navigation */}
       <div className="lpo-header">
         <button className="lpo-back" onClick={onBack} type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
           Back to showtimes
@@ -526,7 +549,17 @@ export default function CheckoutView({
               setPaymentError(null);
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="15 18 9 12 15 6" />
             </svg>
             Change ticket selection

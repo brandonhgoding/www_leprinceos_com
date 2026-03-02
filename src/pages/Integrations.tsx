@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import squareApi from '../api/square';
-import type {
-  SquareCredentialsCreate,
-  SquareConnectionTest,
-} from '../api/types';
+import type { SquareCredentialsCreate, SquareConnectionTest } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
 import { getErrorMessage } from '../utils/errorMessage';
@@ -89,7 +86,9 @@ export default function Integrations() {
 
   const handleToggle = () => {
     if (credentials?.is_configured) {
-      if (confirm('Are you sure you want to disconnect Square? This will remove your credentials.')) {
+      if (
+        confirm('Are you sure you want to disconnect Square? This will remove your credentials.')
+      ) {
         deleteCredentialsMutation.mutate();
       }
     } else {
@@ -111,7 +110,7 @@ export default function Integrations() {
       confirm(
         'This will delete all ticket and discount items managed by this system from Square ' +
           'and re-sync them from scratch. Items you manage directly in Square (concessions, etc.) ' +
-          'will not be affected. Continue?'
+          'will not be affected. Continue?',
       )
     ) {
       triggerSyncMutation.mutate({ sync_type: 'clear_and_sync' });
@@ -195,9 +194,7 @@ export default function Integrations() {
                     <div className={styles.integrationIconWrapper}>{integration.icon}</div>
                     <div>
                       <div className={styles.integrationName}>{integration.name}</div>
-                      <div className={styles.integrationDescription}>
-                        {integration.description}
-                      </div>
+                      <div className={styles.integrationDescription}>{integration.description}</div>
                       {integration.is_configured && (
                         <div className={styles.integrationMeta}>
                           <span className={styles.envBadge}>{integration.environment}</span>
@@ -223,9 +220,7 @@ export default function Integrations() {
                   </span>
                 </td>
                 <td>
-                  <span className={styles.lastSync}>
-                    {formatDate(integration.last_sync_at)}
-                  </span>
+                  <span className={styles.lastSync}>{formatDate(integration.last_sync_at)}</span>
                 </td>
                 <td>
                   <div className={styles.actions}>
@@ -440,9 +435,7 @@ export default function Integrations() {
                       <span className={styles.objectCount}>
                         {log.objects_synced} synced
                         {log.objects_failed > 0 && (
-                          <span className={styles.failedCount}>
-                            , {log.objects_failed} failed
-                          </span>
+                          <span className={styles.failedCount}>, {log.objects_failed} failed</span>
                         )}
                       </span>
                     </td>
@@ -451,7 +444,7 @@ export default function Integrations() {
                         ? `${Math.round(
                             (new Date(log.completed_at).getTime() -
                               new Date(log.started_at).getTime()) /
-                              1000
+                              1000,
                           )}s`
                         : '-'}
                     </td>

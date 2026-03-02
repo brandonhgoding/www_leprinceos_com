@@ -49,7 +49,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes,
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       // Current implementation has placeholder logic that always shows 95%
@@ -101,7 +101,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes,
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current).toHaveLength(2);
@@ -117,7 +117,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current).toHaveLength(0);
@@ -151,11 +151,11 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const missingShowtimeAlert = result.current.find(
-        (alert) => alert.id === 'no-showtimes-tomorrow'
+        (alert) => alert.id === 'no-showtimes-tomorrow',
       );
 
       expect(missingShowtimeAlert).toBeDefined();
@@ -209,11 +209,11 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const missingShowtimeAlert = result.current.find(
-        (alert) => alert.id === 'no-showtimes-tomorrow'
+        (alert) => alert.id === 'no-showtimes-tomorrow',
       );
 
       expect(missingShowtimeAlert).toBeUndefined();
@@ -227,11 +227,11 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const missingShowtimeAlert = result.current.find(
-        (alert) => alert.id === 'no-showtimes-tomorrow'
+        (alert) => alert.id === 'no-showtimes-tomorrow',
       );
 
       expect(missingShowtimeAlert).toBeUndefined();
@@ -279,12 +279,10 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const endingSoonAlert = result.current.find(
-        (alert) => alert.id === 'ending-soon-1'
-      );
+      const endingSoonAlert = result.current.find((alert) => alert.id === 'ending-soon-1');
 
       expect(endingSoonAlert).toBeDefined();
       // The hook calculates this as 0 days due to how it handles date parsing
@@ -319,12 +317,10 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const endingSoonAlert = result.current.find(
-        (alert) => alert.id === 'ending-soon-1'
-      );
+      const endingSoonAlert = result.current.find((alert) => alert.id === 'ending-soon-1');
 
       expect(endingSoonAlert).toBeDefined();
       expect(endingSoonAlert?.message).toBe('Ending Tomorrow ends in 1 day');
@@ -357,12 +353,10 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const endingSoonAlert = result.current.find(
-        (alert) => alert.id === 'ending-soon-1'
-      );
+      const endingSoonAlert = result.current.find((alert) => alert.id === 'ending-soon-1');
 
       expect(endingSoonAlert).toBeDefined();
       expect(endingSoonAlert?.message).toBe('Ending Soon ends in 2 days');
@@ -395,12 +389,10 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const endingSoonAlert = result.current.find(
-        (alert) => alert.id === 'ending-soon-1'
-      );
+      const endingSoonAlert = result.current.find((alert) => alert.id === 'ending-soon-1');
 
       expect(endingSoonAlert).toBeUndefined();
     });
@@ -431,12 +423,10 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const endingSoonAlert = result.current.find(
-        (alert) => alert.id === 'ending-soon-1'
-      );
+      const endingSoonAlert = result.current.find((alert) => alert.id === 'ending-soon-1');
 
       expect(endingSoonAlert).toBeUndefined();
     });
@@ -482,11 +472,11 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const endingSoonAlerts = result.current.filter((alert) =>
-        alert.id.startsWith('ending-soon-')
+        alert.id.startsWith('ending-soon-'),
       );
 
       expect(endingSoonAlerts).toHaveLength(0);
@@ -535,11 +525,11 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const endingSoonAlerts = result.current.filter((alert) =>
-        alert.id.startsWith('ending-soon-')
+        alert.id.startsWith('ending-soon-'),
       );
 
       expect(endingSoonAlerts).toHaveLength(2);
@@ -590,15 +580,11 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const oneDayAlert = result.current.find(
-        (alert) => alert.id === 'ending-soon-1'
-      );
-      const twoDaysAlert = result.current.find(
-        (alert) => alert.id === 'ending-soon-2'
-      );
+      const oneDayAlert = result.current.find((alert) => alert.id === 'ending-soon-1');
+      const twoDaysAlert = result.current.find((alert) => alert.id === 'ending-soon-2');
 
       expect(oneDayAlert?.message).toBe('One Day Left ends in 1 day');
       expect(twoDaysAlert?.message).toBe('Two Days Left ends in 2 days');
@@ -632,12 +618,10 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const draftAlert = result.current.find(
-        (alert) => alert.id === 'draft-engagements'
-      );
+      const draftAlert = result.current.find((alert) => alert.id === 'draft-engagements');
 
       expect(draftAlert).toBeDefined();
       expect(draftAlert).toMatchObject({
@@ -703,17 +687,13 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const draftAlert = result.current.find(
-        (alert) => alert.id === 'draft-engagements'
-      );
+      const draftAlert = result.current.find((alert) => alert.id === 'draft-engagements');
 
       expect(draftAlert).toBeDefined();
-      expect(draftAlert?.message).toBe(
-        'You have 3 draft engagements waiting to be confirmed'
-      );
+      expect(draftAlert?.message).toBe('You have 3 draft engagements waiting to be confirmed');
     });
 
     it('should not alert when there are no draft engagements', () => {
@@ -742,12 +722,10 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const draftAlert = result.current.find(
-        (alert) => alert.id === 'draft-engagements'
-      );
+      const draftAlert = result.current.find((alert) => alert.id === 'draft-engagements');
 
       expect(draftAlert).toBeUndefined();
     });
@@ -808,17 +786,13 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
-      const draftAlert = result.current.find(
-        (alert) => alert.id === 'draft-engagements'
-      );
+      const draftAlert = result.current.find((alert) => alert.id === 'draft-engagements');
 
       expect(draftAlert).toBeDefined();
-      expect(draftAlert?.message).toBe(
-        'You have 1 draft engagement waiting to be confirmed'
-      );
+      expect(draftAlert?.message).toBe('You have 1 draft engagement waiting to be confirmed');
     });
   });
 
@@ -831,7 +805,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current).toHaveLength(0);
@@ -845,7 +819,7 @@ describe('useSmartAlerts', () => {
             engagements: [],
             todayShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current).toHaveLength(0);
@@ -865,7 +839,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes,
             tomorrowShowtimes,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const firstResult = result.current;
@@ -891,7 +865,7 @@ describe('useSmartAlerts', () => {
           initialProps: {
             engagements: [] as Engagement[],
           },
-        }
+        },
       );
 
       const firstResult = result.current;
@@ -935,7 +909,7 @@ describe('useSmartAlerts', () => {
           initialProps: {
             todayShowtimes: [] as Showtime[],
           },
-        }
+        },
       );
 
       const firstResult = result.current;
@@ -1034,7 +1008,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes,
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       // Should have: high capacity, missing tomorrow showtimes, ending soon, draft
@@ -1090,14 +1064,12 @@ describe('useSmartAlerts', () => {
             todayShowtimes,
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       // Order: high capacity, missing showtimes, ending soon, drafts
       const alertIds = result.current.map((alert) => alert.id);
-      const highCapacityIndex = alertIds.findIndex((id) =>
-        id.startsWith('high-capacity-')
-      );
+      const highCapacityIndex = alertIds.findIndex((id) => id.startsWith('high-capacity-'));
       const missingShowtimesIndex = alertIds.indexOf('no-showtimes-tomorrow');
       const draftIndex = alertIds.indexOf('draft-engagements');
 
@@ -1140,7 +1112,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       result.current.forEach((alert) => {
@@ -1197,7 +1169,7 @@ describe('useSmartAlerts', () => {
             todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       result.current.forEach((alert) => {
@@ -1266,21 +1238,17 @@ describe('useSmartAlerts', () => {
             todayShowtimes,
             tomorrowShowtimes: [],
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const highCapacityAlert = result.current.find((alert) =>
-        alert.id.startsWith('high-capacity-')
+        alert.id.startsWith('high-capacity-'),
       );
       const missingShowtimesAlert = result.current.find(
-        (alert) => alert.id === 'no-showtimes-tomorrow'
+        (alert) => alert.id === 'no-showtimes-tomorrow',
       );
-      const endingSoonAlert = result.current.find((alert) =>
-        alert.id.startsWith('ending-soon-')
-      );
-      const draftAlert = result.current.find(
-        (alert) => alert.id === 'draft-engagements'
-      );
+      const endingSoonAlert = result.current.find((alert) => alert.id.startsWith('ending-soon-'));
+      const draftAlert = result.current.find((alert) => alert.id === 'draft-engagements');
 
       expect(highCapacityAlert?.type).toBe('warning');
       expect(missingShowtimesAlert?.type).toBe('warning');

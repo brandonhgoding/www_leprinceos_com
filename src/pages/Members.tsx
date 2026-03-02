@@ -135,9 +135,7 @@ export default function Members() {
     }
 
     const statusClass =
-      member.active_membership.status === 'ACTIVE'
-        ? styles.statusActive
-        : styles.statusPending;
+      member.active_membership.status === 'ACTIVE' ? styles.statusActive : styles.statusPending;
 
     return (
       <span className={statusClass}>
@@ -243,9 +241,7 @@ export default function Members() {
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitleRow}>
                     <h3 className={styles.cardTitle}>{member.full_name}</h3>
-                    <span className={styles.memberNumberBadge}>
-                      #{member.member_number}
-                    </span>
+                    <span className={styles.memberNumberBadge}>#{member.member_number}</span>
                   </div>
                   <div className={styles.cardMeta}>
                     <div>{member.email}</div>
@@ -260,10 +256,7 @@ export default function Members() {
                   >
                     View
                   </button>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => openEditModal(member)}
-                  >
+                  <button className={styles.actionButton} onClick={() => openEditModal(member)}>
                     Edit
                   </button>
                 </div>
@@ -292,8 +285,8 @@ export default function Members() {
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Create Member'
-                : 'Save Changes'}
+                  ? 'Create Member'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -387,9 +380,7 @@ export default function Members() {
               type="number"
               min="0"
               value={formData.family_member_count}
-              onChange={(e) =>
-                setFormData({ ...formData, family_member_count: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, family_member_count: e.target.value })}
               className={styles.input}
             />
             <small className={styles.helpText}>

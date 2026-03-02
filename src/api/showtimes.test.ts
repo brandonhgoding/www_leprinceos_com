@@ -62,7 +62,7 @@ describe('Showtimes API', () => {
       const result = await showtimesApi.list(filters);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/v1/showtimes/?engagement=100&screen=1&is_cancelled=false'
+        '/v1/showtimes/?engagement=100&screen=1&is_cancelled=false',
       );
       expect(result).toEqual([mockShowtime]);
     });
@@ -277,9 +277,7 @@ describe('Showtimes API', () => {
       const error = new Error('Not Found');
       vi.mocked(apiClient.patch).mockRejectedValue(error);
 
-      await expect(showtimesApi.update(999, { is_cancelled: true })).rejects.toThrow(
-        'Not Found'
-      );
+      await expect(showtimesApi.update(999, { is_cancelled: true })).rejects.toThrow('Not Found');
     });
   });
 
@@ -386,7 +384,7 @@ describe('Showtimes API', () => {
       vi.mocked(apiClient.post).mockRejectedValue(error);
 
       await expect(showtimesApi.bulkCreate(dataWithNoTimes)).rejects.toThrow(
-        'Times array cannot be empty'
+        'Times array cannot be empty',
       );
     });
   });

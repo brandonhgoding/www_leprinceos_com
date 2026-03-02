@@ -16,9 +16,9 @@ const API_BASE = 'https://leprinceos.com/api/v1';
 
 /** Selectors to find the widget container div */
 const CONTAINER_SELECTORS = [
-  '[id^="leprince-"]',              // <div id="leprince-buy-tickets" ...>
-  '[data-leprinceos-widget]',       // <div data-leprinceos-widget ...>
-  '#leprinceos-widget',             // legacy: <div id="leprinceos-widget" ...>
+  '[id^="leprince-"]', // <div id="leprince-buy-tickets" ...>
+  '[data-leprinceos-widget]', // <div data-leprinceos-widget ...>
+  '#leprinceos-widget', // legacy: <div id="leprinceos-widget" ...>
 ] as const;
 
 function findContainer(): HTMLElement | null {

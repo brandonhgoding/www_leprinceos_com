@@ -1,5 +1,5 @@
 // src/pages/Engagements.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, screensApi } from '../api';
@@ -41,6 +41,12 @@ export default function Engagements() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [statusFilter, setStatusFilter] = useState<string>('CONFIRMED');
 
+  const openCreateModal = useCallback(() => {
+    setFormData(initialFormData);
+    setSelectedEngagement(null);
+    setModalMode('create');
+  }, []);
+
   // Listen for keyboard shortcut to open create drawer
   useEffect(() => {
     const handleOpenDrawer = () => {
@@ -49,7 +55,7 @@ export default function Engagements() {
 
     window.addEventListener('open-create-engagement-drawer', handleOpenDrawer);
     return () => window.removeEventListener('open-create-engagement-drawer', handleOpenDrawer);
-  }, []);
+  }, [openCreateModal]);
 
   // Queries
   const { data: engagements = [], isLoading: engagementsLoading } = useQuery({
@@ -101,12 +107,6 @@ export default function Engagements() {
   });
 
   // Handlers
-  const openCreateModal = () => {
-    setFormData(initialFormData);
-    setSelectedEngagement(null);
-    setModalMode('create');
-  };
-
   const handleFilmSelected = (film: Film) => {
     setFormData({ ...formData, film: film.id });
     // Invalidate films query to ensure the new film appears in future searches
@@ -156,14 +156,18 @@ export default function Engagements() {
   };
 
   const handleDelete = (engagement: Engagement) => {
-    if (window.confirm(`Are you sure you want to delete the engagement for "${engagement.film_title}"?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the engagement for "${engagement.film_title}"?`,
+      )
+    ) {
       deleteMutation.mutate(engagement.id);
     }
   };
 
   const handleInlineStatusChange = async (
     engagementId: number,
-    newStatus: 'DRAFT' | 'CONFIRMED' | 'CANCELLED' | 'ENDED'
+    newStatus: 'DRAFT' | 'CONFIRMED' | 'CANCELLED' | 'ENDED',
   ) => {
     await inlineUpdateMutation.mutateAsync({
       id: engagementId,
@@ -242,8 +246,7 @@ export default function Engagements() {
           <p className="empty-state-description">
             {statusFilter
               ? `You don't have any ${statusFilter.toLowerCase()} engagements at the moment.`
-              : "Start booking films by creating your first engagement. An engagement represents a film's run at your cinema."
-            }
+              : "Start booking films by creating your first engagement. An engagement represents a film's run at your cinema."}
           </p>
           {!statusFilter && (
             <button className="btn btn-primary" onClick={openCreateModal}>
@@ -333,11 +336,7 @@ export default function Engagements() {
               <div key={engagement.id} className={styles.card}>
                 <div className={styles.cardHeader}>
                   {engagement.film_poster_url && (
-                    <img
-                      src={engagement.film_poster_url}
-                      alt=""
-                      className={styles.cardPoster}
-                    />
+                    <img src={engagement.film_poster_url} alt="" className={styles.cardPoster} />
                   )}
                   <div className={styles.cardTitleSection}>
                     <h3 className={styles.cardTitle}>{engagement.film_title}</h3>
@@ -371,10 +370,7 @@ export default function Engagements() {
                   >
                     Details
                   </Link>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => openEditModal(engagement)}
-                  >
+                  <button className={styles.actionButton} onClick={() => openEditModal(engagement)}>
                     Edit
                   </button>
                   <button
@@ -409,8 +405,8 @@ export default function Engagements() {
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Create Engagement'
-                : 'Save Changes'}
+                  ? 'Create Engagement'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -430,7 +426,9 @@ export default function Engagements() {
             <select
               id="engagement-screen"
               value={formData.screen}
-              onChange={(e) => setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })}
+              onChange={(e) =>
+                setFormData({ ...formData, screen: e.target.value ? parseInt(e.target.value) : '' })
+              }
               required
               className={styles.input}
             >
@@ -474,7 +472,9 @@ export default function Engagements() {
               <select
                 id="engagement-format"
                 value={formData.presentation_format}
-                onChange={(e) => setFormData({ ...formData, presentation_format: e.target.value as '2d' | '3d' })}
+                onChange={(e) =>
+                  setFormData({ ...formData, presentation_format: e.target.value as '2d' | '3d' })
+                }
                 className={styles.input}
               >
                 <option value="2d">2D</option>
@@ -486,7 +486,9 @@ export default function Engagements() {
               <select
                 id="engagement-status"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as FormData['status'] })}
+                onChange={(e) =>
+                  setFormData({ ...formData, status: e.target.value as FormData['status'] })
+                }
                 className={styles.input}
               >
                 <option value="DRAFT">Draft</option>

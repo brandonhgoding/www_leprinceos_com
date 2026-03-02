@@ -377,7 +377,9 @@
   border-radius: 6px;
   background: white;
   color: var(--charcoal);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .input:focus {
@@ -395,7 +397,7 @@
   padding-top: 1.5rem;
 }
 
-.checkboxLabel input[type="checkbox"] {
+.checkboxLabel input[type='checkbox'] {
   width: 18px;
   height: 18px;
   cursor: pointer;

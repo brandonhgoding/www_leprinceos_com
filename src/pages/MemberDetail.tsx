@@ -257,9 +257,7 @@ export default function MemberDetail() {
             </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>Square Customer ID</div>
-              <div className={styles.infoValue}>
-                {member.square_customer_id || 'Not synced'}
-              </div>
+              <div className={styles.infoValue}>{member.square_customer_id || 'Not synced'}</div>
             </div>
           </div>
         </div>
@@ -269,8 +267,7 @@ export default function MemberDetail() {
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>Current Benefits</h2>
             <p className={styles.cardSubtitle}>
-              Active Membership: {benefits.membership.tier_name} (
-              {benefits.membership.status})
+              Active Membership: {benefits.membership.tier_name} ({benefits.membership.status})
             </p>
             <div className={styles.benefitsTable}>
               <table className={styles.table}>
@@ -287,8 +284,7 @@ export default function MemberDetail() {
                     <tr key={allocation.id}>
                       <td className={styles.benefitName}>{allocation.benefit_name}</td>
                       <td>
-                        {formatDate(allocation.period_start)} –{' '}
-                        {formatDate(allocation.period_end)}
+                        {formatDate(allocation.period_start)} – {formatDate(allocation.period_end)}
                       </td>
                       <td>
                         <span className={allocation.is_exhausted ? styles.exhausted : ''}>
@@ -328,15 +324,12 @@ export default function MemberDetail() {
                     <div>
                       <div className={styles.membershipTier}>{membership.tier_name}</div>
                       <div className={styles.membershipDates}>
-                        {formatDate(membership.start_date)} –{' '}
-                        {formatDate(membership.end_date)}
+                        {formatDate(membership.start_date)} – {formatDate(membership.end_date)}
                       </div>
                     </div>
                     <div className={styles.membershipRight}>
                       <span
-                        className={`${styles.statusBadge} ${getStatusClass(
-                          membership.status
-                        )}`}
+                        className={`${styles.statusBadge} ${getStatusClass(membership.status)}`}
                       >
                         {membership.status_display}
                       </span>
@@ -387,9 +380,7 @@ export default function MemberDetail() {
                 id="member-detail-first-name"
                 type="text"
                 value={editFormData.first_name}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, first_name: e.target.value })
-                }
+                onChange={(e) => setEditFormData({ ...editFormData, first_name: e.target.value })}
                 required
                 className={styles.input}
               />
@@ -400,9 +391,7 @@ export default function MemberDetail() {
                 id="member-detail-last-name"
                 type="text"
                 value={editFormData.last_name}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, last_name: e.target.value })
-                }
+                onChange={(e) => setEditFormData({ ...editFormData, last_name: e.target.value })}
                 required
                 className={styles.input}
               />
@@ -438,9 +427,7 @@ export default function MemberDetail() {
               <select
                 id="member-detail-birth-month"
                 value={editFormData.birth_month}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, birth_month: e.target.value })
-                }
+                onChange={(e) => setEditFormData({ ...editFormData, birth_month: e.target.value })}
                 className={styles.input}
               >
                 <option value="">Select month</option>
@@ -459,9 +446,7 @@ export default function MemberDetail() {
                 min="1"
                 max="31"
                 value={editFormData.birth_day}
-                onChange={(e) =>
-                  setEditFormData({ ...editFormData, birth_day: e.target.value })
-                }
+                onChange={(e) => setEditFormData({ ...editFormData, birth_day: e.target.value })}
                 className={styles.input}
               />
             </div>
@@ -504,11 +489,7 @@ export default function MemberDetail() {
           </>
         }
       >
-        <form
-          id="create-membership-form"
-          onSubmit={handleMembershipSubmit}
-          className={styles.form}
-        >
+        <form id="create-membership-form" onSubmit={handleMembershipSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="member-detail-membership-tier">Membership Tier *</label>
             <select

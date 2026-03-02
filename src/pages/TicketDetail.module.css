@@ -290,7 +290,9 @@
   border-radius: 6px;
   background: white;
   color: var(--charcoal);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .input:focus {
@@ -327,13 +329,13 @@
   background: rgba(184, 149, 108, 0.2);
 }
 
-.dayCheckbox input[type="checkbox"] {
+.dayCheckbox input[type='checkbox'] {
   width: 14px;
   height: 14px;
   cursor: pointer;
 }
 
-.dayCheckbox input[type="checkbox"]:checked + span {
+.dayCheckbox input[type='checkbox']:checked + span {
   font-weight: 500;
   color: var(--brass);
 }
@@ -346,7 +348,7 @@
   cursor: pointer;
 }
 
-.checkboxLabel input[type="checkbox"] {
+.checkboxLabel input[type='checkbox'] {
   width: 18px;
   height: 18px;
   cursor: pointer;

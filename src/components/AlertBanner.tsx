@@ -34,7 +34,7 @@ export default function AlertBanner({ alerts, onDismiss }: AlertBannerProps) {
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
 
   const handleDismiss = (alertId: string) => {
-    setDismissedAlerts(prev => new Set(prev).add(alertId));
+    setDismissedAlerts((prev) => new Set(prev).add(alertId));
     onDismiss?.(alertId);
   };
 
@@ -45,7 +45,7 @@ export default function AlertBanner({ alerts, onDismiss }: AlertBannerProps) {
     }
   };
 
-  const visibleAlerts = alerts.filter(alert => !dismissedAlerts.has(alert.id));
+  const visibleAlerts = alerts.filter((alert) => !dismissedAlerts.has(alert.id));
 
   if (visibleAlerts.length === 0) {
     return null;
@@ -53,12 +53,14 @@ export default function AlertBanner({ alerts, onDismiss }: AlertBannerProps) {
 
   return (
     <div className={styles.alertContainer}>
-      {visibleAlerts.map(alert => (
+      {visibleAlerts.map((alert) => (
         <div
           key={alert.id}
           role="alert"
           aria-live="polite"
-          className={`${styles.alert} ${styles[`alert${alert.type.charAt(0).toUpperCase() + alert.type.slice(1)}`]}`}
+          className={`${styles.alert} ${
+            styles[`alert${alert.type.charAt(0).toUpperCase() + alert.type.slice(1)}`]
+          }`}
         >
           <div className={styles.alertIcon} aria-label={alertLabels[alert.type]}>
             {alertIcons[alert.type]}

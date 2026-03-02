@@ -43,8 +43,12 @@ describe('ProtectedRoute Component', () => {
     // Save original location
     originalLocation = window.location;
     // Mock window.location
-    delete (window as any).location;
-    window.location = { ...originalLocation, href: '', pathname: '/dashboard/home' } as any;
+    delete (window as unknown as Record<string, unknown>).location;
+    window.location = {
+      ...originalLocation,
+      href: '',
+      pathname: '/dashboard/home',
+    } as Location & string;
   });
 
   afterEach(() => {
@@ -62,14 +66,14 @@ describe('ProtectedRoute Component', () => {
   describe('Loading State', () => {
     it('should show loading state while checking authentication', () => {
       vi.mocked(authApi.getCurrentUser).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       expect(screen.getByText('Loading...')).toBeInTheDocument();
@@ -78,14 +82,14 @@ describe('ProtectedRoute Component', () => {
 
     it('should have correct loading state styling', () => {
       vi.mocked(authApi.getCurrentUser).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       render(
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       const loadingContainer = screen.getByText('Loading...').parentElement;
@@ -106,7 +110,7 @@ describe('ProtectedRoute Component', () => {
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => {
@@ -127,7 +131,7 @@ describe('ProtectedRoute Component', () => {
             <p>Welcome to the dashboard</p>
           </div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => {
@@ -147,7 +151,7 @@ describe('ProtectedRoute Component', () => {
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       // Component redirects, so protected content should not be rendered
@@ -163,7 +167,7 @@ describe('ProtectedRoute Component', () => {
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       // After loading completes, component returns null (redirects)
@@ -181,7 +185,7 @@ describe('ProtectedRoute Component', () => {
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => {
@@ -195,7 +199,7 @@ describe('ProtectedRoute Component', () => {
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => {
@@ -227,7 +231,7 @@ describe('ProtectedRoute Component', () => {
           <div>Second Child</div>
           <div>Third Child</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => {
@@ -246,7 +250,7 @@ describe('ProtectedRoute Component', () => {
         <ProtectedRoute>
           <div>Protected Content</div>
         </ProtectedRoute>,
-        { wrapper }
+        { wrapper },
       );
 
       // Should not render protected content on errors

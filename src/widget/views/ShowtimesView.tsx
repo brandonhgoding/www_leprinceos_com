@@ -66,7 +66,9 @@ export default function ShowtimesView({ config, onSelectShowtime }: ShowtimesVie
           setLoading(false);
         }
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [config.apiBaseUrl]);
 
   if (loading) {
@@ -115,7 +117,13 @@ export default function ShowtimesView({ config, onSelectShowtime }: ShowtimesVie
             />
           ) : (
             <div className="lpo-film-poster-placeholder" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" />
               </svg>
             </div>
@@ -126,7 +134,11 @@ export default function ShowtimesView({ config, onSelectShowtime }: ShowtimesVie
               {group.runtimeMinutes && <span>{group.runtimeMinutes} min</span>}
               {group.rating && <span>{group.rating}</span>}
             </div>
-            <div className="lpo-showtimes-list" role="list" aria-label={`Showtimes for ${group.filmTitle}`}>
+            <div
+              className="lpo-showtimes-list"
+              role="list"
+              aria-label={`Showtimes for ${group.filmTitle}`}
+            >
               {group.showtimes.map((st) => {
                 const { day, time } = formatShowtime(st.starts_at);
                 return (

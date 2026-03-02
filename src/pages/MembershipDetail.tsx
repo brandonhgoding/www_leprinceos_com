@@ -220,8 +220,7 @@ export default function MembershipDetail() {
           <h2 className={styles.cardTitle}>Benefit Allocations</h2>
           {allocations.length === 0 ? (
             <p className={styles.emptyMessage}>
-              No benefit allocations yet. Allocations are created when the membership is
-              activated.
+              No benefit allocations yet. Allocations are created when the membership is activated.
             </p>
           ) : (
             <div className={styles.tableWrapper}>
@@ -241,13 +240,10 @@ export default function MembershipDetail() {
                       <td className={styles.benefitName}>{allocation.benefit_name}</td>
                       <td>{allocation.period_type}</td>
                       <td className={styles.dates}>
-                        {formatDate(allocation.period_start)} –{' '}
-                        {formatDate(allocation.period_end)}
+                        {formatDate(allocation.period_start)} – {formatDate(allocation.period_end)}
                       </td>
                       <td>
-                        <span
-                          className={allocation.is_exhausted ? styles.exhausted : ''}
-                        >
+                        <span className={allocation.is_exhausted ? styles.exhausted : ''}>
                           {allocation.quantity_used} / {allocation.quantity_allocated}
                         </span>
                       </td>
@@ -257,8 +253,7 @@ export default function MembershipDetail() {
                             className={styles.progressFill}
                             style={{
                               width: `${
-                                (allocation.quantity_used / allocation.quantity_allocated) *
-                                100
+                                (allocation.quantity_used / allocation.quantity_allocated) * 100
                               }%`,
                             }}
                           />
@@ -299,9 +294,7 @@ export default function MembershipDetail() {
                     <tr key={redemption.id}>
                       <td>{formatDateTime(redemption.redeemed_at)}</td>
                       <td className={styles.benefitName}>{redemption.benefit_name}</td>
-                      <td className={styles.discount}>
-                        {formatPrice(redemption.discount_amount)}
-                      </td>
+                      <td className={styles.discount}>{formatPrice(redemption.discount_amount)}</td>
                       <td>{redemption.quantity_redeemed}</td>
                       <td>
                         {redemption.sale ? (
@@ -332,17 +325,13 @@ export default function MembershipDetail() {
                     <div className={styles.auditTime}>{formatDateTime(entry.performed_at)}</div>
                   </div>
                   {entry.performed_by_username && (
-                    <div className={styles.auditUser}>
-                      By: {entry.performed_by_username}
-                    </div>
+                    <div className={styles.auditUser}>By: {entry.performed_by_username}</div>
                   )}
                   {entry.notes && <div className={styles.auditNotes}>{entry.notes}</div>}
                   {(entry.old_value || entry.new_value) && (
                     <div className={styles.auditChange}>
                       {entry.old_value && (
-                        <span className={styles.oldValue}>
-                          Was: {entry.old_value}
-                        </span>
+                        <span className={styles.oldValue}>Was: {entry.old_value}</span>
                       )}
                       {entry.new_value && (
                         <span className={styles.newValue}>Now: {entry.new_value}</span>

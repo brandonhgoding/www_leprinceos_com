@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // src/contexts/ToastContext.tsx
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import type { Alert, AlertType } from '../components/AlertBanner';
@@ -15,16 +16,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const addToast = useCallback((message: string, type: AlertType = 'error') => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    setToasts(prev => [...prev, { id, type, message, dismissible: true }]);
+    setToasts((prev) => [...prev, { id, type, message, dismissible: true }]);
 
     // Auto-dismiss after 6 seconds
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
+      setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 6000);
   }, []);
 
   const dismissToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   return (

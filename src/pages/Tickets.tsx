@@ -178,8 +178,8 @@ export default function Tickets() {
           </div>
           <h3 className="empty-state-title">No Ticket Types Defined</h3>
           <p className="empty-state-description">
-            Create ticket types with different pricing to accommodate various customer segments
-            like adults, children, seniors, or special promotions.
+            Create ticket types with different pricing to accommodate various customer segments like
+            adults, children, seniors, or special promotions.
           </p>
           <button className="btn btn-primary" onClick={openCreateModal}>
             Create First Ticket Type
@@ -210,7 +210,11 @@ export default function Tickets() {
                           Archived
                         </span>
                       ) : (
-                        <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
+                        <span
+                          className={`${styles.statusBadge} ${
+                            ticket.is_active ? styles.statusActive : styles.statusInactive
+                          }`}
+                        >
                           {ticket.is_active ? 'Active' : 'Inactive'}
                         </span>
                       )}
@@ -269,7 +273,11 @@ export default function Tickets() {
                         Archived
                       </span>
                     ) : (
-                      <span className={`${styles.statusBadge} ${ticket.is_active ? styles.statusActive : styles.statusInactive}`}>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          ticket.is_active ? styles.statusActive : styles.statusInactive
+                        }`}
+                      >
                         {ticket.is_active ? 'Active' : 'Inactive'}
                       </span>
                     )}
@@ -285,10 +293,7 @@ export default function Tickets() {
                   >
                     Details
                   </button>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => openEditModal(ticket)}
-                  >
+                  <button className={styles.actionButton} onClick={() => openEditModal(ticket)}>
                     Edit
                   </button>
                   <button
@@ -329,8 +334,8 @@ export default function Tickets() {
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create'
-                ? 'Create Ticket Type'
-                : 'Save Changes'}
+                  ? 'Create Ticket Type'
+                  : 'Save Changes'}
             </button>
           </>
         }

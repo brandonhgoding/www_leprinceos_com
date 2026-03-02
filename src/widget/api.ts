@@ -58,10 +58,7 @@ async function post<T>(baseUrl: string, path: string, body: unknown): Promise<T>
 }
 
 /** Fetch upcoming showtimes for the cinema */
-export function fetchShowtimes(
-  baseUrl: string,
-  days: number = 7,
-): Promise<PublicShowtime[]> {
+export function fetchShowtimes(baseUrl: string, days: number = 7): Promise<PublicShowtime[]> {
   return get<PublicShowtime[]>(baseUrl, `/public/showtimes/?days=${days}`);
 }
 
@@ -95,16 +92,11 @@ export function payOrder(
 }
 
 /** Get order details/status */
-export function fetchOrder(
-  baseUrl: string,
-  orderUuid: string,
-): Promise<OrderConfirmation> {
+export function fetchOrder(baseUrl: string, orderUuid: string): Promise<OrderConfirmation> {
   return get<OrderConfirmation>(baseUrl, `/public/orders/${orderUuid}/`);
 }
 
 /** Fetch cinema config including Square credentials */
-export function fetchCinemaConfig(
-  baseUrl: string,
-): Promise<CinemaConfig> {
+export function fetchCinemaConfig(baseUrl: string): Promise<CinemaConfig> {
   return get<CinemaConfig>(baseUrl, '/public/cinema-config/');
 }

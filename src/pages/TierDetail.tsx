@@ -2,11 +2,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  membershipTiersApi,
-  benefitRulesApi,
-  benefitConditionsApi,
-} from '../api/memberships';
+import { membershipTiersApi, benefitRulesApi, benefitConditionsApi } from '../api/memberships';
 import { ticketsApi } from '../api/tickets';
 import type {
   MembershipTierCreate,
@@ -149,8 +145,7 @@ export default function TierDetail() {
 
   // Mutations
   const updateTierMutation = useMutation({
-    mutationFn: (data: Partial<MembershipTierCreate>) =>
-      membershipTiersApi.update(tierId, data),
+    mutationFn: (data: Partial<MembershipTierCreate>) => membershipTiersApi.update(tierId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['membership-tiers', tierId] });
       queryClient.invalidateQueries({ queryKey: ['membership-tiers'] });
@@ -266,9 +261,7 @@ export default function TierDetail() {
       max_family_members: tierFormData.is_family_tier
         ? parseInt(tierFormData.max_family_members)
         : undefined,
-      display_order: tierFormData.display_order
-        ? parseInt(tierFormData.display_order)
-        : undefined,
+      display_order: tierFormData.display_order ? parseInt(tierFormData.display_order) : undefined,
       is_active: tierFormData.is_active,
     };
 
@@ -292,9 +285,7 @@ export default function TierDetail() {
       benefit_type: ruleFormData.benefit_type as BenefitType,
       benefit_scope: ruleFormData.benefit_scope as BenefitScope,
       value: ruleFormData.value,
-      monthly_limit: ruleFormData.monthly_limit
-        ? parseInt(ruleFormData.monthly_limit)
-        : undefined,
+      monthly_limit: ruleFormData.monthly_limit ? parseInt(ruleFormData.monthly_limit) : undefined,
       daily_limit: ruleFormData.daily_limit ? parseInt(ruleFormData.daily_limit) : undefined,
       priority: ruleFormData.priority ? parseInt(ruleFormData.priority) : undefined,
       is_active: ruleFormData.is_active,
@@ -368,10 +359,7 @@ export default function TierDetail() {
       {/* Header */}
       <div className={styles.header}>
         <div>
-          <button
-            className={styles.backButton}
-            onClick={() => navigate('/membership-tiers')}
-          >
+          <button className={styles.backButton} onClick={() => navigate('/membership-tiers')}>
             ← Back to Tiers
           </button>
           <h1 className={styles.title}>{tier.name}</h1>
@@ -397,9 +385,7 @@ export default function TierDetail() {
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>Type</div>
               <div className={styles.infoValue}>
-                {tier.is_family_tier
-                  ? `Family (max ${tier.max_family_members})`
-                  : 'Individual'}
+                {tier.is_family_tier ? `Family (max ${tier.max_family_members})` : 'Individual'}
               </div>
             </div>
             <div className={styles.infoItem}>
@@ -493,8 +479,7 @@ export default function TierDetail() {
                         {rule.conditions.map((condition: BenefitCondition) => (
                           <div key={condition.id} className={styles.conditionItem}>
                             <span>
-                              {condition.condition_type_display}:{' '}
-                              {formatConditionValue(condition)}
+                              {condition.condition_type_display}: {formatConditionValue(condition)}
                             </span>
                             <button
                               className={styles.deleteConditionButton}
@@ -675,9 +660,7 @@ export default function TierDetail() {
             <textarea
               id="tier-detail-description"
               value={tierFormData.description}
-              onChange={(e) =>
-                setTierFormData({ ...tierFormData, description: e.target.value })
-              }
+              onChange={(e) => setTierFormData({ ...tierFormData, description: e.target.value })}
               className={styles.textarea}
               rows={3}
             />
@@ -791,8 +774,8 @@ export default function TierDetail() {
               {createRuleMutation.isPending || updateRuleMutation.isPending
                 ? 'Saving...'
                 : modalMode === 'create-rule'
-                ? 'Create Rule'
-                : 'Save Changes'}
+                  ? 'Create Rule'
+                  : 'Save Changes'}
             </button>
           </>
         }
@@ -816,9 +799,7 @@ export default function TierDetail() {
             <textarea
               id="benefit-rule-description"
               value={ruleFormData.description}
-              onChange={(e) =>
-                setRuleFormData({ ...ruleFormData, description: e.target.value })
-              }
+              onChange={(e) => setRuleFormData({ ...ruleFormData, description: e.target.value })}
               className={styles.textarea}
               rows={2}
               placeholder="Optional description for staff"
@@ -880,9 +861,7 @@ export default function TierDetail() {
               className={styles.input}
               placeholder="e.g., 5.00 for $5 off, 10 for 10%"
             />
-            <small className={styles.helpText}>
-              Enter dollar amount (5.00) or percentage (10)
-            </small>
+            <small className={styles.helpText}>Enter dollar amount (5.00) or percentage (10)</small>
           </div>
 
           <div className={styles.formRow}>
@@ -907,9 +886,7 @@ export default function TierDetail() {
                 type="number"
                 min="0"
                 value={ruleFormData.daily_limit}
-                onChange={(e) =>
-                  setRuleFormData({ ...ruleFormData, daily_limit: e.target.value })
-                }
+                onChange={(e) => setRuleFormData({ ...ruleFormData, daily_limit: e.target.value })}
                 className={styles.input}
                 placeholder="Leave blank for unlimited"
               />
@@ -924,9 +901,7 @@ export default function TierDetail() {
                 type="number"
                 min="0"
                 value={ruleFormData.priority}
-                onChange={(e) =>
-                  setRuleFormData({ ...ruleFormData, priority: e.target.value })
-                }
+                onChange={(e) => setRuleFormData({ ...ruleFormData, priority: e.target.value })}
                 className={styles.input}
               />
               <small className={styles.helpText}>Lower numbers apply first</small>

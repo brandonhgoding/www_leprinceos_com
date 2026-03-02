@@ -13,15 +13,18 @@ export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Transform cinema memberships for Sidebar component
-  const cinemas = user?.cinemas.map(c => ({
-    id: c.cinema_id,
-    name: c.cinema_name,
-  })) || [];
+  const cinemas =
+    user?.cinemas.map((c) => ({
+      id: c.cinema_id,
+      name: c.cinema_name,
+    })) || [];
 
-  const currentCinemaForSidebar = currentCinema ? {
-    id: currentCinema.cinema_id,
-    name: currentCinema.cinema_name,
-  } : null;
+  const currentCinemaForSidebar = currentCinema
+    ? {
+        id: currentCinema.cinema_id,
+        name: currentCinema.cinema_name,
+      }
+    : null;
 
   const handleCinemaChange = (cinemaId: number) => {
     selectCinema(cinemaId);
@@ -74,9 +77,7 @@ export default function Layout() {
       {/* Main Content */}
       <main className={styles.main}>
         <div className={styles.container}>
-          {toasts.length > 0 && (
-            <AlertBanner alerts={toasts} onDismiss={dismissToast} />
-          )}
+          {toasts.length > 0 && <AlertBanner alerts={toasts} onDismiss={dismissToast} />}
           <Outlet />
         </div>
 

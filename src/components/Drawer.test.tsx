@@ -249,7 +249,7 @@ describe('Drawer Component', () => {
       const { rerender } = render(
         <Drawer {...defaultProps}>
           <div>Original content</div>
-        </Drawer>
+        </Drawer>,
       );
 
       expect(screen.getByText('Original content')).toBeInTheDocument();
@@ -257,7 +257,7 @@ describe('Drawer Component', () => {
       rerender(
         <Drawer {...defaultProps}>
           <div>Updated content</div>
-        </Drawer>
+        </Drawer>,
       );
 
       expect(screen.queryByText('Original content')).not.toBeInTheDocument();

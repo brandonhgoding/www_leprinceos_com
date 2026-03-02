@@ -33,7 +33,7 @@ const EMBED_TYPES: EmbedType[] = [
     name: 'Now Playing',
     description: 'Display films currently showing at your cinema with showtimes.',
     icon: '🎬',
-    previewDescription: 'Shows current films with poster, title, rating, and today\'s showtimes.',
+    previewDescription: "Shows current films with poster, title, rating, and today's showtimes.",
     urlPath: 'nowplaying',
   },
   {
@@ -74,7 +74,8 @@ const EMBED_TYPES: EmbedType[] = [
     name: 'Buy Tickets',
     description: 'Let customers browse showtimes and purchase tickets directly on your site.',
     icon: '🛒',
-    previewDescription: 'Full ticket purchasing flow: browse films, select showtimes, choose tickets, and pay with Square.',
+    previewDescription:
+      'Full ticket purchasing flow: browse films, select showtimes, choose tickets, and pay with Square.',
     urlPath: 'buy',
     widgetPrimary: true,
   },
@@ -196,7 +197,9 @@ export default function Embeds() {
         {EMBED_TYPES.map((embed) => (
           <div
             key={embed.id}
-            className={`${styles.embedCard} ${selectedEmbed?.id === embed.id ? styles.embedCardSelected : ''}`}
+            className={`${styles.embedCard} ${
+              selectedEmbed?.id === embed.id ? styles.embedCardSelected : ''
+            }`}
             onClick={() => selectEmbed(embed)}
           >
             <div className={styles.embedIcon}>{embed.icon}</div>
@@ -258,7 +261,9 @@ export default function Embeds() {
                   <select
                     id="embed-theme"
                     value={config.theme}
-                    onChange={(e) => setConfig({ ...config, theme: e.target.value as 'light' | 'dark' | 'auto' })}
+                    onChange={(e) =>
+                      setConfig({ ...config, theme: e.target.value as 'light' | 'dark' | 'auto' })
+                    }
                     className={styles.select}
                   >
                     <option value="light">Light</option>
@@ -272,7 +277,9 @@ export default function Embeds() {
                     id="embed-max-items"
                     type="number"
                     value={config.maxItems}
-                    onChange={(e) => setConfig({ ...config, maxItems: parseInt(e.target.value) || 10 })}
+                    onChange={(e) =>
+                      setConfig({ ...config, maxItems: parseInt(e.target.value) || 10 })
+                    }
                     className={styles.input}
                     min={1}
                     max={50}
@@ -288,7 +295,10 @@ export default function Embeds() {
                     id="embed-film"
                     value={config.engagementId || ''}
                     onChange={(e) =>
-                      setConfig({ ...config, engagementId: e.target.value ? parseInt(e.target.value) : null })
+                      setConfig({
+                        ...config,
+                        engagementId: e.target.value ? parseInt(e.target.value) : null,
+                      })
                     }
                     className={styles.select}
                   >
@@ -333,7 +343,9 @@ export default function Embeds() {
               <div className={styles.previewContainer}>
                 {selectedEmbed.requiresEngagement && !config.engagementId ? (
                   <div
-                    className={`${styles.previewFrame} ${config.theme === 'dark' ? styles.previewDark : ''}`}
+                    className={`${styles.previewFrame} ${
+                      config.theme === 'dark' ? styles.previewDark : ''
+                    }`}
                     style={{ height: `${Math.min(parseInt(config.height) || 400, 400)}px` }}
                   >
                     <div className={styles.previewPlaceholder}>
@@ -386,8 +398,7 @@ export default function Embeds() {
                     <div className={styles.codeHeader}>
                       <h4>Option 2: iFrame</h4>
                       <p className={styles.codeDescription}>
-                        Simple iframe embed. Works everywhere but cannot adapt to your page
-                        styles.
+                        Simple iframe embed. Works everywhere but cannot adapt to your page styles.
                       </p>
                     </div>
                     <div className={styles.codeBlock}>

@@ -14,8 +14,8 @@ export const squareApi = {
     try {
       const response = await apiClient.get<SquareCredentials>('/v1/square/credentials/');
       return response.data;
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    } catch (error: unknown) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         return null;
       }
       throw error;
@@ -51,8 +51,8 @@ export const squareApi = {
     try {
       const response = await apiClient.get<SquareSyncLog>('/v1/square/sync/latest/');
       return response.data;
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    } catch (error: unknown) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         return null;
       }
       throw error;

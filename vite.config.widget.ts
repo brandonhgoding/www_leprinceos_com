@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // Widget build config: produces a single self-contained JS file
 // that cinemas drop on their websites.
@@ -34,4 +34,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

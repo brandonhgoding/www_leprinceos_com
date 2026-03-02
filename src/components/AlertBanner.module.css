@@ -40,12 +40,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    currentColor,
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
   opacity: 0.3;
 }
 

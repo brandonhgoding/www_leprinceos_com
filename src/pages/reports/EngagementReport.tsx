@@ -10,7 +10,10 @@ type SortField = 'starts_at' | 'total_tickets' | 'gross_revenue' | 'occupancy_pc
 type SortDirection = 'asc' | 'desc';
 
 function formatCurrency(value: string): string {
-  return `$${parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `$${parseFloat(value).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
 function formatDateTime(iso: string): string {
@@ -25,7 +28,13 @@ function formatDateTime(iso: string): string {
 
 const DownloadIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M8 2v8M4 7l4 4 4-4M2 12v2h12v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path
+      d="M8 2v8M4 7l4 4 4-4M2 12v2h12v-2"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
@@ -203,7 +212,9 @@ export default function EngagementReport() {
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Engagement Report</h1>
-          <p className={styles.subtitle}>Aggregate statistics across all showtimes in an engagement.</p>
+          <p className={styles.subtitle}>
+            Aggregate statistics across all showtimes in an engagement.
+          </p>
         </div>
         {stats && (
           <div className={styles.actionBar}>

@@ -59,6 +59,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
   });
 
   // Show dropdown when we have results or are loading/errored
+  /* eslint-disable react-hooks/set-state-in-effect -- syncing dropdown visibility with debounced input */
   useEffect(() => {
     if (debouncedQuery.length >= 2) {
       setIsDropdownOpen(true);
@@ -67,6 +68,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
       setIsDropdownOpen(false);
     }
   }, [debouncedQuery, searchResults]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -95,9 +97,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < searchResults.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < searchResults.length - 1 ? prev + 1 : prev));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -151,9 +151,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
           aria-autocomplete="list"
           aria-controls="search-results"
           aria-expanded={isDropdownOpen}
-          aria-activedescendant={
-            selectedIndex >= 0 ? `result-${selectedIndex}` : undefined
-          }
+          aria-activedescendant={selectedIndex >= 0 ? `result-${selectedIndex}` : undefined}
         />
 
         {/* Loading spinner in input */}
@@ -174,12 +172,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
 
         {/* Dropdown results */}
         {isDropdownOpen && (
-          <div
-            ref={dropdownRef}
-            id="search-results"
-            className={styles.dropdown}
-            role="listbox"
-          >
+          <div ref={dropdownRef} id="search-results" className={styles.dropdown} role="listbox">
             {isSearching && (
               <div className={styles.loadingState}>
                 <div className={styles.loadingSpinner}>
@@ -211,9 +204,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
                   <line x1="12" y1="8" x2="12" y2="12" />
                   <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
-                <p className={styles.errorText}>
-                  Failed to search TMDB. Please try again.
-                </p>
+                <p className={styles.errorText}>Failed to search TMDB. Please try again.</p>
               </div>
             )}
 
@@ -229,9 +220,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.35-4.35" />
                 </svg>
-                <p className={styles.emptyText}>
-                  No films found for "{debouncedQuery}"
-                </p>
+                <p className={styles.emptyText}>No films found for "{debouncedQuery}"</p>
               </div>
             )}
 
@@ -291,11 +280,7 @@ export default function FilmSearch({ onFilmSelected, disabled = false }: FilmSea
                       )}
                       {result.vote_average > 0 && (
                         <div className={styles.resultRating}>
-                          <svg
-                            className={styles.starIcon}
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
+                          <svg className={styles.starIcon} viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                           </svg>
                           {result.vote_average.toFixed(1)}

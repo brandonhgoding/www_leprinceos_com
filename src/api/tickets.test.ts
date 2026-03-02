@@ -243,10 +243,7 @@ describe('Tickets API', () => {
     });
 
     it('should handle multiple rules', async () => {
-      const rules = [
-        mockTicketTypeRule,
-        { ...mockTicketTypeRule, id: 2, name: 'Weekend Evening' },
-      ];
+      const rules = [mockTicketTypeRule, { ...mockTicketTypeRule, id: 2, name: 'Weekend Evening' }];
       vi.mocked(apiClient.get).mockResolvedValue({ data: rules });
 
       const result = await ticketsApi.listRules(1);

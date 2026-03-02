@@ -25,7 +25,13 @@ import EngagementSummaryReport from './pages/reports/EngagementSummaryReport';
 function NotFound() {
   return (
     <div style={{ padding: 'var(--space-xl)', textAlign: 'center' }}>
-      <h1 style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)', marginBottom: 'var(--space-md)' }}>
+      <h1
+        style={{
+          fontFamily: 'var(--font-heading)',
+          color: 'var(--color-text-primary)',
+          marginBottom: 'var(--space-md)',
+        }}
+      >
         404 — Page Not Found
       </h1>
       <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-lg)' }}>

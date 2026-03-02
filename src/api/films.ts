@@ -1,11 +1,6 @@
 // src/api/films.ts
 import apiClient from './client';
-import type {
-  Film,
-  PaginatedResponse,
-  TMDBSearchResult,
-  CreateFilmFromTMDBRequest,
-} from './types';
+import type { Film, PaginatedResponse, TMDBSearchResult, CreateFilmFromTMDBRequest } from './types';
 
 export const filmsApi = {
   list: async (search?: string): Promise<Film[]> => {
@@ -21,16 +16,15 @@ export const filmsApi = {
 
   searchTMDB: async (query: string): Promise<TMDBSearchResult[]> => {
     const response = await apiClient.get<TMDBSearchResult[]>(
-      `/v1/films/search/?q=${encodeURIComponent(query)}`
+      `/v1/films/search/?q=${encodeURIComponent(query)}`,
     );
     return response.data;
   },
 
   createFromTMDB: async (tmdbId: number): Promise<Film> => {
-    const response = await apiClient.post<Film>(
-      '/v1/films/from-tmdb/',
-      { tmdb_id: tmdbId } as CreateFilmFromTMDBRequest
-    );
+    const response = await apiClient.post<Film>('/v1/films/from-tmdb/', {
+      tmdb_id: tmdbId,
+    } as CreateFilmFromTMDBRequest);
     return response.data;
   },
 };

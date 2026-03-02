@@ -14,7 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
@@ -24,33 +24,33 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   // Prevent Cypress from failing tests on uncaught exceptions
   // This is useful for React errors that don't affect test behavior
   // Log the error but don't fail the test
-  console.error('Uncaught exception:', err)
+  console.error('Uncaught exception:', err);
 
   // Return false to prevent the test from failing
   // You can add specific error types to ignore if needed
-  return false
-})
+  return false;
+});
 
 // Add custom viewport sizes for common breakpoints
 Cypress.Commands.add('setMobileViewport', () => {
-  cy.viewport(375, 667) // iPhone SE size
-})
+  cy.viewport(375, 667); // iPhone SE size
+});
 
 Cypress.Commands.add('setTabletViewport', () => {
-  cy.viewport(768, 1024) // iPad size
-})
+  cy.viewport(768, 1024); // iPad size
+});
 
 Cypress.Commands.add('setDesktopViewport', () => {
-  cy.viewport(1280, 720) // Default desktop
-})
+  cy.viewport(1280, 720); // Default desktop
+});
 
 // Extend Cypress namespace for the new viewport commands
 declare global {
   namespace Cypress {
     interface Chainable {
-      setMobileViewport(): Chainable<void>
-      setTabletViewport(): Chainable<void>
-      setDesktopViewport(): Chainable<void>
+      setMobileViewport(): Chainable<void>;
+      setTabletViewport(): Chainable<void>;
+      setDesktopViewport(): Chainable<void>;
     }
   }
 }

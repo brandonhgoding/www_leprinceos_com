@@ -6,7 +6,13 @@ import styles from './Reports.module.css';
 
 const DownloadIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M8 2v8M4 7l4 4 4-4M2 12v2h12v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path
+      d="M8 2v8M4 7l4 4 4-4M2 12v2h12v-2"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
@@ -128,8 +134,8 @@ export default function EngagementSummaryReport() {
         <div className={styles.emptyState}>
           <h3 className={styles.emptyStateTitle}>Report Ready</h3>
           <p className={styles.emptyStateDescription}>
-            Use the download buttons above to export your engagement summary as CSV or PDF.
-            The report covers {startDate} through {endDate}.
+            Use the download buttons above to export your engagement summary as CSV or PDF. The
+            report covers {startDate} through {endDate}.
           </p>
         </div>
       ) : (

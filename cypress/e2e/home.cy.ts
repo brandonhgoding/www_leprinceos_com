@@ -5,14 +5,14 @@ describe('Home Dashboard', () => {
       cy.intercept('GET', '/api/v1/auth/me/', {
         statusCode: 200,
         body: user,
-      }).as('getCurrentUser')
-    })
+      }).as('getCurrentUser');
+    });
 
     // Set up local storage
     cy.window().then((win) => {
-      win.localStorage.setItem('selected_cinema_id', '1')
-    })
-  })
+      win.localStorage.setItem('selected_cinema_id', '1');
+    });
+  });
 
   describe('Page Layout and Summary Cards', () => {
     it('should display welcome message with user name', () => {
@@ -20,28 +20,28 @@ describe('Home Dashboard', () => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: { count: 0, results: [] },
-        }).as('getEngagements')
+        }).as('getEngagements');
 
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: { count: 0, results: [] },
-        }).as('getScreens')
+        }).as('getScreens');
 
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: { count: 0, results: [] },
-        }).as('getShowtimes')
+        }).as('getShowtimes');
 
-        cy.visit('/dashboard')
-        cy.wait('@getCurrentUser')
+        cy.visit('/dashboard');
+        cy.wait('@getCurrentUser');
 
         // Check page title
-        cy.contains('h1', 'Dashboard').should('be.visible')
+        cy.contains('h1', 'Dashboard').should('be.visible');
 
         // Check welcome message with first name
-        cy.contains(`Welcome back, ${user.first_name}`).should('be.visible')
-      })
-    })
+        cy.contains(`Welcome back, ${user.first_name}`).should('be.visible');
+      });
+    });
 
     it('should display summary cards with correct data', () => {
       cy.fixture('engagements').then((engagements) => {
@@ -51,106 +51,106 @@ describe('Home Dashboard', () => {
               statusCode: 200,
               body: {
                 count: 2,
-                results: engagements.results.filter(e => e.status === 'CONFIRMED'),
+                results: engagements.results.filter((e) => e.status === 'CONFIRMED'),
               },
-            })
+            });
           } else {
             req.reply({
               statusCode: 200,
               body: engagements,
-            })
+            });
           }
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
-      })
+        }).as('getShowtimes');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
 
       // Active Engagements card
-      cy.contains('Active Engagements').should('be.visible')
-      cy.contains('Active Engagements').parent().should('contain', '2')
-      cy.contains('View all').should('have.attr', 'href').and('include', '/engagements')
+      cy.contains('Active Engagements').should('be.visible');
+      cy.contains('Active Engagements').parent().should('contain', '2');
+      cy.contains('View all').should('have.attr', 'href').and('include', '/engagements');
 
       // Today's Showtimes card
-      cy.contains("Today's Showtimes").should('be.visible')
-      cy.contains("Today's Showtimes").parent().should('contain', '3')
+      cy.contains("Today's Showtimes").should('be.visible');
+      cy.contains("Today's Showtimes").parent().should('contain', '3');
 
       // Screens card
-      cy.contains('Screens').should('be.visible')
-      cy.contains('Screens').parent().should('contain', '2')
-      cy.contains('Manage').should('have.attr', 'href').and('include', '/screens')
-    })
+      cy.contains('Screens').should('be.visible');
+      cy.contains('Screens').parent().should('contain', '2');
+      cy.contains('Manage').should('have.attr', 'href').and('include', '/screens');
+    });
 
     it('should show loading state for cards', () => {
       // Delay the API responses
       cy.intercept('GET', '/api/v1/engagements/*', (req) => {
         req.reply((res) => {
-          res.delay = 1000
-          res.send({ count: 0, results: [] })
-        })
-      }).as('getEngagements')
+          res.delay = 1000;
+          res.send({ count: 0, results: [] });
+        });
+      }).as('getEngagements');
 
       cy.intercept('GET', '/api/v1/screens/*', {
         statusCode: 200,
         body: { count: 0, results: [] },
-      }).as('getScreens')
+      }).as('getScreens');
 
       cy.intercept('GET', '/api/v1/showtimes/*', {
         statusCode: 200,
         body: { count: 0, results: [] },
-      }).as('getShowtimes')
+      }).as('getShowtimes');
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
 
       // Should show em dash (—) while loading
-      cy.contains('Active Engagements').parent().should('contain', '—')
-    })
+      cy.contains('Active Engagements').parent().should('contain', '—');
+    });
 
     it('should navigate to linked pages from summary cards', () => {
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
-      })
+        }).as('getShowtimes');
+      });
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
 
       // Click "View all" link
-      cy.contains('View all').click()
-      cy.url().should('include', '/dashboard/engagements')
-    })
-  })
+      cy.contains('View all').click();
+      cy.url().should('include', '/dashboard/engagements');
+    });
+  });
 
   describe("Today's Showtimes Section", () => {
     it('should display list of showtimes for today', () => {
@@ -158,160 +158,160 @@ describe('Home Dashboard', () => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
+        }).as('getShowtimes');
 
-        cy.visit('/dashboard')
-        cy.wait('@getCurrentUser')
-        cy.wait('@getShowtimes')
+        cy.visit('/dashboard');
+        cy.wait('@getCurrentUser');
+        cy.wait('@getShowtimes');
 
         // Check section title
-        cy.contains('h2', "Today's Showtimes").should('be.visible')
+        cy.contains('h2', "Today's Showtimes").should('be.visible');
 
         // Check that showtimes are displayed
         showtimes.results.forEach((showtime) => {
-          cy.contains(showtime.film_title).should('be.visible')
-          cy.contains(showtime.screen_name).should('be.visible')
-        })
-      })
-    })
+          cy.contains(showtime.film_title).should('be.visible');
+          cy.contains(showtime.screen_name).should('be.visible');
+        });
+      });
+    });
 
     it('should display showtime status badges', () => {
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
+        }).as('getShowtimes');
 
-        cy.visit('/dashboard')
-        cy.wait('@getCurrentUser')
-        cy.wait('@getShowtimes')
+        cy.visit('/dashboard');
+        cy.wait('@getCurrentUser');
+        cy.wait('@getShowtimes');
 
         // Should show "Active" for non-cancelled showtimes
-        cy.contains('Active').should('be.visible')
+        cy.contains('Active').should('be.visible');
 
         // Should show "Cancelled" for cancelled showtimes
-        cy.contains('Cancelled').should('be.visible')
-      })
-    })
+        cy.contains('Cancelled').should('be.visible');
+      });
+    });
 
     it('should display presentation format', () => {
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
+        }).as('getShowtimes');
 
-        cy.visit('/dashboard')
-        cy.wait('@getCurrentUser')
-        cy.wait('@getShowtimes')
+        cy.visit('/dashboard');
+        cy.wait('@getCurrentUser');
+        cy.wait('@getShowtimes');
 
         // Should show presentation format
-        cy.contains('2D').should('be.visible')
-      })
-    })
+        cy.contains('2D').should('be.visible');
+      });
+    });
 
     it('should show empty state when no showtimes exist', () => {
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.intercept('GET', '/api/v1/showtimes/*', {
         statusCode: 200,
         body: { count: 0, results: [] },
-      }).as('getEmptyShowtimes')
+      }).as('getEmptyShowtimes');
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
-      cy.wait('@getEmptyShowtimes')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
+      cy.wait('@getEmptyShowtimes');
 
       // Check for empty state
-      cy.contains('No Showtimes Today').should('be.visible')
-      cy.contains('Get started by creating an engagement').should('be.visible')
-      cy.contains('View Engagements').should('be.visible')
-    })
+      cy.contains('No Showtimes Today').should('be.visible');
+      cy.contains('Get started by creating an engagement').should('be.visible');
+      cy.contains('View Engagements').should('be.visible');
+    });
 
     it('should show loading state for showtimes', () => {
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       // Delay showtimes response
       cy.intercept('GET', '/api/v1/showtimes/*', (req) => {
         req.reply((res) => {
-          res.delay = 1000
-          res.send({ count: 0, results: [] })
-        })
-      }).as('getShowtimes')
+          res.delay = 1000;
+          res.send({ count: 0, results: [] });
+        });
+      }).as('getShowtimes');
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
 
       // Should show loading message
-      cy.contains('Loading showtimes...').should('be.visible')
-    })
-  })
+      cy.contains('Loading showtimes...').should('be.visible');
+    });
+  });
 
   describe('Smart Alerts', () => {
     it('should display alerts when there are issues', () => {
@@ -329,162 +329,162 @@ describe('Home Dashboard', () => {
             screen: 1,
           },
         ],
-      }
+      };
 
       cy.intercept('GET', '/api/v1/engagements/*', {
         statusCode: 200,
         body: engagementWithNoShowtimes,
-      }).as('getEngagements')
+      }).as('getEngagements');
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       // No showtimes for today or tomorrow
       cy.intercept('GET', '/api/v1/showtimes/*', {
         statusCode: 200,
         body: { count: 0, results: [] },
-      }).as('getShowtimes')
+      }).as('getShowtimes');
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
 
       // Alert banner should be visible (implementation depends on useSmartAlerts hook)
       // This test validates the AlertBanner component is rendered
-      cy.get('body').should('exist')
-    })
-  })
+      cy.get('body').should('exist');
+    });
+  });
 
   describe('Responsive Design', () => {
     it('should display mobile card view on small screens', () => {
-      cy.viewport(375, 667) // Mobile viewport
+      cy.viewport(375, 667); // Mobile viewport
 
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
+        }).as('getShowtimes');
 
-        cy.visit('/dashboard')
-        cy.wait('@getCurrentUser')
-        cy.wait('@getShowtimes')
+        cy.visit('/dashboard');
+        cy.wait('@getCurrentUser');
+        cy.wait('@getShowtimes');
 
         // Summary cards should still be visible
-        cy.contains('Active Engagements').should('be.visible')
-        cy.contains("Today's Showtimes").should('be.visible')
+        cy.contains('Active Engagements').should('be.visible');
+        cy.contains("Today's Showtimes").should('be.visible');
 
         // Showtimes should be displayed in card view
-        cy.contains(showtimes.results[0].film_title).should('be.visible')
-      })
-    })
+        cy.contains(showtimes.results[0].film_title).should('be.visible');
+      });
+    });
 
     it('should display desktop table view on large screens', () => {
-      cy.viewport(1280, 720) // Desktop viewport
+      cy.viewport(1280, 720); // Desktop viewport
 
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
+        }).as('getShowtimes');
 
-        cy.visit('/dashboard')
-        cy.wait('@getCurrentUser')
-        cy.wait('@getShowtimes')
+        cy.visit('/dashboard');
+        cy.wait('@getCurrentUser');
+        cy.wait('@getShowtimes');
 
         // Table headers should be visible
-        cy.contains('th', 'Time').should('be.visible')
-        cy.contains('th', 'Film').should('be.visible')
-        cy.contains('th', 'Screen').should('be.visible')
-        cy.contains('th', 'Format').should('be.visible')
-        cy.contains('th', 'Status').should('be.visible')
-      })
-    })
-  })
+        cy.contains('th', 'Time').should('be.visible');
+        cy.contains('th', 'Film').should('be.visible');
+        cy.contains('th', 'Screen').should('be.visible');
+        cy.contains('th', 'Format').should('be.visible');
+        cy.contains('th', 'Status').should('be.visible');
+      });
+    });
+  });
 
   describe('Error Handling', () => {
     it('should handle engagement API errors gracefully', () => {
       cy.intercept('GET', '/api/v1/engagements/*', {
         statusCode: 500,
         body: { detail: 'Internal server error' },
-      }).as('getEngagementsError')
+      }).as('getEngagementsError');
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.fixture('showtimes').then((showtimes) => {
         cy.intercept('GET', '/api/v1/showtimes/*', {
           statusCode: 200,
           body: showtimes,
-        }).as('getShowtimes')
-      })
+        }).as('getShowtimes');
+      });
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
 
       // Page should still render despite error
-      cy.contains('Dashboard').should('be.visible')
-    })
+      cy.contains('Dashboard').should('be.visible');
+    });
 
     it('should handle showtime API errors gracefully', () => {
       cy.fixture('engagements').then((engagements) => {
         cy.intercept('GET', '/api/v1/engagements/*', {
           statusCode: 200,
           body: engagements,
-        }).as('getEngagements')
-      })
+        }).as('getEngagements');
+      });
 
       cy.fixture('screens').then((screens) => {
         cy.intercept('GET', '/api/v1/screens/*', {
           statusCode: 200,
           body: screens,
-        }).as('getScreens')
-      })
+        }).as('getScreens');
+      });
 
       cy.intercept('GET', '/api/v1/showtimes/*', {
         statusCode: 500,
         body: { detail: 'Internal server error' },
-      }).as('getShowtimesError')
+      }).as('getShowtimesError');
 
-      cy.visit('/dashboard')
-      cy.wait('@getCurrentUser')
+      cy.visit('/dashboard');
+      cy.wait('@getCurrentUser');
 
       // Page should still render
-      cy.contains('Dashboard').should('be.visible')
-    })
-  })
-})
+      cy.contains('Dashboard').should('be.visible');
+    });
+  });
+});

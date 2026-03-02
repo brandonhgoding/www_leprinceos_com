@@ -11,7 +11,10 @@ interface ApiErrorData {
  * Extracts a user-friendly error message from an API error.
  * Handles DRF's common error formats.
  */
-export function getErrorMessage(error: unknown, fallback = 'An unexpected error occurred.'): string {
+export function getErrorMessage(
+  error: unknown,
+  fallback = 'An unexpected error occurred.',
+): string {
   const axiosError = error as AxiosError<ApiErrorData>;
 
   if (axiosError?.response?.data) {

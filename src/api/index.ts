@@ -13,6 +13,12 @@ export { default as ticketsApi } from './tickets';
 export { default as reportsApi } from './reports';
 export { default as onlineOrdersApi } from './onlineOrders';
 
-export { membersApi, membershipTiersApi, membershipsApi, benefitRulesApi, benefitConditionsApi } from './memberships';
+export {
+  membersApi,
+  membershipTiersApi,
+  membershipsApi,
+  benefitRulesApi,
+  benefitConditionsApi,
+} from './memberships';
 
 export * from './types';

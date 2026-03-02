@@ -8,7 +8,7 @@ describe('AlertBanner Component', () => {
     id: string,
     type: AlertType,
     message: string,
-    dismissible?: boolean
+    dismissible?: boolean,
   ): Alert => ({
     id,
     type,
@@ -277,10 +277,7 @@ describe('AlertBanner Component', () => {
     it('should handle Enter key on correct alert when multiple alerts exist', async () => {
       const user = userEvent.setup();
       const onDismiss = vi.fn();
-      const alerts = [
-        createAlert('1', 'info', 'First'),
-        createAlert('2', 'warning', 'Second'),
-      ];
+      const alerts = [createAlert('1', 'info', 'First'), createAlert('2', 'warning', 'Second')];
 
       render(<AlertBanner alerts={alerts} onDismiss={onDismiss} />);
 
@@ -297,10 +294,7 @@ describe('AlertBanner Component', () => {
 
   describe('Accessibility', () => {
     it('should have role="alert" on alert elements', () => {
-      const alerts = [
-        createAlert('1', 'info', 'First'),
-        createAlert('2', 'warning', 'Second'),
-      ];
+      const alerts = [createAlert('1', 'info', 'First'), createAlert('2', 'warning', 'Second')];
 
       render(<AlertBanner alerts={alerts} />);
 
@@ -347,10 +341,7 @@ describe('AlertBanner Component', () => {
 
     it('should be keyboard accessible', async () => {
       const user = userEvent.setup();
-      const alerts = [
-        createAlert('1', 'info', 'First'),
-        createAlert('2', 'warning', 'Second'),
-      ];
+      const alerts = [createAlert('1', 'info', 'First'), createAlert('2', 'warning', 'Second')];
 
       render(<AlertBanner alerts={alerts} />);
 
@@ -376,7 +367,7 @@ describe('AlertBanner Component', () => {
   describe('Dynamic Content', () => {
     it('should update when new alerts are added', () => {
       const { rerender } = render(
-        <AlertBanner alerts={[createAlert('1', 'info', 'First alert')]} />
+        <AlertBanner alerts={[createAlert('1', 'info', 'First alert')]} />,
       );
 
       expect(screen.getByText('First alert')).toBeInTheDocument();
@@ -388,7 +379,7 @@ describe('AlertBanner Component', () => {
             createAlert('1', 'info', 'First alert'),
             createAlert('2', 'warning', 'Second alert'),
           ]}
-        />
+        />,
       );
 
       expect(screen.getByText('First alert')).toBeInTheDocument();
@@ -403,7 +394,7 @@ describe('AlertBanner Component', () => {
             createAlert('1', 'info', 'First alert'),
             createAlert('2', 'warning', 'Second alert'),
           ]}
-        />
+        />,
       );
 
       expect(screen.getByText('First alert')).toBeInTheDocument();
@@ -440,10 +431,7 @@ describe('AlertBanner Component', () => {
 
     it('should maintain dismissed state when props update but alert remains', async () => {
       const user = userEvent.setup();
-      const alerts = [
-        createAlert('1', 'info', 'First'),
-        createAlert('2', 'warning', 'Second'),
-      ];
+      const alerts = [createAlert('1', 'info', 'First'), createAlert('2', 'warning', 'Second')];
 
       const { rerender } = render(<AlertBanner alerts={alerts} />);
 
@@ -460,7 +448,7 @@ describe('AlertBanner Component', () => {
             createAlert('2', 'warning', 'Second'),
             createAlert('3', 'success', 'Third'),
           ]}
-        />
+        />,
       );
 
       expect(screen.queryByText('First')).not.toBeInTheDocument();
@@ -487,7 +475,7 @@ describe('AlertBanner Component', () => {
       render(<AlertBanner alerts={alerts} />);
 
       expect(
-        screen.getByText('Message with <html> & "quotes" and \'apostrophes\'')
+        screen.getByText('Message with <html> & "quotes" and \'apostrophes\''),
       ).toBeInTheDocument();
     });
 

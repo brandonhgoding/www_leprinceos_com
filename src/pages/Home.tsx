@@ -28,7 +28,7 @@ function SummaryCard({
   isLoading,
   trend,
   trendPercentage,
-  previousValue
+  previousValue,
 }: SummaryCardProps) {
   const getTrendArrow = () => {
     if (!trend || trend === 'neutral') return null;
@@ -124,7 +124,7 @@ export default function Home() {
 
   // Sort showtimes by time
   const sortedShowtimes = [...todayShowtimes].sort(
-    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
   );
 
   const displayName = user?.first_name || user?.username || 'User';

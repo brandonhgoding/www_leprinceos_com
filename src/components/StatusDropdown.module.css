@@ -47,7 +47,7 @@
   opacity: 1;
 }
 
-.statusButton[aria-expanded="true"] .chevron {
+.statusButton[aria-expanded='true'] .chevron {
   transform: rotate(180deg);
 }
 

@@ -46,9 +46,7 @@ export default function Drawer({
 
     // Focus first focusable element in the drawer
     const timer = setTimeout(() => {
-      const firstInput = drawerRef.current?.querySelector<HTMLElement>(
-        'input, select, textarea'
-      );
+      const firstInput = drawerRef.current?.querySelector<HTMLElement>('input, select, textarea');
       if (firstInput) {
         firstInput.focus();
       } else {
@@ -68,7 +66,7 @@ export default function Drawer({
       if (e.key !== 'Tab' || !drawerRef.current) return;
 
       const focusableElements = drawerRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
@@ -131,8 +129,14 @@ export default function Drawer({
             </svg>
           </button>
         </div>
-        <div className={styles.content} data-cy="drawer-content">{children}</div>
-        {footer && <div className={styles.footer} data-cy="drawer-footer">{footer}</div>}
+        <div className={styles.content} data-cy="drawer-content">
+          {children}
+        </div>
+        {footer && (
+          <div className={styles.footer} data-cy="drawer-footer">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -61,7 +61,7 @@ describe('AuthContext', () => {
   describe('Authentication State', () => {
     it('should start with loading state', () => {
       vi.mocked(authApi.getCurrentUser).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {}), // Never resolves
       );
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -247,9 +247,7 @@ describe('AuthContext', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      await expect(result.current.login('wrong', 'creds')).rejects.toThrow(
-        'Invalid credentials'
-      );
+      await expect(result.current.login('wrong', 'creds')).rejects.toThrow('Invalid credentials');
       expect(result.current.user).toBeNull();
     });
   });

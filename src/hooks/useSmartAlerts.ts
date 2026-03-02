@@ -1,6 +1,5 @@
 // src/hooks/useSmartAlerts.ts
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import type { Alert } from '../components/AlertBanner';
 import type { Engagement, Showtime } from '../api/types';
 
@@ -10,13 +9,11 @@ interface UseSmartAlertsOptions {
   tomorrowShowtimes?: Showtime[];
 }
 
+// todayShowtimes kept in interface for callers; not currently used in alert logic
 export function useSmartAlerts({
   engagements,
-  todayShowtimes,
-  tomorrowShowtimes = []
+  tomorrowShowtimes = [],
 }: UseSmartAlertsOptions): Alert[] {
-  const navigate = useNavigate();
-
   return useMemo(() => {
     const alerts: Alert[] = [];
 
@@ -33,12 +30,12 @@ export function useSmartAlerts({
     // Check for engagements ending soon (within 2 days)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const twoDaysFromNow = new Date(today);
     twoDaysFromNow.setDate(today.getDate() + 2);
 
     engagements
-      .filter(e => e.status === 'CONFIRMED')
+      .filter((e) => e.status === 'CONFIRMED')
       .forEach((engagement) => {
         const endDate = new Date(engagement.end_date);
         endDate.setHours(0, 0, 0, 0);
@@ -55,16 +52,18 @@ export function useSmartAlerts({
       });
 
     // Check for draft engagements
-    const draftCount = engagements.filter(e => e.status === 'DRAFT').length;
+    const draftCount = engagements.filter((e) => e.status === 'DRAFT').length;
     if (draftCount > 0) {
       alerts.push({
         id: 'draft-engagements',
         type: 'info',
-        message: `You have ${draftCount} draft engagement${draftCount !== 1 ? 's' : ''} waiting to be confirmed`,
+        message: `You have ${draftCount} draft engagement${
+          draftCount !== 1 ? 's' : ''
+        } waiting to be confirmed`,
         dismissible: true,
       });
     }
 
     return alerts;
-  }, [engagements, todayShowtimes, tomorrowShowtimes, navigate]);
+  }, [engagements, tomorrowShowtimes]);
 }

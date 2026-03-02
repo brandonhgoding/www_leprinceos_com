@@ -22,7 +22,7 @@ import type {
   MembershipFilters,
 } from './types';
 
-const buildQueryString = (filters: Record<string, any>): string => {
+const buildQueryString = (filters: Record<string, unknown>): string => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
@@ -71,9 +71,7 @@ export const membersApi = {
 
   getMemberships: async (id: number): Promise<Membership[]> => {
     // This endpoint returns a plain array, not paginated
-    const response = await apiClient.get<Membership[]>(
-      `/v1/members/${id}/memberships/`
-    );
+    const response = await apiClient.get<Membership[]>(`/v1/members/${id}/memberships/`);
     return response.data;
   },
 
@@ -89,7 +87,8 @@ export const membersApi = {
 
 export const membershipTiersApi = {
   list: async (): Promise<MembershipTier[]> => {
-    const response = await apiClient.get<PaginatedResponse<MembershipTier>>('/v1/membership-tiers/');
+    const response =
+      await apiClient.get<PaginatedResponse<MembershipTier>>('/v1/membership-tiers/');
     return response.data.results;
   },
 
@@ -104,10 +103,7 @@ export const membershipTiersApi = {
   },
 
   update: async (id: number, data: Partial<MembershipTierCreate>): Promise<MembershipTier> => {
-    const response = await apiClient.patch<MembershipTier>(
-      `/v1/membership-tiers/${id}/`,
-      data
-    );
+    const response = await apiClient.patch<MembershipTier>(`/v1/membership-tiers/${id}/`, data);
     return response.data;
   },
 
@@ -118,7 +114,7 @@ export const membershipTiersApi = {
   getBenefitRules: async (id: number): Promise<BenefitRule[]> => {
     // This endpoint returns a plain array, not paginated
     const response = await apiClient.get<BenefitRule[]>(
-      `/v1/membership-tiers/${id}/benefit-rules/`
+      `/v1/membership-tiers/${id}/benefit-rules/`,
     );
     return response.data;
   },
@@ -153,10 +149,13 @@ export const benefitRulesApi = {
     await apiClient.delete(`/v1/benefit-rules/${id}/`);
   },
 
-  addCondition: async (ruleId: number, data: Omit<BenefitConditionCreate, 'rule'>): Promise<BenefitCondition> => {
+  addCondition: async (
+    ruleId: number,
+    data: Omit<BenefitConditionCreate, 'rule'>,
+  ): Promise<BenefitCondition> => {
     const response = await apiClient.post<BenefitCondition>(
       `/v1/benefit-rules/${ruleId}/conditions/`,
-      data
+      data,
     );
     return response.data;
   },
@@ -211,25 +210,19 @@ export const membershipsApi = {
 
   getAllocations: async (id: number): Promise<BenefitAllocation[]> => {
     // This endpoint returns a plain array, not paginated
-    const response = await apiClient.get<BenefitAllocation[]>(
-      `/v1/memberships/${id}/allocations/`
-    );
+    const response = await apiClient.get<BenefitAllocation[]>(`/v1/memberships/${id}/allocations/`);
     return response.data;
   },
 
   getRedemptions: async (id: number): Promise<BenefitRedemption[]> => {
     // This endpoint returns a plain array, not paginated
-    const response = await apiClient.get<BenefitRedemption[]>(
-      `/v1/memberships/${id}/redemptions/`
-    );
+    const response = await apiClient.get<BenefitRedemption[]>(`/v1/memberships/${id}/redemptions/`);
     return response.data;
   },
 
   getAuditLog: async (id: number): Promise<MembershipAuditLog[]> => {
     // This endpoint returns a plain array, not paginated
-    const response = await apiClient.get<MembershipAuditLog[]>(
-      `/v1/memberships/${id}/audit-log/`
-    );
+    const response = await apiClient.get<MembershipAuditLog[]>(`/v1/memberships/${id}/audit-log/`);
     return response.data;
   },
 };

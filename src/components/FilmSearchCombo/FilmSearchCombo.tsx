@@ -70,10 +70,7 @@ export default function FilmSearchCombo({
   }, []);
 
   // Search local films
-  const {
-    data: localFilms = [],
-    isLoading: isSearchingLocal,
-  } = useQuery({
+  const { data: localFilms = [], isLoading: isSearchingLocal } = useQuery({
     queryKey: ['films', 'search', debouncedQuery],
     queryFn: () => filmsApi.list(debouncedQuery || undefined),
     enabled: debouncedQuery.length >= 1,
@@ -221,9 +218,7 @@ export default function FilmSearchCombo({
           aria-autocomplete="list"
           aria-controls="search-results"
           aria-expanded={isDropdownOpen}
-          aria-activedescendant={
-            selectedIndex >= 0 ? `result-${selectedIndex}` : undefined
-          }
+          aria-activedescendant={selectedIndex >= 0 ? `result-${selectedIndex}` : undefined}
         />
 
         {/* Loading spinner in input */}
@@ -244,12 +239,7 @@ export default function FilmSearchCombo({
 
         {/* Dropdown results */}
         {isDropdownOpen && debouncedQuery.length >= 1 && (
-          <div
-            ref={dropdownRef}
-            id="search-results"
-            className={styles.dropdown}
-            role="listbox"
-          >
+          <div ref={dropdownRef} id="search-results" className={styles.dropdown} role="listbox">
             {/* Local Films Section */}
             {isSearchingLocal ? (
               <div className={styles.loadingState}>
@@ -287,11 +277,7 @@ export default function FilmSearchCombo({
                       >
                         <div className={styles.posterWrapper}>
                           {film.poster_url ? (
-                            <img
-                              src={film.poster_url}
-                              alt=""
-                              className={styles.poster}
-                            />
+                            <img src={film.poster_url} alt="" className={styles.poster} />
                           ) : (
                             <div className={styles.posterPlaceholder}>
                               <svg
@@ -311,9 +297,7 @@ export default function FilmSearchCombo({
                           <div className={styles.resultTitle}>
                             {film.title}
                             {film.runtime_minutes && (
-                              <span className={styles.resultMeta}>
-                                {film.runtime_minutes} min
-                              </span>
+                              <span className={styles.resultMeta}>{film.runtime_minutes} min</span>
                             )}
                           </div>
                           {film.rating && (
@@ -327,9 +311,7 @@ export default function FilmSearchCombo({
 
                 {localFilms.length === 0 && !isSearchingLocal && (
                   <div className={styles.emptyLocalState}>
-                    <p className={styles.emptyText}>
-                      No films found for "{debouncedQuery}"
-                    </p>
+                    <p className={styles.emptyText}>No films found for "{debouncedQuery}"</p>
                   </div>
                 )}
 
@@ -527,9 +509,7 @@ export default function FilmSearchCombo({
 
       {/* Help text */}
       {!searchQuery && !selectedFilm && (
-        <p className={styles.helpText}>
-          Search your films or find new ones on TMDB.
-        </p>
+        <p className={styles.helpText}>Search your films or find new ones on TMDB.</p>
       )}
     </div>
   );
