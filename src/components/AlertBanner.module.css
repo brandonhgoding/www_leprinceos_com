@@ -5,10 +5,10 @@
   flex-direction: column;
   gap: var(--space-sm);
   margin-bottom: var(--space-lg);
-  animation: slideDown 0.3s ease-out;
+  animation: slide-down 0.35s ease-out;
 }
 
-@keyframes slideDown {
+@keyframes slide-down {
   from {
     opacity: 0;
     transform: translateY(-10px);
@@ -25,23 +25,24 @@
   gap: var(--space-md);
   padding: var(--space-md) var(--space-lg);
   border-radius: var(--radius-md);
-  border-left: 4px solid;
+  border-left: 3px solid;
   background: var(--surface-elevated);
   box-shadow: var(--shadow-sm);
-  animation: fadeInUp 0.3s ease-out;
+  animation: fade-in-up 0.3s ease-out;
   position: relative;
   overflow: hidden;
 }
 
+/* Subtle gradient wash at top */
 .alert::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, currentColor, transparent);
-  opacity: 0.3;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentcolor, transparent);
+  opacity: 0.2;
 }
 
 /* Alert Types */
@@ -90,20 +91,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: bold;
   flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
 }
 
 /* Alert Message */
 .alertMessage {
   flex: 1;
   margin: 0;
-  padding-top: 4px;
+  padding-top: 3px;
   font-size: var(--text-sm);
   font-weight: 500;
   line-height: 1.5;
@@ -115,9 +115,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  margin-top: 2px;
+  width: 28px;
+  height: 28px;
+  margin-top: 0;
   padding: 0;
   background: transparent;
   border: none;
@@ -126,7 +126,7 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   flex-shrink: 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1;
 }
 
@@ -141,7 +141,7 @@
 }
 
 .dismissButton:active {
-  transform: scale(0.95);
+  transform: scale(0.9);
 }
 
 /* Responsive */
@@ -152,9 +152,9 @@
   }
 
   .alertIcon {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
   }
 
   .alertMessage {

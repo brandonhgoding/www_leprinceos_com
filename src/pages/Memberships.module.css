@@ -11,6 +11,18 @@
   margin-bottom: 1.5rem;
   gap: 1rem;
   flex-wrap: wrap;
+  position: relative;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brass), var(--brass-light), transparent);
+  border-radius: 1px;
 }
 
 .title {
@@ -19,6 +31,7 @@
   font-weight: 600;
   color: var(--charcoal);
   margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
@@ -37,6 +50,9 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
   white-space: nowrap;
+  letter-spacing: -0.01em;
+  position: relative;
+  overflow: hidden;
 }
 
 .primaryButton:hover {
@@ -110,13 +126,13 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--stone);
   background: var(--cream);
 }
 
 .table tbody tr:hover {
-  background: var(--cream);
+  background: rgba(184, 149, 108, 0.04);
 }
 
 .table tbody tr:last-child td {
@@ -294,7 +310,7 @@
 
 .formGroup label {
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--charcoal);
 }
 

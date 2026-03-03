@@ -80,17 +80,17 @@
   box-shadow: var(--shadow-lg);
   padding: var(--space-xs);
   z-index: 1000;
-  animation: dropdownSlide 0.2s ease-out;
+  animation: dropdown-slide 0.2s ease-out;
 }
 
-@keyframes dropdownSlide {
+@keyframes dropdown-slide {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-8px) scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 

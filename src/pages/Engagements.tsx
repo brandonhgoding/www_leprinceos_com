@@ -11,6 +11,13 @@ import { useToast } from '../contexts/ToastContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Engagements.module.css';
 
+function getLocalDateString(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
+    now.getDate(),
+  ).padStart(2, '0')}`;
+}
+
 type ModalMode = 'closed' | 'create' | 'edit' | 'showtimes';
 
 interface FormData {
@@ -39,7 +46,7 @@ export default function Engagements() {
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [statusFilter, setStatusFilter] = useState<string>('CONFIRMED');
+  const [statusFilter, setStatusFilter] = useState<string>('CURRENT');
 
   const openCreateModal = useCallback(() => {
     setFormData(initialFormData);
@@ -57,10 +64,28 @@ export default function Engagements() {
     return () => window.removeEventListener('open-create-engagement-drawer', handleOpenDrawer);
   }, [openCreateModal]);
 
+  // Build filter params: some tabs use composite date+status filters
+  const getFilterParams = () => {
+    const today = getLocalDateString();
+    switch (statusFilter) {
+      case 'CURRENT':
+        return { status: 'CONFIRMED', start_date_before: today, end_date_after: today };
+      case 'UPCOMING':
+        return { status: 'CONFIRMED', start_date_after: today };
+      case 'ENDED':
+        return { end_date_before: today };
+      case 'DRAFT':
+      case 'CANCELLED':
+        return { status: statusFilter };
+      default:
+        return {};
+    }
+  };
+
   // Queries
   const { data: engagements = [], isLoading: engagementsLoading } = useQuery({
     queryKey: ['engagements', statusFilter],
-    queryFn: () => engagementsApi.list(statusFilter ? { status: statusFilter } : {}),
+    queryFn: () => engagementsApi.list(getFilterParams()),
   });
 
   const { data: screens = [] } = useQuery({
@@ -199,12 +224,20 @@ export default function Engagements() {
       {/* Filter Tabs */}
       <div className="filter-tabs" role="tablist">
         <button
-          className={`filter-tab ${statusFilter === 'CONFIRMED' ? 'active' : ''}`}
+          className={`filter-tab ${statusFilter === 'CURRENT' ? 'active' : ''}`}
           role="tab"
-          aria-selected={statusFilter === 'CONFIRMED'}
-          onClick={() => setStatusFilter('CONFIRMED')}
+          aria-selected={statusFilter === 'CURRENT'}
+          onClick={() => setStatusFilter('CURRENT')}
         >
-          Confirmed
+          Current
+        </button>
+        <button
+          className={`filter-tab ${statusFilter === 'UPCOMING' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={statusFilter === 'UPCOMING'}
+          onClick={() => setStatusFilter('UPCOMING')}
+        >
+          Upcoming
         </button>
         <button
           className={`filter-tab ${statusFilter === 'DRAFT' ? 'active' : ''}`}
@@ -241,11 +274,26 @@ export default function Engagements() {
             🎬
           </div>
           <h3 className="empty-state-title">
-            {statusFilter ? `No ${statusFilter.toLowerCase()} engagements` : 'No Engagements Yet'}
+            {statusFilter
+              ? `No ${
+                  {
+                    CURRENT: 'current',
+                    UPCOMING: 'upcoming',
+                    DRAFT: 'draft',
+                    ENDED: 'ended',
+                    CANCELLED: 'cancelled',
+                  }[statusFilter] ?? statusFilter.toLowerCase()
+                } engagements`
+              : 'No Engagements Yet'}
           </h3>
           <p className="empty-state-description">
             {statusFilter
-              ? `You don't have any ${statusFilter.toLowerCase()} engagements at the moment.`
+              ? {
+                  CURRENT: "You don't have any engagements currently playing.",
+                  UPCOMING: "You don't have any upcoming engagements.",
+                  ENDED: "You don't have any past engagements.",
+                }[statusFilter] ??
+                `You don't have any ${statusFilter.toLowerCase()} engagements at the moment.`
               : "Start booking films by creating your first engagement. An engagement represents a film's run at your cinema."}
           </p>
           {!statusFilter && (
@@ -300,6 +348,7 @@ export default function Engagements() {
                       <StatusDropdown
                         value={engagement.status}
                         onChange={(newStatus) => handleInlineStatusChange(engagement.id, newStatus)}
+                        disabled={engagement.end_date < getLocalDateString()}
                       />
                     </td>
                     <td>
@@ -344,6 +393,7 @@ export default function Engagements() {
                       <StatusDropdown
                         value={engagement.status}
                         onChange={(newStatus) => handleInlineStatusChange(engagement.id, newStatus)}
+                        disabled={engagement.end_date < getLocalDateString()}
                       />
                       <span className={styles.formatBadge}>
                         {engagement.presentation_format.toUpperCase()}
@@ -494,7 +544,6 @@ export default function Engagements() {
                 <option value="DRAFT">Draft</option>
                 <option value="CONFIRMED">Confirmed</option>
                 <option value="CANCELLED">Cancelled</option>
-                <option value="ENDED">Ended</option>
               </select>
             </div>
           </div>

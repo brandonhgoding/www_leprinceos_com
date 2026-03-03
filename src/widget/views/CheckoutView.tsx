@@ -326,9 +326,10 @@ export default function CheckoutView({
   const handleConfirmMismatch = useCallback(async () => {
     if (!pendingOrder) return;
     setProcessing(true);
-    setPriceMismatch(null);
     try {
       await tokenizeAndPay(pendingOrder);
+      setPriceMismatch(null);
+      setPendingOrder(null);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
@@ -340,6 +341,13 @@ export default function CheckoutView({
   const handleCancelMismatch = useCallback(() => {
     setPriceMismatch(null);
     setPendingOrder(null);
+    // Destroy the Square card instance so it can be re-initialized
+    // when the user returns to the payment step.
+    if (squareCardRef.current) {
+      squareCardRef.current.destroy().catch(() => {});
+      squareCardRef.current = null;
+    }
+    squareInitializedRef.current = false;
     setStep('tickets');
   }, []);
 
@@ -583,7 +591,12 @@ export default function CheckoutView({
                 >
                   Pay {formatCurrency(priceMismatch.serverTotal)}
                 </button>
-                <button type="button" className="lpo-btn-secondary" onClick={handleCancelMismatch}>
+                <button
+                  type="button"
+                  className="lpo-btn-secondary"
+                  onClick={handleCancelMismatch}
+                  disabled={processing}
+                >
                   Cancel
                 </button>
               </div>
@@ -614,6 +627,7 @@ export default function CheckoutView({
           <button
             type="button"
             className="lpo-btn-link"
+            disabled={processing}
             onClick={() => {
               handleCancelMismatch();
               setPaymentError(null);

@@ -4,6 +4,17 @@
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1001;
+  backdrop-filter: blur(2px);
+  animation: overlay-in 0.2s ease-out;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (min-width: 768px) {
@@ -24,7 +35,18 @@
   flex-direction: column;
   z-index: 1002;
   overflow-y: auto;
-  transition: transform 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle vertical grain on sidebar */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
 }
 
 @media (max-width: 767px) {
@@ -39,21 +61,37 @@
 
 /* Sidebar Brand */
 .sidebarBrand {
-  padding: 1.25rem 1rem;
+  padding: 1.5rem 1.25rem 1.25rem;
   border-bottom: 1px solid var(--border-dark);
+  position: relative;
+}
+
+/* Art deco brass accent under brand */
+.sidebarBrand::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 1.25rem;
+  right: 1.25rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--brass) 0%, var(--brass-light) 30%, transparent 100%);
+  opacity: 0.5;
 }
 
 .sidebarLogo {
   font-family: var(--font-serif);
   color: var(--brass);
-  font-size: 1.375rem;
+  font-size: 1.5rem;
   font-weight: 400;
   text-decoration: none;
   display: block;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-normal);
 }
 
 .sidebarLogo:hover {
   color: var(--brass-light);
+  text-shadow: 0 0 20px rgba(184, 149, 108, 0.3);
 }
 
 /* Cinema Selector */
@@ -68,6 +106,7 @@
   justify-content: space-between;
   width: 100%;
   padding: 0.5rem 0.75rem;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--paper);
@@ -75,11 +114,12 @@
   border: 1px solid var(--border-dark);
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .cinemaSelectorToggle:hover {
   border-color: var(--brass);
+  box-shadow: 0 0 0 1px rgba(184, 149, 108, 0.15);
 }
 
 .cinemaName {
@@ -95,12 +135,25 @@
   border-radius: 6px;
   padding: 0.25rem;
   overflow: hidden;
+  animation: scale-in 0.15s ease-out;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .cinemaSelectorItem {
   display: block;
   width: 100%;
   padding: 0.5rem 0.75rem;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   color: var(--text-light-muted);
   background: none;
@@ -108,7 +161,7 @@
   text-align: left;
   cursor: pointer;
   border-radius: 4px;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .cinemaSelectorItem:hover {
@@ -123,7 +176,7 @@
 /* Sidebar Navigation */
 .sidebarNav {
   flex: 1;
-  padding: 1rem 0;
+  padding: 0.75rem 0;
   overflow-y: auto;
 }
 
@@ -133,17 +186,18 @@
   gap: 0.75rem;
   padding: 0.625rem 1rem;
   margin: 0 0.5rem 0.125rem;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-light-muted);
   text-decoration: none;
   border-radius: 6px;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   position: relative;
 }
 
 .sidebarLink:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--paper);
 }
 
@@ -160,18 +214,25 @@
   transform: translateY(-50%);
   width: 3px;
   height: 60%;
-  background-color: var(--brass);
+  background: var(--brass);
   border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(184, 149, 108, 0.4);
 }
 
 .sidebarIcon {
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
 }
 
 .sidebarLink.active .sidebarIcon,
 .sidebarLink:hover .sidebarIcon {
   opacity: 1;
+}
+
+/* Active link icon gets brass tint */
+.sidebarLink.active .sidebarIcon {
+  color: var(--brass-light);
 }
 
 /* Sidebar Groups (Collapsible) */
@@ -186,6 +247,7 @@
   width: calc(100% - 1rem);
   padding: 0.625rem 1rem;
   margin: 0 0.5rem;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-light-muted);
@@ -194,11 +256,11 @@
   cursor: pointer;
   border-radius: 6px;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .sidebarGroupToggle:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--paper);
 }
 
@@ -212,8 +274,8 @@
 
 .sidebarGroupArrow {
   flex-shrink: 0;
-  transition: transform 0.2s ease;
-  opacity: 0.5;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.4;
 }
 
 .sidebarGroupArrow.rotated {
@@ -222,34 +284,61 @@
 
 .sidebarGroupItems {
   overflow: hidden;
+  animation: group-expand 0.2s ease-out;
+}
+
+@keyframes group-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .sidebarSublink {
   display: block;
   padding: 0.5rem 1rem 0.5rem 3.25rem;
   margin: 0 0.5rem;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   color: var(--text-light-muted);
   text-decoration: none;
   border-radius: 6px;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   position: relative;
 }
 
 .sidebarSublink:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--paper);
 }
 
 .sidebarSublink.active {
   color: var(--brass);
+  font-weight: 500;
 }
 
 /* Sidebar User Section */
 .sidebarUser {
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   border-top: 1px solid var(--border-dark);
   margin-top: auto;
+  position: relative;
+}
+
+/* Brass accent line above user section */
+.sidebarUser::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 1.25rem;
+  width: 30px;
+  height: 1px;
+  background: var(--brass);
+  opacity: 0.3;
 }
 
 .sidebarUserInfo {
@@ -268,16 +357,17 @@
   gap: 0.75rem;
   width: 100%;
   padding: 0.5rem 0.75rem;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   color: var(--text-light-muted);
   background: none;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .sidebarLogout:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--paper);
 }

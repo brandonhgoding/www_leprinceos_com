@@ -85,10 +85,10 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   z-index: 100;
-  animation: slideDown var(--transition-fast) ease-out;
+  animation: slide-down var(--transition-fast) ease-out;
 }
 
-@keyframes slideDown {
+@keyframes slide-down {
   from {
     opacity: 0;
     transform: translateY(-8px);

@@ -39,12 +39,14 @@ const STATUS_CONFIG: Record<EngagementStatus, StatusConfig> = {
   },
 };
 
-const STATUS_ORDER: EngagementStatus[] = ['DRAFT', 'CONFIRMED', 'CANCELLED', 'ENDED'];
+// ENDED is determined by date, not manually assigned
+const STATUS_ORDER: EngagementStatus[] = ['DRAFT', 'CONFIRMED', 'CANCELLED'];
 
 export default function StatusDropdown({ value, onChange, disabled = false }: StatusDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isLocked = disabled || value === 'ENDED';
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -74,8 +76,15 @@ export default function StatusDropdown({ value, onChange, disabled = false }: St
     }
   }, [isOpen]);
 
+  // Close dropdown if it becomes locked while open (e.g. disabled prop or ENDED status)
+  useEffect(() => {
+    if (isOpen && isLocked) {
+      setIsOpen(false);
+    }
+  }, [isOpen, isLocked]);
+
   const handleStatusChange = async (newStatus: EngagementStatus) => {
-    if (newStatus === value || isLoading) return;
+    if (newStatus === value || isLoading || isLocked) return;
 
     setIsLoading(true);
     try {
@@ -103,8 +112,8 @@ export default function StatusDropdown({ value, onChange, disabled = false }: St
       <button
         type="button"
         className={`status-badge ${currentConfig.badgeClass} ${styles.statusButton}`}
-        onClick={() => !disabled && !isLoading && setIsOpen(!isOpen)}
-        disabled={disabled || isLoading}
+        onClick={() => !isLocked && !isLoading && setIsOpen(!isOpen)}
+        disabled={isLocked || isLoading}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-label={`Change status from ${currentConfig.label}`}

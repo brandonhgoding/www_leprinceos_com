@@ -5,11 +5,12 @@
   position: fixed;
   inset: 0;
   background: var(--surface-overlay);
+  backdrop-filter: blur(3px);
   z-index: 1000;
-  animation: overlayFadeIn var(--transition-fast) ease-out;
+  animation: overlay-fade-in 0.2s ease-out;
 }
 
-@keyframes overlayFadeIn {
+@keyframes overlay-fade-in {
   from {
     opacity: 0;
   }
@@ -27,17 +28,21 @@
   background: var(--surface-elevated);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-xl);
-  animation: drawerSlideIn var(--transition-normal) ease-out;
+  box-shadow:
+    -8px 0 40px rgba(0, 0, 0, 0.15),
+    -2px 0 8px rgba(0, 0, 0, 0.08);
+  animation: drawer-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 }
 
-@keyframes drawerSlideIn {
+@keyframes drawer-slide-in {
   from {
     transform: translateX(100%);
+    opacity: 0.8;
   }
   to {
     transform: translateX(0);
+    opacity: 1;
   }
 }
 
@@ -65,6 +70,19 @@
   padding: var(--space-lg);
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
+  position: relative;
+}
+
+/* Brass accent under drawer header */
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: var(--space-lg);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brass), transparent);
+  border-radius: 1px;
 }
 
 .title {
@@ -73,6 +91,7 @@
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .closeButton {
@@ -92,6 +111,7 @@
 .closeButton:hover {
   background: var(--surface-secondary);
   color: var(--text-primary);
+  transform: rotate(90deg);
 }
 
 .closeButton:focus-visible {
@@ -135,5 +155,9 @@
 
   .drawer {
     animation: none;
+  }
+
+  .closeButton:hover {
+    transform: none;
   }
 }

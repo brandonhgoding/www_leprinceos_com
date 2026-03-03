@@ -6,6 +6,18 @@
 
 .header {
   margin-bottom: 2rem;
+  position: relative;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brass), var(--brass-light), transparent);
+  border-radius: 1px;
 }
 
 .title {
@@ -14,6 +26,7 @@
   font-weight: 600;
   color: var(--charcoal);
   margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
