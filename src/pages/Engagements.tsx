@@ -8,6 +8,7 @@ import Drawer from '../components/Drawer';
 import StatusDropdown from '../components/StatusDropdown';
 import FilmSearchCombo from '../components/FilmSearchCombo';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Engagements.module.css';
 
@@ -43,6 +44,7 @@ const initialFormData: FormData = {
 export default function Engagements() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm } = useConfirm();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -180,11 +182,14 @@ export default function Engagements() {
     }
   };
 
-  const handleDelete = (engagement: Engagement) => {
+  const handleDelete = async (engagement: Engagement) => {
     if (
-      window.confirm(
-        `Are you sure you want to delete the engagement for "${engagement.film_title}"?`,
-      )
+      await confirm({
+        title: 'Delete Engagement',
+        message: `Are you sure you want to delete the engagement for "${engagement.film_title}"?`,
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
     ) {
       deleteMutation.mutate(engagement.id);
     }

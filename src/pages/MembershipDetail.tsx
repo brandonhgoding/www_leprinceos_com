@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { membershipsApi } from '../api/memberships';
 import type { MembershipStatus } from '../api/types';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './MembershipDetail.module.css';
 
@@ -12,6 +13,7 @@ export default function MembershipDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm, prompt } = useConfirm();
   const membershipId = parseInt(id!);
 
   // Queries
@@ -70,20 +72,38 @@ export default function MembershipDetail() {
   });
 
   // Handlers
-  const handleActivate = () => {
-    if (window.confirm('Activate this membership?')) {
+  const handleActivate = async () => {
+    if (
+      await confirm({
+        title: 'Activate Membership',
+        message: 'Activate this membership?',
+        confirmLabel: 'Activate',
+      })
+    ) {
       activateMutation.mutate();
     }
   };
 
-  const handleRenew = () => {
-    if (window.confirm('Renew this membership? A new membership will be created.')) {
+  const handleRenew = async () => {
+    if (
+      await confirm({
+        title: 'Renew Membership',
+        message: 'Renew this membership? A new membership will be created.',
+        confirmLabel: 'Renew',
+      })
+    ) {
       renewMutation.mutate();
     }
   };
 
-  const handleCancel = () => {
-    const notes = window.prompt('Cancel this membership?\n\nOptional cancellation notes:');
+  const handleCancel = async () => {
+    const notes = await prompt({
+      title: 'Cancel Membership',
+      message: 'Cancel this membership?',
+      confirmLabel: 'Cancel Membership',
+      variant: 'danger',
+      promptLabel: 'Cancellation notes (optional)',
+    });
     if (notes !== null) {
       cancelMutation.mutate(notes || undefined);
     }

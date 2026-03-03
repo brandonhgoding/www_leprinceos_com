@@ -6,6 +6,7 @@ import { membershipsApi, membersApi, membershipTiersApi } from '../api/membershi
 import type { Membership, MembershipCreate, MembershipStatus } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Memberships.module.css';
 
@@ -31,6 +32,7 @@ const initialFormData: FormData = {
 export default function Memberships() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm, prompt } = useConfirm();
   const navigate = useNavigate();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -119,22 +121,38 @@ export default function Memberships() {
     createMutation.mutate(data);
   };
 
-  const handleActivate = (membership: Membership) => {
-    if (window.confirm(`Activate membership for ${membership.member_name}?`)) {
+  const handleActivate = async (membership: Membership) => {
+    if (
+      await confirm({
+        title: 'Activate Membership',
+        message: `Activate membership for ${membership.member_name}?`,
+        confirmLabel: 'Activate',
+      })
+    ) {
       activateMutation.mutate(membership.id);
     }
   };
 
-  const handleRenew = (membership: Membership) => {
-    if (window.confirm(`Renew membership for ${membership.member_name}?`)) {
+  const handleRenew = async (membership: Membership) => {
+    if (
+      await confirm({
+        title: 'Renew Membership',
+        message: `Renew membership for ${membership.member_name}?`,
+        confirmLabel: 'Renew',
+      })
+    ) {
       renewMutation.mutate(membership.id);
     }
   };
 
-  const handleCancel = (membership: Membership) => {
-    const notes = window.prompt(
-      `Cancel membership for ${membership.member_name}?\n\nOptional cancellation notes:`,
-    );
+  const handleCancel = async (membership: Membership) => {
+    const notes = await prompt({
+      title: 'Cancel Membership',
+      message: `Cancel membership for ${membership.member_name}?`,
+      confirmLabel: 'Cancel Membership',
+      variant: 'danger',
+      promptLabel: 'Cancellation notes (optional)',
+    });
     if (notes !== null) {
       cancelMutation.mutate({ id: membership.id, notes: notes || undefined });
     }

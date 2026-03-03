@@ -6,6 +6,7 @@ import { membershipTiersApi } from '../api/memberships';
 import type { MembershipTier, MembershipTierCreate } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './MembershipTiers.module.css';
 
@@ -36,6 +37,7 @@ const initialFormData: FormData = {
 export default function MembershipTiers() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm } = useConfirm();
   const navigate = useNavigate();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedTier, setSelectedTier] = useState<MembershipTier | null>(null);
@@ -128,11 +130,14 @@ export default function MembershipTiers() {
     }
   };
 
-  const handleDelete = (tier: MembershipTier) => {
+  const handleDelete = async (tier: MembershipTier) => {
     if (
-      window.confirm(
-        `Are you sure you want to delete "${tier.name}"? This will affect existing memberships.`,
-      )
+      await confirm({
+        title: 'Delete Membership Tier',
+        message: `Are you sure you want to delete "${tier.name}"? This will affect existing memberships.`,
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
     ) {
       deleteMutation.mutate(tier.id);
     }

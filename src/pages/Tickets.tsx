@@ -6,6 +6,7 @@ import { ticketsApi } from '../api';
 import type { TicketType, TicketTypeCreate } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Tickets.module.css';
 
@@ -28,6 +29,7 @@ const initialFormData: FormData = {
 export default function Tickets() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm } = useConfirm();
   const navigate = useNavigate();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
@@ -127,8 +129,15 @@ export default function Tickets() {
     }
   };
 
-  const handleDelete = (ticket: TicketType) => {
-    if (window.confirm(`Are you sure you want to delete "${ticket.name}"?`)) {
+  const handleDelete = async (ticket: TicketType) => {
+    if (
+      await confirm({
+        title: 'Delete Ticket Type',
+        message: `Are you sure you want to delete "${ticket.name}"?`,
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
+    ) {
       deleteMutation.mutate(ticket.id);
     }
   };

@@ -15,6 +15,7 @@ import type {
 } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './TierDetail.module.css';
 
@@ -80,6 +81,7 @@ export default function TierDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm } = useConfirm();
   const tierId = parseInt(id!);
 
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
@@ -298,8 +300,15 @@ export default function TierDetail() {
     }
   };
 
-  const handleDeleteRule = (rule: BenefitRule) => {
-    if (window.confirm(`Are you sure you want to delete "${rule.name}"?`)) {
+  const handleDeleteRule = async (rule: BenefitRule) => {
+    if (
+      await confirm({
+        title: 'Delete Benefit Rule',
+        message: `Are you sure you want to delete "${rule.name}"?`,
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
+    ) {
       deleteRuleMutation.mutate(rule.id);
     }
   };
@@ -332,8 +341,15 @@ export default function TierDetail() {
     });
   };
 
-  const handleDeleteCondition = (conditionId: number) => {
-    if (window.confirm('Are you sure you want to delete this condition?')) {
+  const handleDeleteCondition = async (conditionId: number) => {
+    if (
+      await confirm({
+        title: 'Delete Condition',
+        message: 'Are you sure you want to delete this condition?',
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
+    ) {
       deleteConditionMutation.mutate(conditionId);
     }
   };

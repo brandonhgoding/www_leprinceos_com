@@ -6,6 +6,7 @@ import { ticketsApi } from '../api';
 import type { TicketTypeRule, TicketTypeRuleCreate } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './TicketDetail.module.css';
 
@@ -66,6 +67,7 @@ export default function TicketDetail() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
 
+  const { confirm } = useConfirm();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedRule, setSelectedRule] = useState<TicketTypeRule | null>(null);
   const [formData, setFormData] = useState<RuleFormData>(initialFormData);
@@ -167,8 +169,15 @@ export default function TicketDetail() {
     }
   };
 
-  const handleDelete = (rule: TicketTypeRule) => {
-    if (window.confirm(`Are you sure you want to delete the rule "${rule.name}"?`)) {
+  const handleDelete = async (rule: TicketTypeRule) => {
+    if (
+      await confirm({
+        title: 'Delete Pricing Rule',
+        message: `Are you sure you want to delete the rule "${rule.name}"?`,
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
+    ) {
       deleteRuleMutation.mutate(rule.id);
     }
   };

@@ -6,6 +6,7 @@ import type { Screen } from '../api/types';
 import type { ScreenCreate } from '../api/screens';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Screens.module.css';
 
@@ -51,6 +52,7 @@ const SOUND_SYSTEM_LABELS: Record<string, string> = {
 export default function Screens() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm } = useConfirm();
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedScreen, setSelectedScreen] = useState<Screen | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -136,11 +138,14 @@ export default function Screens() {
     }
   };
 
-  const handleDelete = (screen: Screen) => {
+  const handleDelete = async (screen: Screen) => {
     if (
-      window.confirm(
-        `Are you sure you want to delete "${screen.name}"? This may affect existing engagements and showtimes.`,
-      )
+      await confirm({
+        title: 'Delete Screen',
+        message: `Are you sure you want to delete "${screen.name}"? This may affect existing engagements and showtimes.`,
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
     ) {
       deleteMutation.mutate(screen.id);
     }

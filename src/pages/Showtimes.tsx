@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { formatDateTime, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
+import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './Showtimes.module.css';
 
@@ -57,6 +58,7 @@ const initialBulkFormData: BulkFormData = {
 export default function Showtimes() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
+  const { confirm } = useConfirm();
   const { currentCinema } = useAuth();
   const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
@@ -199,8 +201,15 @@ export default function Showtimes() {
     bulkCreateMutation.mutate(data);
   };
 
-  const handleDelete = (showtime: Showtime) => {
-    if (window.confirm(`Are you sure you want to delete this showtime?`)) {
+  const handleDelete = async (showtime: Showtime) => {
+    if (
+      await confirm({
+        title: 'Delete Showtime',
+        message: 'Are you sure you want to delete this showtime?',
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
+    ) {
       deleteMutation.mutate(showtime.id);
     }
   };

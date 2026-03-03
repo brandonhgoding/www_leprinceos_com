@@ -5,6 +5,7 @@ import type { RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
+import { ConfirmProvider } from '../contexts/ConfirmContext';
 
 // Create a new QueryClient for each test to ensure isolation
 export function createTestQueryClient() {
@@ -33,7 +34,9 @@ export function AllProviders({ children, queryClient }: AllProvidersProps) {
   return (
     <QueryClientProvider client={client}>
       <BrowserRouter basename="/dashboard">
-        <AuthProvider>{children}</AuthProvider>
+        <ConfirmProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ConfirmProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
