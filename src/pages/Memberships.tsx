@@ -51,8 +51,8 @@ export default function Memberships() {
   });
 
   const { data: members = [] } = useQuery({
-    queryKey: ['members'],
-    queryFn: () => membersApi.list(),
+    queryKey: ['members', 'all'],
+    queryFn: () => membersApi.listAll(),
   });
 
   // Mutations
@@ -249,7 +249,9 @@ export default function Memberships() {
 
       {/* Memberships List */}
       {isLoading ? (
-        <div className={styles.loading}>Loading memberships...</div>
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading memberships...
+        </div>
       ) : filteredMemberships.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>

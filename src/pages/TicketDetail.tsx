@@ -188,7 +188,11 @@ export default function TicketDetail() {
     : [];
 
   if (isLoading) {
-    return <div className={styles.loading}>Loading ticket type...</div>;
+    return (
+      <div className={styles.loading} role="status" aria-live="polite">
+        Loading ticket type...
+      </div>
+    );
   }
 
   if (!ticketType) {

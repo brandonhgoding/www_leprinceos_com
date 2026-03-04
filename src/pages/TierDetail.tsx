@@ -360,7 +360,11 @@ export default function TierDetail() {
   };
 
   if (isLoading) {
-    return <div className={styles.loading}>Loading tier details...</div>;
+    return (
+      <div className={styles.loading} role="status" aria-live="polite">
+        Loading tier details...
+      </div>
+    );
   }
 
   if (!tier) {

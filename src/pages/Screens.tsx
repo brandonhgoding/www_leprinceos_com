@@ -165,7 +165,9 @@ export default function Screens() {
 
       {/* Screens List */}
       {isLoading ? (
-        <div className={styles.loading}>Loading screens...</div>
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading screens...
+        </div>
       ) : screens.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>

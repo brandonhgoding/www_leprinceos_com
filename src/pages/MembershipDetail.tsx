@@ -138,7 +138,11 @@ export default function MembershipDetail() {
   };
 
   if (isLoading) {
-    return <div className={styles.loading}>Loading membership details...</div>;
+    return (
+      <div className={styles.loading} role="status" aria-live="polite">
+        Loading membership details...
+      </div>
+    );
   }
 
   if (!membership) {

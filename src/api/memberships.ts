@@ -45,6 +45,28 @@ export const membersApi = {
     return response.data.results;
   },
 
+  listPaginated: async (filters: MemberFilters = {}): Promise<PaginatedResponse<Member>> => {
+    const query = buildQueryString(filters);
+    const url = query ? `/v1/members/?${query}` : '/v1/members/';
+    const response = await apiClient.get<PaginatedResponse<Member>>(url);
+    return response.data;
+  },
+
+  listAll: async (filters: MemberFilters = {}): Promise<Member[]> => {
+    const allResults: Member[] = [];
+    let page = 1;
+    let hasMore = true;
+    while (hasMore) {
+      const query = buildQueryString({ ...filters, page });
+      const url = query ? `/v1/members/?${query}` : '/v1/members/';
+      const response = await apiClient.get<PaginatedResponse<Member>>(url);
+      allResults.push(...response.data.results);
+      hasMore = response.data.next !== null;
+      page++;
+    }
+    return allResults;
+  },
+
   get: async (id: number): Promise<Member> => {
     const response = await apiClient.get<Member>(`/v1/members/${id}/`);
     return response.data;

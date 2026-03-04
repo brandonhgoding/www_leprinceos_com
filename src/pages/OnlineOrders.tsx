@@ -212,7 +212,9 @@ export default function OnlineOrders() {
 
       {/* Orders List */}
       {isLoading ? (
-        <div className={styles.loading}>Loading orders...</div>
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading orders...
+        </div>
       ) : orders.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
@@ -331,7 +333,9 @@ export default function OnlineOrders() {
         title={orderDetail ? `Order ${orderDetail.confirmation_number}` : 'Order Details'}
       >
         {isLoadingDetail ? (
-          <div className={styles.loading}>Loading order details...</div>
+          <div className={styles.loading} role="status" aria-live="polite">
+            Loading order details...
+          </div>
         ) : orderDetail ? (
           <>
             {/* Status */}

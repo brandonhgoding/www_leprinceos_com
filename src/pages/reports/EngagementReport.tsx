@@ -251,7 +251,11 @@ export default function EngagementReport() {
         </div>
       </div>
 
-      {statsLoading && <div className={styles.loading}>Loading statistics...</div>}
+      {statsLoading && (
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading statistics...
+        </div>
+      )}
 
       {statsError && (
         <div className={styles.errorMessage}>

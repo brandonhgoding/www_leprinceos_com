@@ -167,7 +167,7 @@ export default function Home() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Today's Showtimes</h2>
         {showtimesLoading ? (
-          <div className={styles.emptyCard}>
+          <div className={styles.emptyCard} role="status" aria-live="polite">
             <p className={styles.emptyText}>Loading showtimes...</p>
           </div>
         ) : sortedShowtimes.length > 0 ? (

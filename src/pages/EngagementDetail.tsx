@@ -245,7 +245,11 @@ export default function EngagementDetail() {
   };
 
   if (engagementLoading) {
-    return <div className={styles.loading}>Loading engagement...</div>;
+    return (
+      <div className={styles.loading} role="status" aria-live="polite">
+        Loading engagement...
+      </div>
+    );
   }
 
   if (!engagement) {
@@ -357,7 +361,9 @@ export default function EngagementDetail() {
         </div>
 
         {showtimesLoading ? (
-          <div className={styles.loading}>Loading showtimes...</div>
+          <div className={styles.loading} role="status" aria-live="polite">
+            Loading showtimes...
+          </div>
         ) : sortedShowtimes.length === 0 ? (
           <div className={styles.empty}>
             <p>No showtimes scheduled for this engagement.</p>

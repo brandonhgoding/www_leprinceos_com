@@ -1,5 +1,5 @@
 // src/pages/Members.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { membersApi } from '../api/memberships';
@@ -39,12 +39,25 @@ export default function Members() {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [page, setPage] = useState(1);
+
+  // Debounce search input by 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Queries
-  const { data: members = [], isLoading } = useQuery({
-    queryKey: ['members'],
-    queryFn: () => membersApi.list(),
+  const { data, isLoading } = useQuery({
+    queryKey: ['members', { search: debouncedSearch, page }],
+    queryFn: () => membersApi.listPaginated({ search: debouncedSearch, page }),
   });
+
+  const members = data?.results ?? [];
 
   // Mutations
   const createMutation = useMutation({
@@ -117,18 +130,6 @@ export default function Members() {
     }
   };
 
-  // Filter members based on search term
-  const filteredMembers = members.filter((member) => {
-    if (!searchTerm) return true;
-    const search = searchTerm.toLowerCase();
-    return (
-      member.full_name.toLowerCase().includes(search) ||
-      member.email.toLowerCase().includes(search) ||
-      member.phone?.toLowerCase().includes(search) ||
-      member.member_number.toLowerCase().includes(search)
-    );
-  });
-
   const formatMembershipStatus = (member: Member) => {
     if (!member.active_membership) {
       return <span className={styles.statusInactive}>No Active Membership</span>;
@@ -169,8 +170,10 @@ export default function Members() {
 
       {/* Members List */}
       {isLoading ? (
-        <div className={styles.loading}>Loading members...</div>
-      ) : filteredMembers.length === 0 ? (
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading members...
+        </div>
+      ) : members.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
             👥
@@ -205,7 +208,7 @@ export default function Members() {
                 </tr>
               </thead>
               <tbody>
-                {filteredMembers.map((member) => (
+                {members.map((member) => (
                   <tr key={member.id}>
                     <td className={styles.memberNumber}>{member.member_number}</td>
                     <td className={styles.memberName}>{member.full_name}</td>
@@ -236,7 +239,7 @@ export default function Members() {
 
           {/* Mobile Card View */}
           <div className={styles.cardList}>
-            {filteredMembers.map((member) => (
+            {members.map((member) => (
               <div key={member.id} className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitleRow}>
@@ -263,6 +266,27 @@ export default function Members() {
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {(data?.previous || data?.next) && (
+            <div className={styles.pagination}>
+              <button
+                className={styles.actionButton}
+                onClick={() => setPage((p) => p - 1)}
+                disabled={!data?.previous}
+              >
+                Previous
+              </button>
+              <span>Page {page}</span>
+              <button
+                className={styles.actionButton}
+                onClick={() => setPage((p) => p + 1)}
+                disabled={!data?.next}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
 

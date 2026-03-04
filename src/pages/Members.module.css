@@ -335,6 +335,22 @@
   cursor: not-allowed;
 }
 
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  font-size: 0.875rem;
+  color: var(--stone);
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Responsive: Mobile */
 @media (max-width: 768px) {
   .tableWrapper {

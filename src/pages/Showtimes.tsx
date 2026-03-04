@@ -292,7 +292,9 @@ export default function Showtimes() {
 
       {/* Showtimes List */}
       {showtimesLoading ? (
-        <div className={styles.loading}>Loading showtimes...</div>
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading showtimes...
+        </div>
       ) : showtimes.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>

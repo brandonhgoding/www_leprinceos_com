@@ -272,7 +272,9 @@ export default function Engagements() {
 
       {/* Engagements List */}
       {engagementsLoading ? (
-        <div className={styles.loading}>Loading engagements...</div>
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading engagements...
+        </div>
       ) : engagements.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>

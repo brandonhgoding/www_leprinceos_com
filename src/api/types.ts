@@ -274,7 +274,7 @@ export interface Member {
   birth_day: number | null;
   family_member_count: number;
   member_number: string;
-  square_customer_id: string;
+  square_customer_id?: string;
   active_membership: {
     id: number;
     tier_name: string;
@@ -491,6 +491,7 @@ export interface ReportDateRangeParams {
 // Filter types
 export interface MemberFilters {
   search?: string;
+  page?: number;
   email?: string;
   phone?: string;
   member_number?: string;

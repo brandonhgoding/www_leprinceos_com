@@ -161,7 +161,9 @@ export default function Integrations() {
   if (loadingCredentials) {
     return (
       <div className={styles.page}>
-        <div className={styles.loading}>Loading integrations...</div>
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading integrations...
+        </div>
       </div>
     );
   }
@@ -407,7 +409,9 @@ export default function Integrations() {
       >
         <div className={styles.logsContent}>
           {loadingSyncHistory ? (
-            <div className={styles.loading}>Loading sync history...</div>
+            <div className={styles.loading} role="status" aria-live="polite">
+              Loading sync history...
+            </div>
           ) : syncHistory && syncHistory.length > 0 ? (
             <table className={styles.logsTable}>
               <thead>

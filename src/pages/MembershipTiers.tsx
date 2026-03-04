@@ -165,7 +165,9 @@ export default function MembershipTiers() {
 
       {/* Tiers List */}
       {isLoading ? (
-        <div className={styles.loading}>Loading membership tiers...</div>
+        <div className={styles.loading} role="status" aria-live="polite">
+          Loading membership tiers...
+        </div>
       ) : sortedTiers.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon" style={{ fontSize: '2.5rem' }}>
