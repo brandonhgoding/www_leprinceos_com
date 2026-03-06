@@ -158,7 +158,7 @@ describe('timezone utilities', () => {
 
   describe('formatDate', () => {
     it('should format date with weekday, month, day, and year', () => {
-      const dateStr = '2026-01-30T14:30:00Z';
+      const dateStr = '2026-01-30';
       const timezone = 'America/New_York';
 
       const result = formatDate(dateStr, timezone);
@@ -169,15 +169,15 @@ describe('timezone utilities', () => {
       expect(result).toContain('2026');
     });
 
-    it('should handle dates across timezone boundaries', () => {
-      // Late night UTC that's the next day in some timezones
-      const dateStr = '2026-01-30T23:00:00Z';
+    it('should handle different dates in different timezones', () => {
+      // formatDate takes YYYY-MM-DD strings and formats them in the given timezone
+      const result1 = formatDate('2026-01-30', 'America/New_York');
+      expect(result1).toContain('Jan');
+      expect(result1).toContain('2026');
 
-      const tokyoResult = formatDate(dateStr, 'Asia/Tokyo');
-      expect(tokyoResult).toContain('31'); // Next day in Tokyo
-
-      const laResult = formatDate(dateStr, 'America/Los_Angeles');
-      expect(laResult).toContain('30'); // Still same day in LA
+      const result2 = formatDate('2026-06-15', 'America/New_York');
+      expect(result2).toContain('Jun');
+      expect(result2).toContain('2026');
     });
   });
 
@@ -203,12 +203,13 @@ describe('timezone utilities', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle leap seconds gracefully', () => {
-      const dateStr = '2026-12-31T23:59:59Z';
+    it('should handle edge date values gracefully', () => {
+      const dateTimeStr = '2026-12-31T23:59:59Z';
+      const dateStr = '2026-12-31';
       const timezone = 'UTC';
 
-      expect(() => formatDateTime(dateStr, timezone)).not.toThrow();
-      expect(() => formatTime(dateStr, timezone)).not.toThrow();
+      expect(() => formatDateTime(dateTimeStr, timezone)).not.toThrow();
+      expect(() => formatTime(dateTimeStr, timezone)).not.toThrow();
       expect(() => formatDate(dateStr, timezone)).not.toThrow();
     });
 

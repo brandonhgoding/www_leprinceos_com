@@ -20,7 +20,7 @@ import './commands';
 // require('./commands')
 
 // Global before hook to handle uncaught exceptions
-Cypress.on('uncaught:exception', (err, runnable) => {
+Cypress.on('uncaught:exception', (err) => {
   // Prevent Cypress from failing tests on uncaught exceptions
   // This is useful for React errors that don't affect test behavior
   // Log the error but don't fail the test
@@ -46,6 +46,7 @@ Cypress.Commands.add('setDesktopViewport', () => {
 
 // Extend Cypress namespace for the new viewport commands
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       setMobileViewport(): Chainable<void>;

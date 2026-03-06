@@ -23,8 +23,8 @@ describe('useSmartAlerts', () => {
     <BrowserRouter>{children}</BrowserRouter>
   );
 
-  describe('High Capacity Warnings', () => {
-    it('should generate warning for showtimes over 90% capacity', () => {
+  describe('todayShowtimes parameter', () => {
+    it('should not generate alerts from todayShowtimes alone', () => {
       const todayShowtimes: Showtime[] = [
         {
           id: 1,
@@ -52,64 +52,11 @@ describe('useSmartAlerts', () => {
         { wrapper },
       );
 
-      // Current implementation has placeholder logic that always shows 95%
-      expect(result.current).toHaveLength(1);
-      expect(result.current[0]).toMatchObject({
-        id: 'high-capacity-1',
-        type: 'warning',
-        message: "Tonight's Test Movie showing is at 95% capacity",
-        dismissible: true,
-      });
+      // todayShowtimes is accepted but not currently used for alert generation
+      expect(result.current).toHaveLength(0);
     });
 
-    it('should generate warnings for multiple high-capacity showtimes', () => {
-      const todayShowtimes: Showtime[] = [
-        {
-          id: 1,
-          engagement: 1,
-          screen: 1,
-          screen_name: 'Screen 1',
-          starts_at: '2026-02-03T19:00:00-05:00',
-          is_cancelled: false,
-          captions: null,
-          film_title: 'First Movie',
-          film_poster_url: 'https://example.com/poster1.jpg',
-          is_outside_engagement_range: false,
-          presentation_format: '2d',
-          presentation_format_display: '2D',
-        },
-        {
-          id: 2,
-          engagement: 2,
-          screen: 2,
-          screen_name: 'Screen 2',
-          starts_at: '2026-02-03T21:30:00-05:00',
-          is_cancelled: false,
-          captions: null,
-          film_title: 'Second Movie',
-          film_poster_url: 'https://example.com/poster2.jpg',
-          is_outside_engagement_range: false,
-          presentation_format: '3d',
-          presentation_format_display: '3D',
-        },
-      ];
-
-      const { result } = renderHook(
-        () =>
-          useSmartAlerts({
-            engagements: [],
-            todayShowtimes,
-            tomorrowShowtimes: [],
-          }),
-        { wrapper },
-      );
-
-      expect(result.current).toHaveLength(2);
-      expect(result.current[0].id).toBe('high-capacity-1');
-      expect(result.current[1].id).toBe('high-capacity-2');
-    });
-
-    it('should not generate warnings when no showtimes exist', () => {
+    it('should not generate alerts when no data exists', () => {
       const { result } = renderHook(
         () =>
           useSmartAlerts({
@@ -893,21 +840,20 @@ describe('useSmartAlerts', () => {
       expect(result.current).not.toBe(firstResult);
     });
 
-    it('should return new reference when todayShowtimes change', () => {
+    it('should return new reference when tomorrowShowtimes change', () => {
       const engagements: Engagement[] = [];
-      const tomorrowShowtimes: Showtime[] = [];
 
       const { result, rerender } = renderHook(
-        ({ todayShowtimes }) =>
+        ({ tomorrowShowtimes }) =>
           useSmartAlerts({
             engagements,
-            todayShowtimes,
+            todayShowtimes: [],
             tomorrowShowtimes,
           }),
         {
           wrapper,
           initialProps: {
-            todayShowtimes: [] as Showtime[],
+            tomorrowShowtimes: [] as Showtime[],
           },
         },
       );
@@ -915,7 +861,7 @@ describe('useSmartAlerts', () => {
       const firstResult = result.current;
 
       rerender({
-        todayShowtimes: [
+        tomorrowShowtimes: [
           {
             id: 1,
             engagement: 1,
@@ -959,7 +905,6 @@ describe('useSmartAlerts', () => {
           screen: 1,
           screen_name: 'Screen 1',
           start_date: '2026-01-28',
-          // Adjusted for timezone handling - needs to be within 2 days
           end_date: '2026-02-05',
           presentation_format: '2d',
           status: 'CONFIRMED',
@@ -984,41 +929,23 @@ describe('useSmartAlerts', () => {
         },
       ];
 
-      const todayShowtimes: Showtime[] = [
-        {
-          id: 1,
-          engagement: 1,
-          screen: 1,
-          screen_name: 'Screen 1',
-          starts_at: '2026-02-03T19:00:00-05:00',
-          is_cancelled: false,
-          captions: null,
-          film_title: 'High Capacity Movie',
-          film_poster_url: 'https://example.com/poster3.jpg',
-          is_outside_engagement_range: false,
-          presentation_format: '2d',
-          presentation_format_display: '2D',
-        },
-      ];
-
       const { result } = renderHook(
         () =>
           useSmartAlerts({
             engagements,
-            todayShowtimes,
+            todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
         { wrapper },
       );
 
-      // Should have: high capacity, missing tomorrow showtimes, ending soon, draft
-      expect(result.current.length).toBeGreaterThan(2);
+      // Should have: missing tomorrow showtimes, ending soon, draft
+      expect(result.current.length).toBeGreaterThanOrEqual(3);
 
-      const alertTypes = result.current.map((alert) => alert.id);
-      expect(alertTypes).toContain('high-capacity-1');
-      expect(alertTypes).toContain('no-showtimes-tomorrow');
-      expect(alertTypes).toContain('ending-soon-1');
-      expect(alertTypes).toContain('draft-engagements');
+      const alertIds = result.current.map((alert) => alert.id);
+      expect(alertIds).toContain('no-showtimes-tomorrow');
+      expect(alertIds).toContain('ending-soon-1');
+      expect(alertIds).toContain('draft-engagements');
     });
 
     it('should generate alerts in consistent order', () => {
@@ -1040,42 +967,24 @@ describe('useSmartAlerts', () => {
         },
       ];
 
-      const todayShowtimes: Showtime[] = [
-        {
-          id: 1,
-          engagement: 1,
-          screen: 1,
-          screen_name: 'Screen 1',
-          starts_at: '2026-02-03T19:00:00-05:00',
-          is_cancelled: false,
-          captions: null,
-          film_title: 'Test Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          is_outside_engagement_range: false,
-          presentation_format: '2d',
-          presentation_format_display: '2D',
-        },
-      ];
-
       const { result } = renderHook(
         () =>
           useSmartAlerts({
             engagements,
-            todayShowtimes,
+            todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
         { wrapper },
       );
 
-      // Order: high capacity, missing showtimes, ending soon, drafts
+      // Order: missing showtimes, ending soon, drafts
       const alertIds = result.current.map((alert) => alert.id);
-      const highCapacityIndex = alertIds.findIndex((id) => id.startsWith('high-capacity-'));
       const missingShowtimesIndex = alertIds.indexOf('no-showtimes-tomorrow');
       const draftIndex = alertIds.indexOf('draft-engagements');
 
-      // High capacity should come before missing showtimes
-      if (highCapacityIndex !== -1 && missingShowtimesIndex !== -1) {
-        expect(highCapacityIndex).toBeLessThan(missingShowtimesIndex);
+      // Missing showtimes should come before drafts
+      if (missingShowtimesIndex !== -1 && draftIndex !== -1) {
+        expect(missingShowtimesIndex).toBeLessThan(draftIndex);
       }
 
       // Draft should come last
@@ -1115,6 +1024,7 @@ describe('useSmartAlerts', () => {
         { wrapper },
       );
 
+      expect(result.current.length).toBeGreaterThan(0);
       result.current.forEach((alert) => {
         expect(alert).toHaveProperty('id');
         expect(alert).toHaveProperty('type');
@@ -1129,6 +1039,9 @@ describe('useSmartAlerts', () => {
     });
 
     it('should have dismissible set to true for all alerts', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-02-03T12:00:00Z'));
+
       const engagements: Engagement[] = [
         {
           id: 1,
@@ -1172,9 +1085,12 @@ describe('useSmartAlerts', () => {
         { wrapper },
       );
 
+      expect(result.current.length).toBeGreaterThan(0);
       result.current.forEach((alert) => {
         expect(alert.dismissible).toBe(true);
       });
+
+      vi.useRealTimers();
     });
 
     it('should have correct alert types', () => {
@@ -1214,43 +1130,22 @@ describe('useSmartAlerts', () => {
         },
       ];
 
-      const todayShowtimes: Showtime[] = [
-        {
-          id: 1,
-          engagement: 1,
-          screen: 1,
-          screen_name: 'Screen 1',
-          starts_at: '2026-02-03T19:00:00-05:00',
-          is_cancelled: false,
-          captions: null,
-          film_title: 'Test Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          is_outside_engagement_range: false,
-          presentation_format: '2d',
-          presentation_format_display: '2D',
-        },
-      ];
-
       const { result } = renderHook(
         () =>
           useSmartAlerts({
             engagements,
-            todayShowtimes,
+            todayShowtimes: [],
             tomorrowShowtimes: [],
           }),
         { wrapper },
       );
 
-      const highCapacityAlert = result.current.find((alert) =>
-        alert.id.startsWith('high-capacity-'),
-      );
       const missingShowtimesAlert = result.current.find(
         (alert) => alert.id === 'no-showtimes-tomorrow',
       );
       const endingSoonAlert = result.current.find((alert) => alert.id.startsWith('ending-soon-'));
       const draftAlert = result.current.find((alert) => alert.id === 'draft-engagements');
 
-      expect(highCapacityAlert?.type).toBe('warning');
       expect(missingShowtimesAlert?.type).toBe('warning');
       expect(endingSoonAlert?.type).toBe('info');
       expect(draftAlert?.type).toBe('info');

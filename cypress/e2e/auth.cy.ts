@@ -104,7 +104,7 @@ describe('Authentication Flow', () => {
 
         // Verify localStorage is cleared
         cy.window().then((win) => {
-          expect(win.localStorage.getItem('selected_cinema_id')).to.be.null;
+          expect(win.localStorage.getItem('selected_cinema_id')).to.equal(null);
         });
       });
     });

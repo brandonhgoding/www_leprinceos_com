@@ -71,7 +71,7 @@ describe('Tickets API', () => {
 
       const result = await ticketsApi.list();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/v1/ticket-types/');
+      expect(apiClient.get).toHaveBeenCalledWith('/v1/ticket-types/', { params: undefined });
       expect(result).toEqual([mockTicketType]);
     });
 

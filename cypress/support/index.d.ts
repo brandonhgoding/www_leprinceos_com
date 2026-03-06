@@ -18,7 +18,7 @@ declare namespace Cypress {
      * Custom command to set up authenticated session with mock user data
      * @example cy.mockAuthSession()
      */
-    mockAuthSession(userData?: any): Chainable<void>;
+    mockAuthSession(userData?: Record<string, unknown>): Chainable<void>;
 
     /**
      * Custom command to select a cinema in the context
@@ -36,6 +36,6 @@ declare namespace Cypress {
      * Custom command to wait for API call and check response
      * @example cy.waitForApi('@getEngagements', 200)
      */
-    waitForApi(alias: string, expectedStatus?: number): Chainable<any>;
+    waitForApi(alias: string, expectedStatus?: number): Chainable<Cypress.Response<unknown>>;
   }
 }
