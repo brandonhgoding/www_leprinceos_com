@@ -46,19 +46,13 @@ export const apiClient = axios.create({
   withCredentials: true, // Send cookies with requests
 });
 
-// Request interceptor - add CSRF token and cinema header
+// Request interceptor - add CSRF token
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Add CSRF token for non-GET requests
     const token = getCsrfToken();
     if (token && config.method && config.method.toLowerCase() !== 'get') {
       config.headers['X-CSRFToken'] = token;
-    }
-
-    // Add cinema header for multi-tenant requests
-    const cinemaId = getCurrentCinemaId();
-    if (cinemaId) {
-      config.headers['X-Cinema-ID'] = cinemaId;
     }
 
     return config;

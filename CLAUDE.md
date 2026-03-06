@@ -30,7 +30,7 @@ npm run preview
 
 - **API Proxy:** Vite proxies `/api` requests to Django backend at `localhost:8000`
 - **Authentication:** Session-based auth via Django; CSRF token read from `csrftoken` cookie
-- **Multi-tenancy:** Cinema ID sent via `X-Cinema-ID` header on all requests
+- **Multi-tenancy:** Cinema resolved server-side via host/session; cinema selection persisted in `localStorage`
 - **401 Handling:** Automatic redirect to `/login` (Django-served page)
 
 ### Key Directories
