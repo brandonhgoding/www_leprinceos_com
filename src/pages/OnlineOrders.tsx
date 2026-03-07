@@ -410,23 +410,6 @@ export default function OnlineOrders() {
               </div>
             </div>
 
-            {/* Payment Info */}
-            {orderDetail.square_payment_id && (
-              <div className={styles.detailSection}>
-                <h4 className={styles.detailSectionTitle}>Payment</h4>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Square Payment ID</span>
-                  <span className={styles.detailValue} style={{ fontSize: '0.8125rem' }}>
-                    {orderDetail.square_payment_id}
-                  </span>
-                </div>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Amount</span>
-                  <span className={styles.detailValue}>${orderDetail.total_amount}</span>
-                </div>
-              </div>
-            )}
-
             {/* Timeline */}
             <div className={styles.detailSection}>
               <h4 className={styles.detailSectionTitle}>Timeline</h4>
@@ -459,9 +442,9 @@ export default function OnlineOrders() {
               <div className={styles.detailSection}>
                 {refundMutation.isError && (
                   <div className={styles.errorMsg}>
-                    {refundMutation.error instanceof Error
-                      ? refundMutation.error.message
-                      : 'Refund failed. Please try again.'}
+                    {getErrorMessage(refundMutation.error, '').includes('not configured')
+                      ? 'Refunds are currently unavailable. No payment provider is configured.'
+                      : getErrorMessage(refundMutation.error, 'Refund failed. Please try again.')}
                   </div>
                 )}
 
@@ -476,8 +459,8 @@ export default function OnlineOrders() {
                   <div className={styles.refundConfirm}>
                     <p className={styles.refundConfirmTitle}>Confirm Refund</p>
                     <p className={styles.refundConfirmText}>
-                      This will refund ${orderDetail.total_amount} to the customer's card via
-                      Square. This action cannot be undone.
+                      This will refund ${orderDetail.total_amount} to the customer. This action
+                      cannot be undone.
                     </p>
                     <input
                       type="text"

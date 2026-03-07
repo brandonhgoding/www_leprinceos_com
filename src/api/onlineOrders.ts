@@ -33,7 +33,6 @@ export interface OnlineOrderDetail extends OnlineOrderSummary {
   items: OnlineOrderItem[];
   subtotal: string;
   tax_amount: string;
-  square_payment_id?: string | null;
   sale_uuid: string | null;
   expires_at: string | null;
   updated_at: string;

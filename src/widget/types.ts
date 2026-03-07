@@ -69,14 +69,6 @@ export interface OrderConfirmation {
   tickets: TicketQR[];
 }
 
-export interface CinemaConfig {
-  name: string;
-  slug: string;
-  square_app_id: string;
-  square_location_id: string;
-  square_environment: 'sandbox' | 'production';
-}
-
 /** Configuration read from the host page's data attributes */
 export interface WidgetConfig {
   cinema: string;

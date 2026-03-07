@@ -2,9 +2,8 @@
 // Root widget component that manages view navigation between
 // showtimes, checkout, and confirmation screens.
 
-import { useCallback, useEffect, useState } from 'react';
-import { fetchCinemaConfig } from './api.ts';
-import type { CinemaConfig, WidgetConfig, WidgetView } from './types.ts';
+import { useCallback, useState } from 'react';
+import type { WidgetConfig, WidgetView } from './types.ts';
 import CheckoutView from './views/CheckoutView.tsx';
 import ConfirmationView from './views/ConfirmationView.tsx';
 import ShowtimesView from './views/ShowtimesView.tsx';
@@ -15,18 +14,6 @@ interface WidgetProps {
 
 export default function Widget({ config }: WidgetProps) {
   const [view, setView] = useState<WidgetView>({ name: 'showtimes' });
-  const [cinemaConfig, setCinemaConfig] = useState<CinemaConfig | null>(null);
-
-  // Load cinema config (Square credentials) on mount
-  useEffect(() => {
-    fetchCinemaConfig(config.apiBaseUrl)
-      .then(setCinemaConfig)
-      .catch((err: unknown) => {
-        // Non-fatal: cinema config provides Square credentials.
-        // If it fails, we can still browse showtimes; payment will fail gracefully.
-        console.warn('Failed to load cinema config:', err);
-      });
-  }, [config.apiBaseUrl]);
 
   const handleSelectShowtime = useCallback((showtimeId: number) => {
     setView({ name: 'checkout', showtimeId });
@@ -53,7 +40,6 @@ export default function Widget({ config }: WidgetProps) {
       {view.name === 'checkout' && (
         <CheckoutView
           config={config}
-          cinemaConfig={cinemaConfig}
           showtimeId={view.showtimeId}
           onBack={handleBackToShowtimes}
           onComplete={handleOrderComplete}

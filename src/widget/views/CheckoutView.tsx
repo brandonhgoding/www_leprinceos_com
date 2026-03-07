@@ -1,11 +1,10 @@
 // src/widget/views/CheckoutView.tsx
-// Two-step checkout: (1) select ticket quantities, (2) customer info + Square payment.
+// Two-step checkout: (1) select ticket quantities, (2) customer info + payment.
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ApiError, createOrder, fetchAvailability, payOrder } from '../api.ts';
+import { useCallback, useEffect, useState } from 'react';
+import { ApiError, createOrder, fetchAvailability } from '../api.ts';
 import type {
   Cart,
-  CinemaConfig,
   OrderConfirmation,
   ShowtimeAvailability,
   TicketType,
@@ -14,7 +13,6 @@ import type {
 
 interface CheckoutViewProps {
   config: WidgetConfig;
-  cinemaConfig: CinemaConfig | null;
   showtimeId: number;
   onBack: () => void;
   onComplete: (orderId: string) => void;
@@ -45,25 +43,10 @@ function getTotalQuantity(cart: Cart): number {
   return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 }
 
-// Square types - loaded dynamically
-interface SquarePayments {
-  card: (opts?: Record<string, unknown>) => Promise<SquareCard>;
-}
-interface SquareCard {
-  attach: (selector: string | HTMLElement) => Promise<void>;
-  tokenize: () => Promise<{ status: string; token?: string; errors?: Array<{ message: string }> }>;
-  destroy: () => Promise<void>;
-}
-interface SquareGlobal {
-  payments: (appId: string, locationId: string) => SquarePayments;
-}
-
 export default function CheckoutView({
   config,
-  cinemaConfig,
   showtimeId,
-  onBack,
-  onComplete,
+  onBack, // onComplete will be used when a payment provider is integrated
 }: CheckoutViewProps) {
   // State
   const [availability, setAvailability] = useState<ShowtimeAvailability | null>(null);
@@ -89,11 +72,6 @@ export default function CheckoutView({
   } | null>(null);
   const [pendingOrder, setPendingOrder] = useState<OrderConfirmation | null>(null);
 
-  // Refs
-  const squareCardRef = useRef<SquareCard | null>(null);
-  const cardContainerRef = useRef<HTMLDivElement | null>(null);
-  const squareInitializedRef = useRef(false);
-
   // Load availability data
   useEffect(() => {
     setLoading(true);
@@ -109,15 +87,6 @@ export default function CheckoutView({
         setLoading(false);
       });
   }, [config.apiBaseUrl, showtimeId]);
-
-  // Cleanup Square card on unmount
-  useEffect(() => {
-    return () => {
-      if (squareCardRef.current) {
-        squareCardRef.current.destroy().catch(() => {});
-      }
-    };
-  }, []);
 
   const totalQty = getTotalQuantity(cart);
   const subtotal = availability ? getSubtotal(cart, availability.ticket_types) : 0;
@@ -141,103 +110,21 @@ export default function CheckoutView({
     });
   }, []);
 
-  // Load Square Web Payments SDK script
-  const loadSquareSDK = useCallback((): Promise<void> => {
-    if (!cinemaConfig) return Promise.reject(new Error('Cinema config not loaded'));
-
-    // Check if already loaded
-    const win = window as unknown as Record<string, unknown>;
-    if (win['Square']) return Promise.resolve();
-
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src =
-        cinemaConfig.square_environment === 'production'
-          ? 'https://web.squarecdn.com/v1/square.js'
-          : 'https://sandbox.web.squarecdn.com/v1/square.js';
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error('Failed to load payment SDK'));
-      document.head.appendChild(script);
-    });
-  }, [cinemaConfig]);
-
-  // Initialize Square card payment form
-  const initSquarePayments = useCallback(async () => {
-    if (squareInitializedRef.current || !cinemaConfig || !cardContainerRef.current) return;
-    squareInitializedRef.current = true;
-
-    try {
-      await loadSquareSDK();
-
-      const Square = (window as unknown as Record<string, unknown>)['Square'] as
-        | SquareGlobal
-        | undefined;
-      if (!Square) {
-        setPaymentError('Payment system is loading. Please wait a moment and try again.');
-        squareInitializedRef.current = false;
-        return;
-      }
-
-      const payments = Square.payments(cinemaConfig.square_app_id, cinemaConfig.square_location_id);
-      const isDark = config.theme === 'dark';
-
-      const card = await payments.card({
-        style: {
-          '.input-container': {
-            borderColor: isDark ? 'rgba(245, 242, 235, 0.15)' : 'rgba(13, 13, 13, 0.1)',
-            borderRadius: '6px',
-          },
-          '.input-container.is-focus': {
-            borderColor: isDark ? '#d4b896' : '#b8956c',
-          },
-          input: {
-            backgroundColor: isDark ? '#262626' : '#ffffff',
-            color: isDark ? '#f5f2eb' : '#0d0d0d',
-            fontFamily: 'Inter, system-ui, sans-serif',
-            fontSize: '14px',
-          },
-          'input::placeholder': {
-            color: isDark ? 'rgba(245, 242, 235, 0.5)' : 'rgba(13, 13, 13, 0.5)',
-          },
-        },
-      });
-
-      squareCardRef.current = card;
-      await card.attach(cardContainerRef.current);
-    } catch (err: unknown) {
-      console.error('Square SDK init error:', err);
-      setPaymentError('Could not initialize payment form. Please refresh and try again.');
-      squareInitializedRef.current = false;
-    }
-  }, [cinemaConfig, config.theme, loadSquareSDK]);
-
-  // When moving to payment step, initialize Square
+  // When moving to payment step
   const handleContinueToPayment = useCallback(() => {
     setStep('payment');
-    // Defer init until after DOM renders the card container
-    setTimeout(() => {
-      initSquarePayments();
-    }, 0);
-  }, [initSquarePayments]);
+  }, []);
 
-  // Tokenize and pay for a given order
-  const tokenizeAndPay = useCallback(
-    async (order: OrderConfirmation) => {
-      if (!squareCardRef.current) {
-        throw new Error('Payment form not ready. Please try again.');
-      }
-
-      const tokenResult = await squareCardRef.current.tokenize();
-      if (tokenResult.status !== 'OK' || !tokenResult.token) {
-        const messages = tokenResult.errors?.map((e) => e.message).join('. ');
-        throw new Error(messages ?? 'Payment failed. Please check your card details.');
-      }
-
-      await payOrder(config.apiBaseUrl, order.order_id, tokenResult.token);
-      onComplete(order.order_id);
-    },
-    [config.apiBaseUrl, onComplete],
-  );
+  // Process payment for a given order.
+  // Currently no payment provider is active — short-circuit without calling
+  // the backend payment endpoint. When a provider is integrated, tokenize
+  // and call payOrder here instead.
+  const processPayment = useCallback(async () => {
+    setPaymentError(
+      'Online payment is not currently available. Please purchase tickets at the box office.',
+    );
+    setProcessing(false);
+  }, []);
 
   // Handle form submission
   const handleSubmit = useCallback(
@@ -299,8 +186,8 @@ export default function CheckoutView({
           return;
         }
 
-        // Step 3: Tokenize and pay
-        await tokenizeAndPay(order);
+        // Step 3: Process payment
+        await processPayment();
       } catch (err: unknown) {
         const message =
           err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.';
@@ -318,7 +205,7 @@ export default function CheckoutView({
       memberEmail,
       showtimeId,
       subtotal,
-      tokenizeAndPay,
+      processPayment,
     ],
   );
 
@@ -327,7 +214,7 @@ export default function CheckoutView({
     if (!pendingOrder) return;
     setProcessing(true);
     try {
-      await tokenizeAndPay(pendingOrder);
+      await processPayment();
       setPriceMismatch(null);
       setPendingOrder(null);
     } catch (err: unknown) {
@@ -336,18 +223,11 @@ export default function CheckoutView({
       setPaymentError(message);
       setProcessing(false);
     }
-  }, [pendingOrder, tokenizeAndPay]);
+  }, [pendingOrder, processPayment]);
 
   const handleCancelMismatch = useCallback(() => {
     setPriceMismatch(null);
     setPendingOrder(null);
-    // Destroy the Square card instance so it can be re-initialized
-    // when the user returns to the payment step.
-    if (squareCardRef.current) {
-      squareCardRef.current.destroy().catch(() => {});
-      squareCardRef.current = null;
-    }
-    squareInitializedRef.current = false;
     setStep('tickets');
   }, []);
 
@@ -574,7 +454,9 @@ export default function CheckoutView({
           <h3 className="lpo-section-title" style={{ marginTop: '1.5rem' }}>
             Payment
           </h3>
-          <div className="lpo-card-container" ref={cardContainerRef} />
+          <div className="lpo-error-msg" role="status">
+            Online payment is not currently available. Please purchase tickets at the box office.
+          </div>
 
           {priceMismatch && (
             <div className="lpo-error-msg" role="alert">
@@ -609,11 +491,7 @@ export default function CheckoutView({
             </div>
           )}
 
-          <button
-            type="submit"
-            className="lpo-btn-primary"
-            disabled={processing || !squareCardRef.current || !!priceMismatch}
-          >
+          <button type="submit" className="lpo-btn-primary" disabled={true}>
             {processing ? (
               <>
                 <span className="lpo-spinner lpo-spinner-sm" aria-hidden="true" />

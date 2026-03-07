@@ -75,7 +75,7 @@ const EMBED_TYPES: EmbedType[] = [
     description: 'Let customers browse showtimes and purchase tickets directly on your site.',
     icon: '🛒',
     previewDescription:
-      'Full ticket purchasing flow: browse films, select showtimes, choose tickets, and pay with Square.',
+      'Full ticket flow: browse films, select showtimes, choose tickets, and complete your reservation.',
     urlPath: 'buy',
     widgetPrimary: true,
   },

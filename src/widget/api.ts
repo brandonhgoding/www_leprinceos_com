@@ -4,7 +4,6 @@
 
 import type {
   ApiErrorResponse,
-  CinemaConfig,
   OrderConfirmation,
   OrderCreatePayload,
   PublicShowtime,
@@ -94,9 +93,4 @@ export function payOrder(
 /** Get order details/status */
 export function fetchOrder(baseUrl: string, orderUuid: string): Promise<OrderConfirmation> {
   return get<OrderConfirmation>(baseUrl, `/public/orders/${orderUuid}/`);
-}
-
-/** Fetch cinema config including Square credentials */
-export function fetchCinemaConfig(baseUrl: string): Promise<CinemaConfig> {
-  return get<CinemaConfig>(baseUrl, '/public/cinema-config/');
 }

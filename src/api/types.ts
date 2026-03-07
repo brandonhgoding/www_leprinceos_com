@@ -182,73 +182,6 @@ export interface TicketTypeCreate {
   description?: string;
 }
 
-// Square Integration
-export interface SquareCredentials {
-  id: number;
-  environment: 'sandbox' | 'production';
-  location_id: string;
-  merchant_id: string;
-  is_active: boolean;
-  is_connected: boolean;
-  is_configured: boolean;
-  token_preview: string;
-  last_sync_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SquareCredentialsCreate {
-  access_token: string;
-  refresh_token?: string;
-  environment: 'sandbox' | 'production';
-  location_id: string;
-  merchant_id?: string;
-}
-
-export interface SquareConnectionTest {
-  success: boolean;
-  location_name?: string;
-  location_id?: string;
-  merchant_id?: string;
-  error?: string;
-}
-
-export type SquareSyncType =
-  | 'full'
-  | 'clear_and_sync'
-  | 'tickets'
-  | 'discounts'
-  | 'customers'
-  | 'customer_groups';
-export type SquareSyncStatus = 'pending' | 'in_progress' | 'success' | 'partial' | 'failed';
-
-export interface SquareSyncLog {
-  id: number;
-  sync_type: SquareSyncType;
-  status: SquareSyncStatus;
-  objects_synced: number;
-  objects_failed: number;
-  error_details: Record<string, unknown> | null;
-  started_at: string;
-  completed_at: string | null;
-}
-
-export interface SquareSyncRequest {
-  sync_type?: SquareSyncType;
-}
-
-// Integration types for the Integrations page
-export interface Integration {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  is_configured: boolean;
-  is_active: boolean;
-  status: 'connected' | 'disconnected' | 'error';
-  last_sync_at: string | null;
-}
-
 // Memberships
 export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 export type BenefitType = 'FIXED_AMOUNT' | 'PERCENTAGE' | 'FREE_ITEM';
@@ -274,7 +207,6 @@ export interface Member {
   birth_day: number | null;
   family_member_count: number;
   member_number: string;
-  square_customer_id?: string;
   active_membership: {
     id: number;
     tier_name: string;

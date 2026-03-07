@@ -224,7 +224,12 @@ export default function Sidebar({
       ],
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
-    { path: '/online-orders', label: 'Online Orders', icon: <OnlineOrdersIcon />, managerOnly: true },
+    {
+      path: '/online-orders',
+      label: 'Online Orders',
+      icon: <OnlineOrdersIcon />,
+      managerOnly: true,
+    },
     { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon />, managerOnly: true },
     { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
     { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },

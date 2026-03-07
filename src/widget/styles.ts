@@ -426,7 +426,7 @@ export function getWidgetCSS(theme: 'light' | 'dark'): string {
       border-color: ${vars.errorColor};
     }
 
-    /* -- Card container for Square SDK -- */
+    /* -- Card container -- */
     .lpo-card-container {
       min-height: 90px;
       background: ${vars.bgCard};
