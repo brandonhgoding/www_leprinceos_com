@@ -135,7 +135,6 @@ function ConcessionItemPicker({ item, onAdd }: ConcessionItemPickerProps) {
       itemName: item.name,
       variationName: selectedVariation.name,
       unitPrice,
-      taxRate: parseFloat(item.tax_rate),
     });
   }, [selectedVariation, selectedOptions, item, onAdd]);
 

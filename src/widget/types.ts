@@ -106,7 +106,6 @@ export interface PublicConcessionItem {
   name: string;
   description: string;
   image: string | null;
-  tax_rate: string; // Decimal as string from DRF
   variations: PublicConcessionVariation[];
   modifiers: PublicModifier[];
 }
@@ -134,7 +133,6 @@ export interface PublicCombo {
   name: string;
   description: string;
   price: string; // Decimal as string from DRF
-  tax_rate: string;
   slots: PublicComboSlot[];
 }
 
@@ -154,7 +152,6 @@ export interface ConcessionCartItem {
   itemName: string;
   variationName: string;
   unitPrice: number; // base price + modifier adjustments
-  taxRate: number;
 }
 
 export interface ConcessionItemPayload {

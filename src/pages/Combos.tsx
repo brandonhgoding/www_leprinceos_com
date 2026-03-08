@@ -15,7 +15,6 @@ interface FormData {
   name: string;
   description: string;
   price: string;
-  tax_rate: string;
   is_active: boolean;
 }
 
@@ -23,7 +22,6 @@ const initialFormData: FormData = {
   name: '',
   description: '',
   price: '',
-  tax_rate: '0',
   is_active: true,
 };
 
@@ -81,7 +79,6 @@ export default function Combos() {
       name: combo.name,
       description: combo.description,
       price: combo.price,
-      tax_rate: combo.tax_rate,
       is_active: combo.is_active,
     });
     setSelectedCombo(combo);
@@ -103,7 +100,6 @@ export default function Combos() {
       name: formData.name,
       description: formData.description,
       price: formData.price,
-      tax_rate: formData.tax_rate,
       is_active: formData.is_active,
     };
 
@@ -174,7 +170,6 @@ export default function Combos() {
                 <tr>
                   <th>Name</th>
                   <th>Price</th>
-                  <th>Tax Rate</th>
                   <th>Slots</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -185,7 +180,6 @@ export default function Combos() {
                   <tr key={combo.id}>
                     <td className={styles.comboName}>{combo.name}</td>
                     <td className={styles.price}>{formatPrice(combo.price)}</td>
-                    <td>{combo.tax_rate}%</td>
                     <td>
                       <span className={styles.slotsCount}>
                         {combo.slots.length} {combo.slots.length === 1 ? 'slot' : 'slots'}
@@ -300,34 +294,19 @@ export default function Combos() {
             />
           </div>
 
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="combo-price">Price</label>
-              <input
-                id="combo-price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                required
-                className={styles.input}
-                placeholder="e.g., 19.99"
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="combo-tax-rate">Tax Rate (%)</label>
-              <input
-                id="combo-tax-rate"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.tax_rate}
-                onChange={(e) => setFormData({ ...formData, tax_rate: e.target.value })}
-                className={styles.input}
-                placeholder="e.g., 5.50"
-              />
-            </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="combo-price">Price</label>
+            <input
+              id="combo-price"
+              type="number"
+              min="0"
+              step="0.01"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              required
+              className={styles.input}
+              placeholder="e.g., 19.99"
+            />
           </div>
 
           <div className={styles.formGroup}>

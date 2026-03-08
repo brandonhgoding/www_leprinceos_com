@@ -168,23 +168,13 @@ export default function POS() {
     [concessionCart],
   );
 
-  const concessionTax = useMemo(
-    () =>
-      concessionCart.reduce((sum, c) => {
-        const taxRate = parseFloat(c.item.tax_rate) / 100;
-        return sum + parseFloat(c.variation.price) * c.quantity * taxRate;
-      }, 0),
-    [concessionCart],
-  );
-
   const ticketSubtotal = useMemo(
     () => ticketCart.reduce((sum, t) => sum + parseFloat(t.price) * t.quantity, 0),
     [ticketCart],
   );
 
   const subtotal = concessionSubtotal + ticketSubtotal;
-  const tax = concessionTax;
-  const total = subtotal + tax;
+  const total = subtotal;
 
   const cartIsEmpty = concessionCart.length === 0 && ticketCart.length === 0;
 
@@ -465,16 +455,6 @@ export default function POS() {
             {!cartIsEmpty && (
               <div className={styles.cartFooter}>
                 <div className={styles.cartTotals}>
-                  <div className={styles.totalRow}>
-                    <span>Subtotal</span>
-                    <span>{formatPrice(subtotal)}</span>
-                  </div>
-                  {tax > 0 && (
-                    <div className={styles.totalRow}>
-                      <span>Tax</span>
-                      <span>{formatPrice(tax)}</span>
-                    </div>
-                  )}
                   <div className={styles.totalRowGrand}>
                     <span>Total</span>
                     <span>{formatPrice(total)}</span>
