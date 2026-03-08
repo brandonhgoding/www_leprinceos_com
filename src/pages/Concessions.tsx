@@ -1,7 +1,7 @@
 // src/pages/Concessions.tsx
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { concessionsApi } from '../api';
+import { concessionsApi, taxesApi } from '../api';
 import type {
   ConcessionCategory,
   ConcessionCategoryCreate,
@@ -27,7 +27,8 @@ interface ItemFormData {
   name: string;
   category: string;
   description: string;
-  tax_rate: string;
+  price: string;
+  tax_group: string;
   is_active: boolean;
 }
 
@@ -41,7 +42,8 @@ const initialItemFormData: ItemFormData = {
   name: '',
   category: '',
   description: '',
-  tax_rate: '0.00',
+  price: '',
+  tax_group: '',
   is_active: true,
 };
 
@@ -66,6 +68,11 @@ export default function Concessions() {
   const { data: items = [], isLoading: itemsLoading } = useQuery({
     queryKey: ['concession-items'],
     queryFn: () => concessionsApi.listItems(),
+  });
+
+  const { data: taxGroups = [] } = useQuery({
+    queryKey: ['tax-groups'],
+    queryFn: () => taxesApi.listTaxGroups(),
   });
 
   // Category Mutations
@@ -151,7 +158,8 @@ export default function Concessions() {
       name: item.name,
       category: String(item.category),
       description: item.description,
-      tax_rate: item.tax_rate,
+      price: item.price || '',
+      tax_group: item.tax_group ? String(item.tax_group) : '',
       is_active: item.is_active,
     });
     setSelectedItem(item);
@@ -191,7 +199,8 @@ export default function Concessions() {
       category: parseInt(itemFormData.category, 10),
       name: itemFormData.name,
       description: itemFormData.description,
-      tax_rate: itemFormData.tax_rate,
+      price: itemFormData.price || null,
+      tax_group: itemFormData.tax_group ? parseInt(itemFormData.tax_group, 10) : null,
       is_active: itemFormData.is_active,
     };
 
@@ -629,30 +638,47 @@ export default function Concessions() {
 
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label htmlFor="item-tax-rate">Tax Rate</label>
+                <label htmlFor="item-price">Price</label>
                 <input
-                  id="item-tax-rate"
+                  id="item-price"
                   type="number"
                   min="0"
                   step="0.01"
-                  value={itemFormData.tax_rate}
-                  onChange={(e) => setItemFormData({ ...itemFormData, tax_rate: e.target.value })}
+                  value={itemFormData.price}
+                  onChange={(e) => setItemFormData({ ...itemFormData, price: e.target.value })}
                   className={styles.input}
-                  placeholder="e.g., 0.08"
+                  placeholder="e.g., 5.00"
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={itemFormData.is_active}
-                    onChange={(e) =>
-                      setItemFormData({ ...itemFormData, is_active: e.target.checked })
-                    }
-                  />
-                  Active
-                </label>
+                <label htmlFor="item-tax-group">Tax Group</label>
+                <select
+                  id="item-tax-group"
+                  value={itemFormData.tax_group}
+                  onChange={(e) => setItemFormData({ ...itemFormData, tax_group: e.target.value })}
+                  className={styles.input}
+                >
+                  <option value="">No tax</option>
+                  {taxGroups.map((tg) => (
+                    <option key={tg.id} value={tg.id}>
+                      {tg.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={itemFormData.is_active}
+                  onChange={(e) =>
+                    setItemFormData({ ...itemFormData, is_active: e.target.checked })
+                  }
+                />
+                Active
+              </label>
             </div>
           </form>
         )}
