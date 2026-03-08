@@ -156,6 +156,17 @@ const ConcessionsIcon = () => (
   </svg>
 );
 
+const TaxesIcon = () => (
+  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path
+      d="M10 3v14M6 7l8 6M6 13l8-6"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
 const POSIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -253,6 +264,7 @@ export default function Sidebar({
         { path: '/inventory', label: 'Inventory' },
       ],
     },
+    { path: '/taxes', label: 'Taxes', icon: <TaxesIcon />, managerOnly: true },
     { path: '/pos', label: 'POS', icon: <POSIcon /> },
     {
       path: '/online-orders',
