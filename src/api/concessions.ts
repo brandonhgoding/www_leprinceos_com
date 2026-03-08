@@ -1,0 +1,126 @@
+// src/api/concessions.ts
+import apiClient from './client';
+import type {
+  ConcessionCategory,
+  ConcessionCategoryCreate,
+  ConcessionItem,
+  ConcessionItemCreate,
+  ComboTemplate,
+  ComboTemplateCreate,
+  Modifier,
+  ModifierWrite,
+  PaginatedResponse,
+} from './types';
+
+export const concessionsApi = {
+  // Categories
+  listCategories: async (): Promise<ConcessionCategory[]> => {
+    const response = await apiClient.get<PaginatedResponse<ConcessionCategory>>(
+      '/v1/concession-categories/',
+    );
+    return response.data.results;
+  },
+
+  getCategory: async (id: number): Promise<ConcessionCategory> => {
+    const response = await apiClient.get<ConcessionCategory>(`/v1/concession-categories/${id}/`);
+    return response.data;
+  },
+
+  createCategory: async (data: ConcessionCategoryCreate): Promise<ConcessionCategory> => {
+    const response = await apiClient.post<ConcessionCategory>('/v1/concession-categories/', data);
+    return response.data;
+  },
+
+  updateCategory: async (
+    id: number,
+    data: Partial<ConcessionCategoryCreate>,
+  ): Promise<ConcessionCategory> => {
+    const response = await apiClient.patch<ConcessionCategory>(
+      `/v1/concession-categories/${id}/`,
+      data,
+    );
+    return response.data;
+  },
+
+  deleteCategory: async (id: number): Promise<void> => {
+    await apiClient.delete(`/v1/concession-categories/${id}/`);
+  },
+
+  // Items
+  listItems: async (): Promise<ConcessionItem[]> => {
+    const response =
+      await apiClient.get<PaginatedResponse<ConcessionItem>>('/v1/concession-items/');
+    return response.data.results;
+  },
+
+  getItem: async (id: number): Promise<ConcessionItem> => {
+    const response = await apiClient.get<ConcessionItem>(`/v1/concession-items/${id}/`);
+    return response.data;
+  },
+
+  createItem: async (data: ConcessionItemCreate): Promise<ConcessionItem> => {
+    const response = await apiClient.post<ConcessionItem>('/v1/concession-items/', data);
+    return response.data;
+  },
+
+  updateItem: async (id: number, data: Partial<ConcessionItemCreate>): Promise<ConcessionItem> => {
+    const response = await apiClient.patch<ConcessionItem>(`/v1/concession-items/${id}/`, data);
+    return response.data;
+  },
+
+  deleteItem: async (id: number): Promise<void> => {
+    await apiClient.delete(`/v1/concession-items/${id}/`);
+  },
+
+  // Modifiers
+  listModifiers: async (): Promise<Modifier[]> => {
+    const response = await apiClient.get<PaginatedResponse<Modifier>>('/v1/modifiers/');
+    return response.data.results;
+  },
+
+  getModifier: async (id: number): Promise<Modifier> => {
+    const response = await apiClient.get<Modifier>(`/v1/modifiers/${id}/`);
+    return response.data;
+  },
+
+  createModifier: async (data: ModifierWrite): Promise<Modifier> => {
+    const response = await apiClient.post<Modifier>('/v1/modifiers/', data);
+    return response.data;
+  },
+
+  updateModifier: async (id: number, data: Partial<ModifierWrite>): Promise<Modifier> => {
+    const response = await apiClient.patch<Modifier>(`/v1/modifiers/${id}/`, data);
+    return response.data;
+  },
+
+  deleteModifier: async (id: number): Promise<void> => {
+    await apiClient.delete(`/v1/modifiers/${id}/`);
+  },
+
+  // Combos
+  listCombos: async (): Promise<ComboTemplate[]> => {
+    const response = await apiClient.get<PaginatedResponse<ComboTemplate>>('/v1/combo-templates/');
+    return response.data.results;
+  },
+
+  getCombo: async (id: number): Promise<ComboTemplate> => {
+    const response = await apiClient.get<ComboTemplate>(`/v1/combo-templates/${id}/`);
+    return response.data;
+  },
+
+  createCombo: async (data: ComboTemplateCreate): Promise<ComboTemplate> => {
+    const response = await apiClient.post<ComboTemplate>('/v1/combo-templates/', data);
+    return response.data;
+  },
+
+  updateCombo: async (id: number, data: Partial<ComboTemplateCreate>): Promise<ComboTemplate> => {
+    const response = await apiClient.patch<ComboTemplate>(`/v1/combo-templates/${id}/`, data);
+    return response.data;
+  },
+
+  deleteCombo: async (id: number): Promise<void> => {
+    await apiClient.delete(`/v1/combo-templates/${id}/`);
+  },
+};
+
+export default concessionsApi;

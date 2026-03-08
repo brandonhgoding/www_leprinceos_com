@@ -37,6 +37,7 @@ export interface OrderItemInput {
 export interface OrderCreatePayload {
   showtime_id: number;
   items: OrderItemInput[];
+  concession_items?: ConcessionItemPayload[];
   customer_name: string;
   customer_email: string;
   customer_phone?: string;
@@ -75,6 +76,91 @@ export interface WidgetConfig {
   type: string;
   theme: 'light' | 'dark';
   apiBaseUrl: string;
+}
+
+/* ---- Concession types ---- */
+
+export interface PublicModifierOption {
+  id: number;
+  name: string;
+  price_adjustment: string; // Decimal as string from DRF
+}
+
+export interface PublicModifier {
+  id: number;
+  name: string;
+  is_required: boolean;
+  max_selections: number;
+  options: PublicModifierOption[];
+}
+
+export interface PublicConcessionVariation {
+  id: number;
+  name: string;
+  price: string; // Decimal as string from DRF
+  in_stock: boolean;
+}
+
+export interface PublicConcessionItem {
+  id: number;
+  name: string;
+  description: string;
+  image: string | null;
+  tax_rate: string; // Decimal as string from DRF
+  variations: PublicConcessionVariation[];
+  modifiers: PublicModifier[];
+}
+
+export interface PublicConcessionCategory {
+  id: number;
+  name: string;
+  items: PublicConcessionItem[];
+}
+
+export interface PublicComboSlotOption {
+  id: number;
+  name: string;
+  is_default: boolean;
+}
+
+export interface PublicComboSlot {
+  id: number;
+  name: string;
+  options: PublicComboSlotOption[];
+}
+
+export interface PublicCombo {
+  id: number;
+  name: string;
+  description: string;
+  price: string; // Decimal as string from DRF
+  tax_rate: string;
+  slots: PublicComboSlot[];
+}
+
+export interface PublicConcessionMenu {
+  categories: PublicConcessionCategory[];
+  combos: PublicCombo[];
+}
+
+/** A single concession item in the cart */
+export interface ConcessionCartItem {
+  /** Unique key for this cart entry (variation_id + sorted modifier_option_ids) */
+  cartKey: string;
+  variation_id: number;
+  quantity: number;
+  modifier_option_ids: number[];
+  /** Display fields */
+  itemName: string;
+  variationName: string;
+  unitPrice: number; // base price + modifier adjustments
+  taxRate: number;
+}
+
+export interface ConcessionItemPayload {
+  variation_id: number;
+  quantity: number;
+  modifier_option_ids: number[];
 }
 
 /** Cart state: maps ticket_type_id -> quantity */

@@ -167,6 +167,11 @@
   color: var(--stone);
 }
 
+.statusWarning {
+  background: rgba(217, 119, 6, 0.1);
+  color: #d97706;
+}
+
 .lastSync {
   font-size: 0.875rem;
   color: var(--stone);
@@ -496,6 +501,38 @@
   padding: 1rem;
   border-radius: 6px;
   font-size: 0.875rem;
+}
+
+/* Account details */
+.accountId {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  color: var(--charcoal);
+  margin-bottom: 0.375rem;
+}
+
+.detailChecks {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.checkEnabled {
+  color: #15803d;
+}
+
+.checkDisabled {
+  color: #dc2626;
+}
+
+.noDetails {
+  font-size: 0.875rem;
+  color: var(--stone);
+}
+
+/* Section spacing */
+.sectionSpacer {
+  height: 1.5rem;
 }
 
 /* Responsive */

@@ -382,6 +382,252 @@ export interface MemberBenefits {
   allocations: BenefitAllocation[];
 }
 
+// Concessions
+export interface ModifierOption {
+  id: number;
+  name: string;
+  price_adjustment: string;
+  is_default: boolean;
+  display_order: number;
+}
+
+export interface Modifier {
+  id: number;
+  name: string;
+  is_required: boolean;
+  max_selections: number;
+  display_order: number;
+  options: ModifierOption[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ModifierOptionWrite {
+  id?: number;
+  name: string;
+  price_adjustment: string;
+  is_default?: boolean;
+  display_order?: number;
+}
+
+export interface ModifierWrite {
+  name: string;
+  is_required?: boolean;
+  max_selections?: number;
+  display_order?: number;
+  options?: ModifierOptionWrite[];
+}
+
+export interface ConcessionVariation {
+  id: number;
+  name: string;
+  price: string;
+  sku: string;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConcessionItem {
+  id: number;
+  category: number;
+  category_name: string;
+  name: string;
+  description: string;
+  image: string | null;
+  tax_rate: string;
+  is_active: boolean;
+  variations: ConcessionVariation[];
+  modifiers: Modifier[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConcessionItemCreate {
+  category: number;
+  name: string;
+  description?: string;
+  image?: string | null;
+  tax_rate?: string;
+  is_active?: boolean;
+  modifier_ids?: number[];
+}
+
+export interface ConcessionCategory {
+  id: number;
+  name: string;
+  display_order: number;
+  is_active: boolean;
+  items_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConcessionCategoryCreate {
+  name: string;
+  display_order?: number;
+  is_active?: boolean;
+}
+
+export interface ComboSlotOption {
+  id: number;
+  variation: number | null;
+  variation_name: string | null;
+  ticket_type: number | null;
+  ticket_type_name: string | null;
+  is_default: boolean;
+}
+
+export interface ComboSlot {
+  id: number;
+  name: string;
+  display_order: number;
+  options: ComboSlotOption[];
+}
+
+export interface ComboTemplate {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  tax_rate: string;
+  is_active: boolean;
+  is_fixed: boolean;
+  slots: ComboSlot[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ComboSlotOptionWrite {
+  variation?: number | null;
+  ticket_type?: number | null;
+  is_default?: boolean;
+}
+
+export interface ComboSlotWrite {
+  name: string;
+  display_order?: number;
+  options?: ComboSlotOptionWrite[];
+}
+
+export interface ComboTemplateCreate {
+  name: string;
+  description?: string;
+  price: string;
+  tax_rate?: string;
+  is_active?: boolean;
+  slots?: ComboSlotWrite[];
+}
+
+// Inventory
+export interface ConcessionInventory {
+  id: number;
+  variation: number;
+  variation_name: string;
+  item_name: string;
+  quantity_on_hand: number;
+  low_stock_threshold: number;
+  track_inventory: boolean;
+  is_low_stock: boolean;
+  is_out_of_stock: boolean;
+  updated_at: string;
+}
+
+export interface InventoryAdjustment {
+  id: number;
+  variation: number;
+  quantity_change: number;
+  reason: string;
+  reason_display: string;
+  notes: string;
+  adjusted_by: number | null;
+  adjusted_by_username: string | null;
+  created_at: string;
+}
+
+export interface InventoryAdjustmentCreate {
+  variation_id: number;
+  quantity_change: number;
+  reason: 'RECEIVED' | 'SOLD' | 'WASTE' | 'CORRECTION' | 'OTHER';
+  notes?: string;
+}
+
+// Payments
+export type PaymentStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'REFUNDED';
+export type PaymentMethodType = 'CARD_ONLINE' | 'CARD_TERMINAL';
+
+export interface StripeAccountStatus {
+  has_account: boolean;
+  stripe_account_id: string | null;
+  charges_enabled: boolean;
+  payouts_enabled: boolean;
+  onboarding_complete: boolean;
+}
+
+export interface PaymentRecord {
+  id: number;
+  stripe_payment_intent_id: string;
+  amount: string;
+  platform_fee: string;
+  currency: string;
+  status: PaymentStatus;
+  payment_method_type: PaymentMethodType;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaymentIntentResponse {
+  id: number;
+  stripe_payment_intent_id: string;
+  client_secret: string;
+  amount: string;
+  status: PaymentStatus;
+}
+
+// POS
+export interface POSTicketItem {
+  ticket_type_id: number;
+  quantity: number;
+}
+
+export interface POSConcessionItem {
+  variation_id: number;
+  quantity: number;
+  modifier_option_ids?: number[];
+}
+
+export interface POSComboItem {
+  combo_template_id: number;
+  slot_selections: Record<number, number>;
+}
+
+export type PaymentMethod = 'CASH' | 'CARD' | 'COMP' | 'OTHER';
+
+export interface POSSaleCreate {
+  showtime_id?: number | null;
+  payment_method: PaymentMethod;
+  customer_name?: string;
+  customer_email?: string;
+  customer_phone?: string;
+  notes?: string;
+  member_id?: number | null;
+  ticket_items?: POSTicketItem[];
+  concession_items?: POSConcessionItem[];
+  combo_items?: POSComboItem[];
+}
+
+export interface POSSaleResponse {
+  uuid: string;
+  total_amount: string;
+  payment_method: PaymentMethod;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  notes: string;
+  created_at: string;
+}
+
 // Reports
 export interface TicketTypeBreakdown {
   ticket_type__name: string;

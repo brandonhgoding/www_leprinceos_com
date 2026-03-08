@@ -615,6 +615,156 @@ export function getWidgetCSS(theme: 'light' | 'dark'): string {
       color: ${vars.textPrimary};
     }
 
+    /* -- Concession browsing -- */
+    .lpo-category-header {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: ${vars.textPrimary};
+      margin: 1.25rem 0 0.625rem;
+      padding-bottom: 0.375rem;
+      border-bottom: 1px solid ${vars.borderColor};
+    }
+
+    .lpo-category-header:first-child {
+      margin-top: 0;
+    }
+
+    .lpo-concession-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: ${vars.bgCard};
+      border: 1px solid ${vars.borderColor};
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .lpo-concession-img {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: ${vars.borderColor};
+    }
+
+    .lpo-concession-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .lpo-concession-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: block;
+      color: ${vars.textPrimary};
+    }
+
+    .lpo-concession-desc {
+      font-size: 0.75rem;
+      color: ${vars.textSecondary};
+      display: block;
+      margin-top: 0.125rem;
+    }
+
+    .lpo-concession-price {
+      font-weight: 600;
+      color: ${vars.accent};
+      white-space: nowrap;
+      min-width: 50px;
+      text-align: right;
+      font-size: 0.875rem;
+    }
+
+    .lpo-concession-variation {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0;
+    }
+
+    .lpo-concession-variation-name {
+      font-size: 0.8125rem;
+      color: ${vars.textSecondary};
+      flex: 1;
+    }
+
+    .lpo-concession-out-of-stock {
+      font-size: 0.75rem;
+      color: ${vars.textMuted};
+      font-style: italic;
+    }
+
+    .lpo-modifier-group {
+      padding: 0.5rem 0 0.25rem;
+      margin-top: 0.25rem;
+    }
+
+    .lpo-modifier-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: ${vars.textSecondary};
+      margin-bottom: 0.375rem;
+      display: block;
+    }
+
+    .lpo-modifier-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      font-size: 0.8125rem;
+      color: ${vars.textPrimary};
+      cursor: pointer;
+    }
+
+    .lpo-modifier-option input[type="checkbox"],
+    .lpo-modifier-option input[type="radio"] {
+      accent-color: ${vars.accent};
+      margin: 0;
+    }
+
+    .lpo-modifier-adjustment {
+      color: ${vars.textMuted};
+      font-size: 0.75rem;
+    }
+
+    .lpo-concession-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: ${vars.accent};
+      background: none;
+      border: 1px solid ${vars.accent};
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .lpo-concession-toggle:hover {
+      background: ${vars.accent};
+      color: #ffffff;
+    }
+
+    .lpo-concession-section {
+      margin-top: 0.5rem;
+    }
+
+    .lpo-concession-item-expanded {
+      background: ${vars.bgCard};
+      border: 1px solid ${vars.borderColor};
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+
     /* -- Member lookup row -- */
     .lpo-member-row {
       display: flex;

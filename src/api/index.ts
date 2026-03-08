@@ -21,4 +21,8 @@ export {
   benefitConditionsApi,
 } from './memberships';
 
+export { default as concessionsApi } from './concessions';
+export { default as paymentsApi } from './payments';
+export { default as inventoryApi } from './inventory';
+
 export * from './types';

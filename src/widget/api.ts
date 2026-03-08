@@ -6,6 +6,7 @@ import type {
   ApiErrorResponse,
   OrderConfirmation,
   OrderCreatePayload,
+  PublicConcessionMenu,
   PublicShowtime,
   ShowtimeAvailability,
 } from './types.ts';
@@ -54,6 +55,11 @@ async function post<T>(baseUrl: string, path: string, body: unknown): Promise<T>
     body: JSON.stringify(body),
   });
   return handleResponse<T>(response);
+}
+
+/** Fetch the concession menu (categories + combos) */
+export function fetchConcessionMenu(baseUrl: string): Promise<PublicConcessionMenu> {
+  return get<PublicConcessionMenu>(baseUrl, '/public/concessions/');
 }
 
 /** Fetch upcoming showtimes for the cinema */

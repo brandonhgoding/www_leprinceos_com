@@ -18,6 +18,10 @@ import TierDetail from './pages/TierDetail';
 import Memberships from './pages/Memberships';
 import MembershipDetail from './pages/MembershipDetail';
 import OnlineOrders from './pages/OnlineOrders';
+import Concessions from './pages/Concessions';
+import Combos from './pages/Combos';
+import Inventory from './pages/Inventory';
+import POS from './pages/POS';
 import ShowtimeReport from './pages/reports/ShowtimeReport';
 import EngagementReport from './pages/reports/EngagementReport';
 import TicketDetailReport from './pages/reports/TicketDetailReport';
@@ -99,6 +103,10 @@ function App() {
           <Route path="screens" element={<Screens />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
+          <Route path="concessions" element={<Concessions />} />
+          <Route path="combos" element={<Combos />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="pos" element={<POS />} />
           <Route path="embeds" element={<Embeds />} />
           <Route
             path="online-orders"

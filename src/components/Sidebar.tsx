@@ -144,6 +144,26 @@ const MembershipsIcon = () => (
   </svg>
 );
 
+const ConcessionsIcon = () => (
+  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path
+      d="M4 7h12l-1 9H5L4 7zM7 7V5a3 3 0 016 0v2"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const POSIcon = () => (
+  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M7 6h6M7 9h6M7 12h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="13" cy="14" r="1.5" fill="currentColor" />
+  </svg>
+);
+
 const LogoutIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path
@@ -224,6 +244,16 @@ export default function Sidebar({
       ],
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
+    {
+      label: 'Concessions',
+      icon: <ConcessionsIcon />,
+      items: [
+        { path: '/concessions', label: 'Menu' },
+        { path: '/combos', label: 'Combos' },
+        { path: '/inventory', label: 'Inventory' },
+      ],
+    },
+    { path: '/pos', label: 'POS', icon: <POSIcon /> },
     {
       path: '/online-orders',
       label: 'Online Orders',

@@ -1,11 +1,17 @@
 // src/widget/views/CheckoutView.tsx
-// Two-step checkout: (1) select ticket quantities, (2) customer info + payment.
+// Two-step checkout: (1) select ticket quantities + optional concessions, (2) customer info + payment.
 
 import { useCallback, useEffect, useState } from 'react';
-import { ApiError, createOrder, fetchAvailability } from '../api.ts';
+import { ApiError, createOrder, fetchAvailability, fetchConcessionMenu } from '../api.ts';
 import type {
   Cart,
+  ConcessionCartItem,
   OrderConfirmation,
+  PublicConcessionCategory,
+  PublicConcessionItem,
+  PublicConcessionMenu,
+  PublicConcessionVariation,
+  PublicModifier,
   ShowtimeAvailability,
   TicketType,
   WidgetConfig,
@@ -19,6 +25,7 @@ interface CheckoutViewProps {
 }
 
 const MAX_TICKETS = 10;
+const MAX_CONCESSION_QTY = 20;
 
 function formatCurrency(amount: number): string {
   return `$${amount.toFixed(2)}`;
@@ -43,6 +50,275 @@ function getTotalQuantity(cart: Cart): number {
   return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 }
 
+function getConcessionSubtotal(concessionCart: ConcessionCartItem[]): number {
+  return concessionCart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+}
+
+function makeConcessionCartKey(variationId: number, modifierOptionIds: number[]): string {
+  const sorted = [...modifierOptionIds].sort((a, b) => a - b);
+  return `${variationId}:${sorted.join(',')}`;
+}
+
+/** Compute unit price for a variation including modifier adjustments */
+function computeUnitPrice(
+  variation: PublicConcessionVariation,
+  item: PublicConcessionItem,
+  selectedOptionIds: number[],
+): number {
+  let price = parseFloat(variation.price);
+  for (const mod of item.modifiers) {
+    for (const opt of mod.options) {
+      if (selectedOptionIds.includes(opt.id)) {
+        price += parseFloat(opt.price_adjustment);
+      }
+    }
+  }
+  return price;
+}
+
+/* ---- Concession Item Picker (inline, no modal) ---- */
+
+interface ConcessionItemPickerProps {
+  item: PublicConcessionItem;
+  onAdd: (item: ConcessionCartItem) => void;
+}
+
+function ConcessionItemPicker({ item, onAdd }: ConcessionItemPickerProps) {
+  // If only one variation, auto-select it
+  const inStockVariations = item.variations.filter((v) => v.in_stock);
+  const [selectedVariation, setSelectedVariation] = useState<PublicConcessionVariation | null>(
+    inStockVariations.length === 1 ? inStockVariations[0] : null,
+  );
+  const [selectedOptions, setSelectedOptions] = useState<Record<number, number[]>>(() => {
+    const initial: Record<number, number[]> = {};
+    for (const mod of item.modifiers) {
+      initial[mod.id] = [];
+    }
+    return initial;
+  });
+
+  const toggleOption = useCallback((modifier: PublicModifier, optionId: number) => {
+    setSelectedOptions((prev) => {
+      const current = prev[modifier.id] ?? [];
+      if (current.includes(optionId)) {
+        return { ...prev, [modifier.id]: current.filter((id) => id !== optionId) };
+      }
+      // For single-select (max_selections=1), replace
+      if (modifier.max_selections === 1) {
+        return { ...prev, [modifier.id]: [optionId] };
+      }
+      // For multi-select, check max
+      if (modifier.max_selections > 0 && current.length >= modifier.max_selections) {
+        return prev;
+      }
+      return { ...prev, [modifier.id]: [...current, optionId] };
+    });
+  }, []);
+
+  const allRequiredMet = item.modifiers
+    .filter((m) => m.is_required)
+    .every((m) => (selectedOptions[m.id] ?? []).length > 0);
+
+  const canAdd = selectedVariation && allRequiredMet;
+
+  const handleAdd = useCallback(() => {
+    if (!selectedVariation) return;
+    const allOptionIds = Object.values(selectedOptions).flat();
+    const unitPrice = computeUnitPrice(selectedVariation, item, allOptionIds);
+    const cartKey = makeConcessionCartKey(selectedVariation.id, allOptionIds);
+
+    onAdd({
+      cartKey,
+      variation_id: selectedVariation.id,
+      quantity: 1,
+      modifier_option_ids: allOptionIds,
+      itemName: item.name,
+      variationName: selectedVariation.name,
+      unitPrice,
+      taxRate: parseFloat(item.tax_rate),
+    });
+  }, [selectedVariation, selectedOptions, item, onAdd]);
+
+  if (inStockVariations.length === 0) {
+    return (
+      <div className="lpo-concession-card">
+        <div className="lpo-concession-info">
+          <span className="lpo-concession-name">{item.name}</span>
+          <span className="lpo-concession-out-of-stock">Out of stock</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="lpo-concession-item-expanded">
+      <span className="lpo-concession-name">{item.name}</span>
+      {item.description && <span className="lpo-concession-desc">{item.description}</span>}
+
+      {/* Variation selection (only if more than one) */}
+      {inStockVariations.length > 1 && (
+        <div style={{ marginTop: '0.5rem' }}>
+          {inStockVariations.map((v) => (
+            <div className="lpo-concession-variation" key={v.id}>
+              <input
+                type="radio"
+                name={`variation-${item.id}`}
+                checked={selectedVariation?.id === v.id}
+                onChange={() => setSelectedVariation(v)}
+                style={{ accentColor: 'inherit' }}
+              />
+              <span className="lpo-concession-variation-name">{v.name}</span>
+              <span className="lpo-concession-price">${v.price}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Single variation: show price */}
+      {inStockVariations.length === 1 && selectedVariation && (
+        <span className="lpo-concession-price" style={{ display: 'block', marginTop: '0.25rem' }}>
+          ${selectedVariation.price}
+        </span>
+      )}
+
+      {/* Modifier groups */}
+      {item.modifiers.map((mod) => (
+        <div className="lpo-modifier-group" key={mod.id}>
+          <span className="lpo-modifier-label">
+            {mod.name}
+            {mod.is_required && ' *'}
+            {mod.max_selections > 1 && ` (choose up to ${mod.max_selections})`}
+          </span>
+          {mod.options.map((opt) => {
+            const isSelected = (selectedOptions[mod.id] ?? []).includes(opt.id);
+            const inputType = mod.max_selections === 1 ? 'radio' : 'checkbox';
+            return (
+              <label className="lpo-modifier-option" key={opt.id}>
+                <input
+                  type={inputType}
+                  name={`mod-${mod.id}`}
+                  checked={isSelected}
+                  onChange={() => toggleOption(mod, opt.id)}
+                />
+                <span>{opt.name}</span>
+                {parseFloat(opt.price_adjustment) !== 0 && (
+                  <span className="lpo-modifier-adjustment">
+                    {parseFloat(opt.price_adjustment) > 0 ? '+' : ''}${opt.price_adjustment}
+                  </span>
+                )}
+              </label>
+            );
+          })}
+        </div>
+      ))}
+
+      <button
+        type="button"
+        className="lpo-btn-primary"
+        style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', fontSize: '0.8125rem' }}
+        disabled={!canAdd}
+        onClick={handleAdd}
+      >
+        Add to Order
+      </button>
+    </div>
+  );
+}
+
+/* ---- Concession Menu Browser ---- */
+
+interface ConcessionBrowserProps {
+  menu: PublicConcessionMenu;
+  concessionCart: ConcessionCartItem[];
+  onAddItem: (item: ConcessionCartItem) => void;
+  onUpdateQty: (cartKey: string, delta: number) => void;
+  onRemoveItem: (cartKey: string) => void;
+}
+
+function ConcessionBrowser({
+  menu,
+  concessionCart,
+  onAddItem,
+  onUpdateQty,
+  onRemoveItem,
+}: ConcessionBrowserProps) {
+  const hasItems = menu.categories.some((c) => c.items.length > 0);
+
+  if (!hasItems) {
+    return (
+      <p style={{ fontSize: '0.8125rem', color: 'inherit', opacity: 0.6 }}>
+        No concession items currently available.
+      </p>
+    );
+  }
+
+  return (
+    <div className="lpo-concession-section">
+      {/* Cart summary at top if items exist */}
+      {concessionCart.length > 0 && (
+        <div className="lpo-summary" style={{ marginBottom: '1rem', marginTop: 0 }}>
+          {concessionCart.map((ci) => (
+            <div
+              className="lpo-concession-card"
+              key={ci.cartKey}
+              style={{ marginBottom: '0.375rem' }}
+            >
+              <div className="lpo-concession-info">
+                <span className="lpo-concession-name">
+                  {ci.itemName}
+                  {ci.variationName !== ci.itemName && ` - ${ci.variationName}`}
+                </span>
+              </div>
+              <div className="lpo-concession-price">{formatCurrency(ci.unitPrice)}</div>
+              <div className="lpo-qty-controls">
+                <button
+                  type="button"
+                  className="lpo-qty-btn"
+                  onClick={() => {
+                    if (ci.quantity <= 1) {
+                      onRemoveItem(ci.cartKey);
+                    } else {
+                      onUpdateQty(ci.cartKey, -1);
+                    }
+                  }}
+                  aria-label={`Decrease ${ci.itemName} quantity`}
+                >
+                  -
+                </button>
+                <span className="lpo-qty-display">{ci.quantity}</span>
+                <button
+                  type="button"
+                  className="lpo-qty-btn"
+                  onClick={() => onUpdateQty(ci.cartKey, 1)}
+                  disabled={ci.quantity >= MAX_CONCESSION_QTY}
+                  aria-label={`Increase ${ci.itemName} quantity`}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Menu categories */}
+      {menu.categories.map((cat: PublicConcessionCategory) => {
+        if (cat.items.length === 0) return null;
+        return (
+          <div key={cat.id}>
+            <h4 className="lpo-category-header">{cat.name}</h4>
+            {cat.items.map((item: PublicConcessionItem) => (
+              <ConcessionItemPicker key={item.id} item={item} onAdd={onAddItem} />
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---- Main CheckoutView ---- */
+
 export default function CheckoutView({
   config,
   showtimeId,
@@ -54,6 +330,12 @@ export default function CheckoutView({
   const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<Cart>({});
   const [step, setStep] = useState<'tickets' | 'payment'>('tickets');
+
+  // Concession state
+  const [concessionMenu, setConcessionMenu] = useState<PublicConcessionMenu | null>(null);
+  const [concessionCart, setConcessionCart] = useState<ConcessionCartItem[]>([]);
+  const [showConcessions, setShowConcessions] = useState(false);
+  const [concessionsLoading, setConcessionsLoading] = useState(false);
 
   // Customer form state
   const [customerName, setCustomerName] = useState('');
@@ -88,8 +370,31 @@ export default function CheckoutView({
       });
   }, [config.apiBaseUrl, showtimeId]);
 
+  // Load concession menu (lazy, on first toggle)
+  const handleToggleConcessions = useCallback(() => {
+    if (!showConcessions && !concessionMenu) {
+      setConcessionsLoading(true);
+      fetchConcessionMenu(config.apiBaseUrl)
+        .then((data) => {
+          setConcessionMenu(data);
+          setConcessionsLoading(false);
+          setShowConcessions(true);
+        })
+        .catch(() => {
+          setConcessionsLoading(false);
+          // Silently fail - concessions are optional
+          setShowConcessions(true);
+          setConcessionMenu({ categories: [], combos: [] });
+        });
+    } else {
+      setShowConcessions((prev) => !prev);
+    }
+  }, [showConcessions, concessionMenu, config.apiBaseUrl]);
+
   const totalQty = getTotalQuantity(cart);
-  const subtotal = availability ? getSubtotal(cart, availability.ticket_types) : 0;
+  const ticketSubtotal = availability ? getSubtotal(cart, availability.ticket_types) : 0;
+  const concessionSubtotal = getConcessionSubtotal(concessionCart);
+  const subtotal = ticketSubtotal + concessionSubtotal;
 
   const updateQty = useCallback((ticketTypeId: number, delta: number) => {
     setCart((prev) => {
@@ -108,6 +413,36 @@ export default function CheckoutView({
       }
       return next;
     });
+  }, []);
+
+  // Concession cart handlers
+  const handleAddConcessionItem = useCallback((item: ConcessionCartItem) => {
+    setConcessionCart((prev) => {
+      const existing = prev.find((ci) => ci.cartKey === item.cartKey);
+      if (existing) {
+        return prev.map((ci) =>
+          ci.cartKey === item.cartKey ? { ...ci, quantity: ci.quantity + 1 } : ci,
+        );
+      }
+      return [...prev, item];
+    });
+  }, []);
+
+  const handleUpdateConcessionQty = useCallback((cartKey: string, delta: number) => {
+    setConcessionCart((prev) =>
+      prev
+        .map((ci) => {
+          if (ci.cartKey !== cartKey) return ci;
+          const newQty = ci.quantity + delta;
+          if (newQty <= 0) return null;
+          return { ...ci, quantity: Math.min(newQty, MAX_CONCESSION_QTY) };
+        })
+        .filter((ci): ci is ConcessionCartItem => ci !== null),
+    );
+  }, []);
+
+  const handleRemoveConcessionItem = useCallback((cartKey: string) => {
+    setConcessionCart((prev) => prev.filter((ci) => ci.cartKey !== cartKey));
   }, []);
 
   // When moving to payment step
@@ -152,6 +487,15 @@ export default function CheckoutView({
           .filter(([, qty]) => qty > 0)
           .map(([id, qty]) => ({ ticket_type_id: Number(id), quantity: qty }));
 
+        const concessionItems =
+          concessionCart.length > 0
+            ? concessionCart.map((ci) => ({
+                variation_id: ci.variation_id,
+                quantity: ci.quantity,
+                modifier_option_ids: ci.modifier_option_ids,
+              }))
+            : undefined;
+
         const orderPayload = {
           showtime_id: showtimeId,
           customer_name: customerName.trim(),
@@ -160,6 +504,7 @@ export default function CheckoutView({
           member_email:
             memberEmail.trim() && isValidEmail(memberEmail.trim()) ? memberEmail.trim() : undefined,
           items,
+          concession_items: concessionItems,
         };
 
         let order: OrderConfirmation;
@@ -198,6 +543,7 @@ export default function CheckoutView({
     [
       availability,
       cart,
+      concessionCart,
       config.apiBaseUrl,
       customerEmail,
       customerName,
@@ -293,7 +639,7 @@ export default function CheckoutView({
         </p>
       </div>
 
-      {/* Step 1: Ticket Selection */}
+      {/* Step 1: Ticket Selection + Concessions */}
       {step === 'tickets' && (
         <div>
           <h3 className="lpo-section-title">Select Tickets</h3>
@@ -331,12 +677,69 @@ export default function CheckoutView({
             </div>
           ))}
 
-          {totalQty > 0 && (
+          {/* Concessions toggle and browser */}
+          <button
+            type="button"
+            className="lpo-concession-toggle"
+            onClick={handleToggleConcessions}
+            disabled={concessionsLoading}
+          >
+            {concessionsLoading ? (
+              <>
+                <span className="lpo-spinner lpo-spinner-sm" aria-hidden="true" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {showConcessions ? (
+                    <polyline points="18 15 12 9 6 15" />
+                  ) : (
+                    <polyline points="6 9 12 15 18 9" />
+                  )}
+                </svg>
+                {showConcessions ? 'Hide Concessions' : 'Add Concessions'}
+                {concessionCart.length > 0 &&
+                  ` (${concessionCart.reduce((s, i) => s + i.quantity, 0)})`}
+              </>
+            )}
+          </button>
+
+          {showConcessions && concessionMenu && (
+            <ConcessionBrowser
+              menu={concessionMenu}
+              concessionCart={concessionCart}
+              onAddItem={handleAddConcessionItem}
+              onUpdateQty={handleUpdateConcessionQty}
+              onRemoveItem={handleRemoveConcessionItem}
+            />
+          )}
+
+          {/* Order summary */}
+          {(totalQty > 0 || concessionCart.length > 0) && (
             <div className="lpo-summary">
-              <div className="lpo-summary-row">
-                <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
-              </div>
+              {ticketSubtotal > 0 && (
+                <div className="lpo-summary-row">
+                  <span>Tickets</span>
+                  <span>{formatCurrency(ticketSubtotal)}</span>
+                </div>
+              )}
+              {concessionSubtotal > 0 && (
+                <div className="lpo-summary-row">
+                  <span>Concessions</span>
+                  <span>{formatCurrency(concessionSubtotal)}</span>
+                </div>
+              )}
               <div className="lpo-summary-row lpo-summary-total">
                 <span>Total</span>
                 <span>{formatCurrency(subtotal)}</span>
@@ -347,7 +750,7 @@ export default function CheckoutView({
           <button
             type="button"
             className="lpo-btn-primary"
-            disabled={totalQty === 0}
+            disabled={totalQty === 0 && concessionCart.length === 0}
             onClick={handleContinueToPayment}
           >
             Continue to Payment
@@ -429,6 +832,7 @@ export default function CheckoutView({
             Order Summary
           </h3>
           <div className="lpo-summary">
+            {/* Ticket line items */}
             {Object.entries(cart)
               .filter(([, qty]) => qty > 0)
               .map(([id, qty]) => {
@@ -436,7 +840,7 @@ export default function CheckoutView({
                 if (!tt) return null;
                 const lineTotal = parseFloat(tt.price) * qty;
                 return (
-                  <div className="lpo-summary-row" key={id}>
+                  <div className="lpo-summary-row" key={`ticket-${id}`}>
                     <span>
                       {qty}x {tt.name}
                     </span>
@@ -444,6 +848,21 @@ export default function CheckoutView({
                   </div>
                 );
               })}
+
+            {/* Concession line items */}
+            {concessionCart.map((ci) => {
+              const lineTotal = ci.unitPrice * ci.quantity;
+              return (
+                <div className="lpo-summary-row" key={`conc-${ci.cartKey}`}>
+                  <span>
+                    {ci.quantity}x {ci.itemName}
+                    {ci.variationName !== ci.itemName && ` (${ci.variationName})`}
+                  </span>
+                  <span>{formatCurrency(lineTotal)}</span>
+                </div>
+              );
+            })}
+
             <div className="lpo-summary-row lpo-summary-total">
               <span>Total</span>
               <span>{formatCurrency(subtotal)}</span>
