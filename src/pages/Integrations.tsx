@@ -138,7 +138,16 @@ export default function Integrations() {
                 </td>
                 <td data-label="Actions">
                   <div className={styles.actions}>
-                    {connectStatus.charges_enabled ? null : connectStatus.has_account ? (
+                    {connectStatus.charges_enabled ? (
+                      <a
+                        href="https://dashboard.stripe.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${styles.actionButton} ${styles.syncButton}`}
+                      >
+                        Go to Stripe Dashboard
+                      </a>
+                    ) : connectStatus.has_account ? (
                       <button
                         className={`${styles.actionButton} ${styles.syncButton}`}
                         onClick={() => onboardingMutation.mutate()}

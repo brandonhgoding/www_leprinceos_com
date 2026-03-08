@@ -1,4 +1,6 @@
 // src/api/payments.ts
+import { isAxiosError } from 'axios';
+
 import apiClient from './client';
 import type {
   PaymentIntentResponse,
@@ -11,8 +13,22 @@ import type {
 export const paymentsApi = {
   // Stripe Connect
   getConnectStatus: async (): Promise<StripeAccountStatus> => {
-    const response = await apiClient.get<StripeAccountStatus>('/v1/payments/connect/status/');
-    return response.data;
+    try {
+      const response = await apiClient.get<StripeAccountStatus>('/v1/payments/connect/status/');
+      return response.data;
+    } catch (err) {
+      // 404 means no Stripe account exists yet — return default status
+      if (isAxiosError(err) && err.response?.status === 404) {
+        return {
+          has_account: false,
+          stripe_account_id: null,
+          charges_enabled: false,
+          payouts_enabled: false,
+          onboarding_complete: false,
+        };
+      }
+      throw err;
+    }
   },
 
   startOnboarding: async (

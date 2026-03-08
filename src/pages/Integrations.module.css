@@ -272,6 +272,10 @@
   border-color: var(--brass-light);
 }
 
+a.syncButton {
+  text-decoration: none;
+}
+
 .clearSyncButton {
   width: auto;
   padding: 0 0.75rem;
