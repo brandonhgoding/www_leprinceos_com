@@ -436,7 +436,9 @@ export interface ConcessionItem {
   name: string;
   description: string;
   image: string | null;
-  tax_rate: string;
+  price: string | null;
+  tax_group: number | null;
+  tax_group_name: string;
   is_active: boolean;
   variations: ConcessionVariation[];
   modifiers: Modifier[];
@@ -449,7 +451,8 @@ export interface ConcessionItemCreate {
   name: string;
   description?: string;
   image?: string | null;
-  tax_rate?: string;
+  price?: string | null;
+  tax_group?: number | null;
   is_active?: boolean;
   modifier_ids?: number[];
 }
@@ -491,7 +494,6 @@ export interface ComboTemplate {
   name: string;
   description: string;
   price: string;
-  tax_rate: string;
   is_active: boolean;
   is_fixed: boolean;
   slots: ComboSlot[];
@@ -515,9 +517,39 @@ export interface ComboTemplateCreate {
   name: string;
   description?: string;
   price: string;
-  tax_rate?: string;
   is_active?: boolean;
   slots?: ComboSlotWrite[];
+}
+
+// Tax types
+export interface SalesTax {
+  id: number;
+  name: string;
+  rate: string;
+  tax_type: string;
+  is_inclusive: boolean;
+  is_active: boolean;
+}
+
+export interface SalesTaxCreate {
+  name: string;
+  rate: string;
+  tax_type?: string;
+  is_inclusive?: boolean;
+  is_active?: boolean;
+}
+
+export interface TaxGroup {
+  id: number;
+  name: string;
+  taxes: SalesTax[];
+  is_active: boolean;
+}
+
+export interface TaxGroupCreate {
+  name: string;
+  tax_ids?: number[];
+  is_active?: boolean;
 }
 
 // Inventory
