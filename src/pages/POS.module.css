@@ -350,6 +350,45 @@
   white-space: nowrap;
 }
 
+/* Cart quantity controls (for concession items) */
+.cartQuantityControls {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.cartQuantityButton {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  background: var(--cream);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.cartQuantityButton:hover {
+  background: var(--brass);
+  color: var(--warmblack);
+  border-color: var(--brass);
+}
+
+.cartQuantityValue {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  min-width: 18px;
+  text-align: center;
+}
+
 .removeButton {
   width: 24px;
   height: 24px;

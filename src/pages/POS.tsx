@@ -126,6 +126,14 @@ export default function POS() {
     });
   };
 
+  const updateConcessionQuantity = (variationId: number, delta: number) => {
+    setConcessionCart((prev) => {
+      return prev
+        .map((c) => (c.variation.id === variationId ? { ...c, quantity: c.quantity + delta } : c))
+        .filter((c) => c.quantity > 0);
+    });
+  };
+
   const removeConcessionFromCart = (variationId: number) => {
     setConcessionCart((prev) => prev.filter((c) => c.variation.id !== variationId));
   };
@@ -431,10 +439,27 @@ export default function POS() {
                         {c.item.name} ({c.variation.name})
                       </div>
                       <div className={styles.cartItemMeta}>
-                        &times; {c.quantity} @ {formatPrice(c.variation.price)}
+                        {formatPrice(c.variation.price)} each
                       </div>
                     </div>
                     <div className={styles.cartItemRight}>
+                      <div className={styles.cartQuantityControls}>
+                        <button
+                          className={styles.cartQuantityButton}
+                          onClick={() => updateConcessionQuantity(c.variation.id, -1)}
+                          aria-label={`Decrease ${c.item.name} quantity`}
+                        >
+                          -
+                        </button>
+                        <span className={styles.cartQuantityValue}>{c.quantity}</span>
+                        <button
+                          className={styles.cartQuantityButton}
+                          onClick={() => updateConcessionQuantity(c.variation.id, 1)}
+                          aria-label={`Increase ${c.item.name} quantity`}
+                        >
+                          +
+                        </button>
+                      </div>
                       <span className={styles.cartItemPrice}>
                         {formatPrice(parseFloat(c.variation.price) * c.quantity)}
                       </span>
