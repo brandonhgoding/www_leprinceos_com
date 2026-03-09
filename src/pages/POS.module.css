@@ -113,6 +113,9 @@
   padding: 1rem;
   cursor: pointer;
   transition: all 0.15s ease;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
 }
 
 .itemCard:hover {
@@ -121,17 +124,29 @@
   transform: translateY(-1px);
 }
 
+.itemCardDisabled {
+  composes: itemCard;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.itemCardDisabled:hover {
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  transform: none;
+}
+
 .itemName {
   font-weight: 600;
   font-size: 0.9375rem;
   color: var(--charcoal);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
 }
 
 .itemDescription {
   font-size: 0.8125rem;
   color: var(--stone);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.5rem 0;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -139,29 +154,97 @@
   overflow: hidden;
 }
 
-.variations {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
+.itemPrice {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--brass-dark, var(--charcoal));
 }
 
-.variationButton {
-  padding: 0.375rem 0.625rem;
+.variationHint {
   font-size: 0.75rem;
+  color: var(--stone);
+  margin-top: 0.25rem;
+}
+
+/* Variation picker modal */
+.variationOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.variationModal {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-width: 280px;
+  max-width: 360px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.variationModalTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.variationList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.variationOption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   color: var(--charcoal);
   background: var(--cream);
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   font-family: inherit;
 }
 
-.variationButton:hover {
+.variationOption:hover {
   background: var(--brass);
   color: var(--warmblack);
   border-color: var(--brass);
+}
+
+.variationOptionPrice {
+  font-weight: 600;
+}
+
+.variationCancel {
+  width: 100%;
+  padding: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--stone);
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.variationCancel:hover {
+  color: var(--charcoal);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Tickets tab */

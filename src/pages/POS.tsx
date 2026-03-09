@@ -18,6 +18,11 @@ import styles from './POS.module.css';
 
 type ActiveTab = 'concessions' | 'tickets';
 
+interface VariationPickerState {
+  item: ConcessionItem;
+  variations: ConcessionVariation[];
+}
+
 interface CartConcessionItem {
   variation: ConcessionVariation;
   item: ConcessionItem;
@@ -49,6 +54,9 @@ export default function POS() {
   // Cart state
   const [concessionCart, setConcessionCart] = useState<CartConcessionItem[]>([]);
   const [ticketCart, setTicketCart] = useState<CartTicketItem[]>([]);
+
+  // Variation picker state
+  const [variationPicker, setVariationPicker] = useState<VariationPickerState | null>(null);
 
   // Success state
   const [saleResult, setSaleResult] = useState<POSSaleResponse | null>(null);
@@ -107,7 +115,17 @@ export default function POS() {
   );
 
   // Cart helpers
+  const handleItemClick = (item: ConcessionItem) => {
+    const activeVariations = item.variations.filter((v) => v.is_active);
+    if (activeVariations.length === 1) {
+      addConcessionToCart(item, activeVariations[0]);
+    } else if (activeVariations.length > 1) {
+      setVariationPicker({ item, variations: activeVariations });
+    }
+  };
+
   const addConcessionToCart = (item: ConcessionItem, variation: ConcessionVariation) => {
+    setVariationPicker(null);
     setConcessionCart((prev) => {
       const existing = prev.find((c) => c.variation.id === variation.id);
       if (existing) {
@@ -281,27 +299,46 @@ export default function POS() {
                   <div className={styles.emptyMenu}>No items found.</div>
                 ) : (
                   <div className={styles.itemGrid}>
-                    {filteredItems.map((item: ConcessionItem) => (
-                      <div key={item.id} className={styles.itemCard}>
-                        <div className={styles.itemName}>{item.name}</div>
-                        {item.description && (
-                          <div className={styles.itemDescription}>{item.description}</div>
-                        )}
-                        <div className={styles.variations}>
-                          {item.variations
-                            .filter((v: ConcessionVariation) => v.is_active)
-                            .map((variation: ConcessionVariation) => (
-                              <button
-                                key={variation.id}
-                                className={styles.variationButton}
-                                onClick={() => addConcessionToCart(item, variation)}
-                              >
-                                {variation.name} &middot; {formatPrice(variation.price)}
-                              </button>
-                            ))}
-                        </div>
-                      </div>
-                    ))}
+                    {filteredItems.map((item: ConcessionItem) => {
+                      const activeVariations = item.variations.filter(
+                        (v: ConcessionVariation) => v.is_active,
+                      );
+                      const hasVariations = activeVariations.length > 0;
+                      const singleVariation =
+                        activeVariations.length === 1 ? activeVariations[0] : null;
+
+                      return (
+                        <button
+                          key={item.id}
+                          className={hasVariations ? styles.itemCard : styles.itemCardDisabled}
+                          onClick={() => handleItemClick(item)}
+                          disabled={!hasVariations}
+                        >
+                          <div className={styles.itemName}>{item.name}</div>
+                          {item.description && (
+                            <div className={styles.itemDescription}>{item.description}</div>
+                          )}
+                          <div className={styles.itemPrice}>
+                            {singleVariation
+                              ? formatPrice(singleVariation.price)
+                              : activeVariations.length > 1
+                                ? `From ${formatPrice(
+                                    activeVariations.reduce((min, v) =>
+                                      parseFloat(v.price) < parseFloat(min.price) ? v : min,
+                                    ).price,
+                                  )}`
+                                : item.price
+                                  ? formatPrice(item.price)
+                                  : 'No variations'}
+                          </div>
+                          {activeVariations.length > 1 && (
+                            <div className={styles.variationHint}>
+                              {activeVariations.length} sizes
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </>
@@ -374,6 +411,32 @@ export default function POS() {
           </>
         )}
       </div>
+
+      {/* Variation picker modal */}
+      {variationPicker && (
+        <div className={styles.variationOverlay} onClick={() => setVariationPicker(null)}>
+          <div className={styles.variationModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.variationModalTitle}>{variationPicker.item.name}</h3>
+            <div className={styles.variationList}>
+              {variationPicker.variations.map((variation) => (
+                <button
+                  key={variation.id}
+                  className={styles.variationOption}
+                  onClick={() => addConcessionToCart(variationPicker.item, variation)}
+                >
+                  <span>{variation.name}</span>
+                  <span className={styles.variationOptionPrice}>
+                    {formatPrice(variation.price)}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <button className={styles.variationCancel} onClick={() => setVariationPicker(null)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Right panel — Cart/Checkout */}
       <div className={styles.cartPanel}>

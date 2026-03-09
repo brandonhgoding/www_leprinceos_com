@@ -5,6 +5,8 @@ import type {
   ConcessionCategoryCreate,
   ConcessionItem,
   ConcessionItemCreate,
+  ConcessionVariation,
+  ConcessionVariationCreate,
   ComboTemplate,
   ComboTemplateCreate,
   Modifier,
@@ -70,6 +72,41 @@ export const concessionsApi = {
 
   deleteItem: async (id: number): Promise<void> => {
     await apiClient.delete(`/v1/concession-items/${id}/`);
+  },
+
+  // Variations
+  listVariations: async (itemId: number): Promise<ConcessionVariation[]> => {
+    const response = await apiClient.get<ConcessionVariation[]>(
+      `/v1/concession-items/${itemId}/variations/`,
+    );
+    return response.data;
+  },
+
+  createVariation: async (
+    itemId: number,
+    data: ConcessionVariationCreate,
+  ): Promise<ConcessionVariation> => {
+    const response = await apiClient.post<ConcessionVariation>(
+      `/v1/concession-items/${itemId}/variations/`,
+      data,
+    );
+    return response.data;
+  },
+
+  updateVariation: async (
+    itemId: number,
+    variationId: number,
+    data: Partial<ConcessionVariationCreate>,
+  ): Promise<ConcessionVariation> => {
+    const response = await apiClient.patch<ConcessionVariation>(
+      `/v1/concession-items/${itemId}/variations/${variationId}/`,
+      data,
+    );
+    return response.data;
+  },
+
+  deleteVariation: async (itemId: number, variationId: number): Promise<void> => {
+    await apiClient.delete(`/v1/concession-items/${itemId}/variations/${variationId}/`);
   },
 
   // Modifiers

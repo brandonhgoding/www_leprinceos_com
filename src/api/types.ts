@@ -457,6 +457,14 @@ export interface ConcessionItemCreate {
   modifier_ids?: number[];
 }
 
+export interface ConcessionVariationCreate {
+  name: string;
+  price: string;
+  sku?: string;
+  display_order?: number;
+  is_active?: boolean;
+}
+
 export interface ConcessionCategory {
   id: number;
   name: string;

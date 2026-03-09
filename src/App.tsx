@@ -19,6 +19,7 @@ import Memberships from './pages/Memberships';
 import MembershipDetail from './pages/MembershipDetail';
 import OnlineOrders from './pages/OnlineOrders';
 import Concessions from './pages/Concessions';
+import ConcessionItemDetail from './pages/ConcessionItemDetail';
 import Combos from './pages/Combos';
 import Inventory from './pages/Inventory';
 import POS from './pages/POS';
@@ -105,6 +106,7 @@ function App() {
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
           <Route path="concessions" element={<Concessions />} />
+          <Route path="concessions/:id" element={<ConcessionItemDetail />} />
           <Route path="combos" element={<Combos />} />
           <Route path="inventory" element={<Inventory />} />
           <Route path="pos" element={<POS />} />

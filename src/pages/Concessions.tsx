@@ -1,5 +1,6 @@
 // src/pages/Concessions.tsx
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { concessionsApi, taxesApi } from '../api';
 import type {
@@ -48,6 +49,7 @@ const initialItemFormData: ItemFormData = {
 };
 
 export default function Concessions() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const { confirm } = useConfirm();
@@ -150,19 +152,6 @@ export default function Concessions() {
       is_active: category.is_active,
     });
     setSelectedCategory(category);
-    setModalMode('edit');
-  };
-
-  const openEditItem = (item: ConcessionItem) => {
-    setItemFormData({
-      name: item.name,
-      category: String(item.category),
-      description: item.description,
-      price: item.price || '',
-      tax_group: item.tax_group ? String(item.tax_group) : '',
-      is_active: item.is_active,
-    });
-    setSelectedItem(item);
     setModalMode('edit');
   };
 
@@ -440,7 +429,11 @@ export default function Concessions() {
               </thead>
               <tbody>
                 {items.map((item) => (
-                  <tr key={item.id}>
+                  <tr
+                    key={item.id}
+                    className={styles.clickableRow}
+                    onClick={() => navigate(`/concessions/${item.id}`)}
+                  >
                     <td className={styles.itemName}>{item.name}</td>
                     <td>{item.category_name}</td>
                     <td>{item.variations.length}</td>
@@ -462,12 +455,21 @@ export default function Concessions() {
                     </td>
                     <td>
                       <div className={styles.actions}>
-                        <button className={styles.actionButton} onClick={() => openEditItem(item)}>
-                          Edit
+                        <button
+                          className={styles.actionButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/concessions/${item.id}`);
+                          }}
+                        >
+                          View
                         </button>
                         <button
                           className={`${styles.actionButton} ${styles.deleteButton}`}
-                          onClick={() => handleDeleteItem(item)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteItem(item);
+                          }}
                         >
                           Delete
                         </button>
@@ -482,7 +484,11 @@ export default function Concessions() {
           {/* Items Mobile Cards */}
           <div className={styles.cardList}>
             {items.map((item) => (
-              <div key={item.id} className={styles.card}>
+              <div
+                key={item.id}
+                className={`${styles.card} ${styles.clickableRow}`}
+                onClick={() => navigate(`/concessions/${item.id}`)}
+              >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitleRow}>
                     <h3 className={styles.cardTitle}>{item.name}</h3>
@@ -508,12 +514,21 @@ export default function Concessions() {
                   </div>
                 </div>
                 <div className={styles.cardActions}>
-                  <button className={styles.actionButton} onClick={() => openEditItem(item)}>
-                    Edit
+                  <button
+                    className={styles.actionButton}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/concessions/${item.id}`);
+                    }}
+                  >
+                    View
                   </button>
                   <button
                     className={`${styles.actionButton} ${styles.deleteButton}`}
-                    onClick={() => handleDeleteItem(item)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteItem(item);
+                    }}
                   >
                     Delete
                   </button>
