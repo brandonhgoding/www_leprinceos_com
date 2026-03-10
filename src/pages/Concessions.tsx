@@ -29,7 +29,7 @@ interface ItemFormData {
   category: string;
   description: string;
   price: string;
-  tax_group: string;
+  tax_ids: number[];
   is_active: boolean;
 }
 
@@ -44,7 +44,7 @@ const initialItemFormData: ItemFormData = {
   category: '',
   description: '',
   price: '',
-  tax_group: '',
+  tax_ids: [],
   is_active: true,
 };
 
@@ -72,9 +72,9 @@ export default function Concessions() {
     queryFn: () => concessionsApi.listItems(),
   });
 
-  const { data: taxGroups = [] } = useQuery({
-    queryKey: ['tax-groups'],
-    queryFn: () => taxesApi.listTaxGroups(),
+  const { data: salesTaxes = [] } = useQuery({
+    queryKey: ['sales-taxes'],
+    queryFn: () => taxesApi.listSalesTaxes(),
   });
 
   // Category Mutations
@@ -189,7 +189,7 @@ export default function Concessions() {
       name: itemFormData.name,
       description: itemFormData.description,
       price: itemFormData.price || null,
-      tax_group: itemFormData.tax_group ? parseInt(itemFormData.tax_group, 10) : null,
+      tax_ids: itemFormData.tax_ids,
       is_active: itemFormData.is_active,
     };
 
@@ -666,20 +666,32 @@ export default function Concessions() {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="item-tax-group">Tax Group</label>
-                <select
-                  id="item-tax-group"
-                  value={itemFormData.tax_group}
-                  onChange={(e) => setItemFormData({ ...itemFormData, tax_group: e.target.value })}
-                  className={styles.input}
-                >
-                  <option value="">No tax</option>
-                  {taxGroups.map((tg) => (
-                    <option key={tg.id} value={tg.id}>
-                      {tg.name}
-                    </option>
-                  ))}
-                </select>
+                <label>Taxes</label>
+                {salesTaxes.length === 0 ? (
+                  <p className={styles.hint}>No tax rates created yet.</p>
+                ) : (
+                  <div className={styles.checkboxList}>
+                    {salesTaxes
+                      .filter((t) => t.is_active)
+                      .map((tax) => (
+                        <label key={tax.id}>
+                          <input
+                            type="checkbox"
+                            checked={itemFormData.tax_ids.includes(tax.id)}
+                            onChange={() =>
+                              setItemFormData((prev) => ({
+                                ...prev,
+                                tax_ids: prev.tax_ids.includes(tax.id)
+                                  ? prev.tax_ids.filter((id) => id !== tax.id)
+                                  : [...prev.tax_ids, tax.id],
+                              }))
+                            }
+                          />
+                          {tax.name} ({(parseFloat(tax.rate) * 100).toFixed(2)}%)
+                        </label>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
 

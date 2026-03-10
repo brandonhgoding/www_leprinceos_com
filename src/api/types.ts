@@ -437,8 +437,7 @@ export interface ConcessionItem {
   description: string;
   image: string | null;
   price: string | null;
-  tax_group: number | null;
-  tax_group_name: string;
+  taxes: SalesTax[];
   is_active: boolean;
   variations: ConcessionVariation[];
   modifiers: Modifier[];
@@ -452,7 +451,7 @@ export interface ConcessionItemCreate {
   description?: string;
   image?: string | null;
   price?: string | null;
-  tax_group?: number | null;
+  tax_ids?: number[];
   is_active?: boolean;
   modifier_ids?: number[];
 }
@@ -544,19 +543,6 @@ export interface SalesTaxCreate {
   rate: string;
   tax_type?: string;
   is_inclusive?: boolean;
-  is_active?: boolean;
-}
-
-export interface TaxGroup {
-  id: number;
-  name: string;
-  taxes: SalesTax[];
-  is_active: boolean;
-}
-
-export interface TaxGroupCreate {
-  name: string;
-  tax_ids?: number[];
   is_active?: boolean;
 }
 

@@ -1,12 +1,6 @@
 // src/api/taxes.ts
 import apiClient from './client';
-import type {
-  SalesTax,
-  SalesTaxCreate,
-  TaxGroup,
-  TaxGroupCreate,
-  PaginatedResponse,
-} from './types';
+import type { SalesTax, SalesTaxCreate, PaginatedResponse } from './types';
 
 export const taxesApi = {
   // Sales Taxes
@@ -27,26 +21,6 @@ export const taxesApi = {
 
   deleteSalesTax: async (id: number): Promise<void> => {
     await apiClient.delete(`/v1/sales-taxes/${id}/`);
-  },
-
-  // Tax Groups
-  listTaxGroups: async (): Promise<TaxGroup[]> => {
-    const response = await apiClient.get<PaginatedResponse<TaxGroup>>('/v1/tax-groups/');
-    return response.data.results;
-  },
-
-  createTaxGroup: async (data: TaxGroupCreate): Promise<TaxGroup> => {
-    const response = await apiClient.post<TaxGroup>('/v1/tax-groups/', data);
-    return response.data;
-  },
-
-  updateTaxGroup: async (id: number, data: Partial<TaxGroupCreate>): Promise<TaxGroup> => {
-    const response = await apiClient.patch<TaxGroup>(`/v1/tax-groups/${id}/`, data);
-    return response.data;
-  },
-
-  deleteTaxGroup: async (id: number): Promise<void> => {
-    await apiClient.delete(`/v1/tax-groups/${id}/`);
   },
 };
 
