@@ -85,9 +85,8 @@ interface ConcessionItemPickerProps {
 
 function ConcessionItemPicker({ item, onAdd }: ConcessionItemPickerProps) {
   // If only one variation, auto-select it
-  const inStockVariations = item.variations.filter((v) => v.in_stock);
   const [selectedVariation, setSelectedVariation] = useState<PublicConcessionVariation | null>(
-    inStockVariations.length === 1 ? inStockVariations[0] : null,
+    item.variations.length === 1 ? item.variations[0] : null,
   );
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number[]>>(() => {
     const initial: Record<number, number[]> = {};
@@ -138,15 +137,8 @@ function ConcessionItemPicker({ item, onAdd }: ConcessionItemPickerProps) {
     });
   }, [selectedVariation, selectedOptions, item, onAdd]);
 
-  if (inStockVariations.length === 0) {
-    return (
-      <div className="lpo-concession-card">
-        <div className="lpo-concession-info">
-          <span className="lpo-concession-name">{item.name}</span>
-          <span className="lpo-concession-out-of-stock">Out of stock</span>
-        </div>
-      </div>
-    );
+  if (item.variations.length === 0) {
+    return null;
   }
 
   return (
@@ -155,9 +147,9 @@ function ConcessionItemPicker({ item, onAdd }: ConcessionItemPickerProps) {
       {item.description && <span className="lpo-concession-desc">{item.description}</span>}
 
       {/* Variation selection (only if more than one) */}
-      {inStockVariations.length > 1 && (
+      {item.variations.length > 1 && (
         <div style={{ marginTop: '0.5rem' }}>
-          {inStockVariations.map((v) => (
+          {item.variations.map((v) => (
             <div className="lpo-concession-variation" key={v.id}>
               <input
                 type="radio"
@@ -174,7 +166,7 @@ function ConcessionItemPicker({ item, onAdd }: ConcessionItemPickerProps) {
       )}
 
       {/* Single variation: show price */}
-      {inStockVariations.length === 1 && selectedVariation && (
+      {item.variations.length === 1 && selectedVariation && (
         <span className="lpo-concession-price" style={{ display: 'block', marginTop: '0.25rem' }}>
           ${selectedVariation.price}
         </span>
@@ -383,7 +375,7 @@ export default function CheckoutView({
           setConcessionsLoading(false);
           // Silently fail - concessions are optional
           setShowConcessions(true);
-          setConcessionMenu({ categories: [], combos: [] });
+          setConcessionMenu({ categories: [] });
         });
     } else {
       setShowConcessions((prev) => !prev);

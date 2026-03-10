@@ -57,7 +57,7 @@ async function post<T>(baseUrl: string, path: string, body: unknown): Promise<T>
   return handleResponse<T>(response);
 }
 
-/** Fetch the concession menu (categories + combos) */
+/** Fetch the concession menu */
 export function fetchConcessionMenu(baseUrl: string): Promise<PublicConcessionMenu> {
   return get<PublicConcessionMenu>(baseUrl, '/public/concessions/');
 }

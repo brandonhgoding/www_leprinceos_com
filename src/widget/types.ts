@@ -98,7 +98,6 @@ export interface PublicConcessionVariation {
   id: number;
   name: string;
   price: string; // Decimal as string from DRF
-  in_stock: boolean;
 }
 
 export interface PublicConcessionItem {
@@ -116,29 +115,8 @@ export interface PublicConcessionCategory {
   items: PublicConcessionItem[];
 }
 
-export interface PublicComboSlotOption {
-  id: number;
-  name: string;
-  is_default: boolean;
-}
-
-export interface PublicComboSlot {
-  id: number;
-  name: string;
-  options: PublicComboSlotOption[];
-}
-
-export interface PublicCombo {
-  id: number;
-  name: string;
-  description: string;
-  price: string; // Decimal as string from DRF
-  slots: PublicComboSlot[];
-}
-
 export interface PublicConcessionMenu {
   categories: PublicConcessionCategory[];
-  combos: PublicCombo[];
 }
 
 /** A single concession item in the cart */

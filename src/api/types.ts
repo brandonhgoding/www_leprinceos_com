@@ -480,54 +480,6 @@ export interface ConcessionCategoryCreate {
   is_active?: boolean;
 }
 
-export interface ComboSlotOption {
-  id: number;
-  variation: number | null;
-  variation_name: string | null;
-  ticket_type: number | null;
-  ticket_type_name: string | null;
-  is_default: boolean;
-}
-
-export interface ComboSlot {
-  id: number;
-  name: string;
-  display_order: number;
-  options: ComboSlotOption[];
-}
-
-export interface ComboTemplate {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  is_active: boolean;
-  is_fixed: boolean;
-  slots: ComboSlot[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ComboSlotOptionWrite {
-  variation?: number | null;
-  ticket_type?: number | null;
-  is_default?: boolean;
-}
-
-export interface ComboSlotWrite {
-  name: string;
-  display_order?: number;
-  options?: ComboSlotOptionWrite[];
-}
-
-export interface ComboTemplateCreate {
-  name: string;
-  description?: string;
-  price: string;
-  is_active?: boolean;
-  slots?: ComboSlotWrite[];
-}
-
 // Tax types
 export interface SalesTax {
   id: number;
@@ -544,39 +496,6 @@ export interface SalesTaxCreate {
   tax_type?: string;
   is_inclusive?: boolean;
   is_active?: boolean;
-}
-
-// Inventory
-export interface ConcessionInventory {
-  id: number;
-  variation: number;
-  variation_name: string;
-  item_name: string;
-  quantity_on_hand: number;
-  low_stock_threshold: number;
-  track_inventory: boolean;
-  is_low_stock: boolean;
-  is_out_of_stock: boolean;
-  updated_at: string;
-}
-
-export interface InventoryAdjustment {
-  id: number;
-  variation: number;
-  quantity_change: number;
-  reason: string;
-  reason_display: string;
-  notes: string;
-  adjusted_by: number | null;
-  adjusted_by_username: string | null;
-  created_at: string;
-}
-
-export interface InventoryAdjustmentCreate {
-  variation_id: number;
-  quantity_change: number;
-  reason: 'RECEIVED' | 'SOLD' | 'WASTE' | 'CORRECTION' | 'OTHER';
-  notes?: string;
 }
 
 // Payments
@@ -623,11 +542,6 @@ export interface POSConcessionItem {
   modifier_option_ids?: number[];
 }
 
-export interface POSComboItem {
-  combo_template_id: number;
-  slot_selections: Record<number, number>;
-}
-
 export type PaymentMethod = 'CASH' | 'CARD' | 'COMP' | 'OTHER';
 
 export interface POSSaleCreate {
@@ -640,7 +554,6 @@ export interface POSSaleCreate {
   member_id?: number | null;
   ticket_items?: POSTicketItem[];
   concession_items?: POSConcessionItem[];
-  combo_items?: POSComboItem[];
 }
 
 export interface POSSaleResponse {

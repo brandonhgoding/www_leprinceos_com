@@ -7,8 +7,6 @@ import type {
   ConcessionItemCreate,
   ConcessionVariation,
   ConcessionVariationCreate,
-  ComboTemplate,
-  ComboTemplateCreate,
   Modifier,
   ModifierWrite,
   PaginatedResponse,
@@ -132,31 +130,6 @@ export const concessionsApi = {
 
   deleteModifier: async (id: number): Promise<void> => {
     await apiClient.delete(`/v1/modifiers/${id}/`);
-  },
-
-  // Combos
-  listCombos: async (): Promise<ComboTemplate[]> => {
-    const response = await apiClient.get<PaginatedResponse<ComboTemplate>>('/v1/combo-templates/');
-    return response.data.results;
-  },
-
-  getCombo: async (id: number): Promise<ComboTemplate> => {
-    const response = await apiClient.get<ComboTemplate>(`/v1/combo-templates/${id}/`);
-    return response.data;
-  },
-
-  createCombo: async (data: ComboTemplateCreate): Promise<ComboTemplate> => {
-    const response = await apiClient.post<ComboTemplate>('/v1/combo-templates/', data);
-    return response.data;
-  },
-
-  updateCombo: async (id: number, data: Partial<ComboTemplateCreate>): Promise<ComboTemplate> => {
-    const response = await apiClient.patch<ComboTemplate>(`/v1/combo-templates/${id}/`, data);
-    return response.data;
-  },
-
-  deleteCombo: async (id: number): Promise<void> => {
-    await apiClient.delete(`/v1/combo-templates/${id}/`);
   },
 };
 
