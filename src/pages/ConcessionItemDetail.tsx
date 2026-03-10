@@ -7,7 +7,7 @@ import type {
   ConcessionVariation,
   ConcessionVariationCreate,
   ConcessionItemCreate,
-  TaxGroup,
+  SalesTax,
   ConcessionCategory,
 } from '../api/types';
 import Drawer from '../components/Drawer';
@@ -31,7 +31,7 @@ interface ItemFormData {
   category: string;
   description: string;
   price: string;
-  tax_group: string;
+  tax_ids: number[];
   is_active: boolean;
 }
 
@@ -63,7 +63,7 @@ export default function ConcessionItemDetail() {
     category: '',
     description: '',
     price: '',
-    tax_group: '',
+    tax_ids: [],
     is_active: true,
   });
 
@@ -79,9 +79,9 @@ export default function ConcessionItemDetail() {
     queryFn: () => concessionsApi.listCategories(),
   });
 
-  const { data: taxGroups = [] } = useQuery({
-    queryKey: ['tax-groups'],
-    queryFn: () => taxesApi.listTaxGroups(),
+  const { data: salesTaxes = [] } = useQuery({
+    queryKey: ['sales-taxes'],
+    queryFn: () => taxesApi.listSalesTaxes(),
   });
 
   // Item mutations
@@ -144,7 +144,7 @@ export default function ConcessionItemDetail() {
       category: String(item.category),
       description: item.description,
       price: item.price || '',
-      tax_group: item.tax_group ? String(item.tax_group) : '',
+      tax_ids: item.taxes.map((t: SalesTax) => t.id),
       is_active: item.is_active,
     });
     setModalMode('edit-item');
@@ -176,7 +176,7 @@ export default function ConcessionItemDetail() {
       name: itemForm.name,
       description: itemForm.description,
       price: itemForm.price || null,
-      tax_group: itemForm.tax_group ? parseInt(itemForm.tax_group, 10) : null,
+      tax_ids: itemForm.tax_ids,
       is_active: itemForm.is_active,
     });
   };
@@ -297,8 +297,10 @@ export default function ConcessionItemDetail() {
               </div>
             )}
             <div className={styles.infoRow}>
-              <span className={styles.label}>Tax Group:</span>
-              <span>{item.tax_group_name || 'None'}</span>
+              <span className={styles.label}>Taxes:</span>
+              <span>
+                {item.taxes.length > 0 ? item.taxes.map((t) => t.name).join(', ') : 'None'}
+              </span>
             </div>
             <div className={styles.infoRow}>
               <span className={styles.label}>Status:</span>
@@ -582,20 +584,32 @@ export default function ConcessionItemDetail() {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label htmlFor="item-edit-tax-group">Tax Group</label>
-                <select
-                  id="item-edit-tax-group"
-                  value={itemForm.tax_group}
-                  onChange={(e) => setItemForm({ ...itemForm, tax_group: e.target.value })}
-                  className={styles.input}
-                >
-                  <option value="">No tax</option>
-                  {taxGroups.map((tg: TaxGroup) => (
-                    <option key={tg.id} value={tg.id}>
-                      {tg.name}
-                    </option>
-                  ))}
-                </select>
+                <label>Taxes</label>
+                {salesTaxes.length === 0 ? (
+                  <p className={styles.hint}>No tax rates created yet.</p>
+                ) : (
+                  <div className={styles.checkboxList}>
+                    {salesTaxes
+                      .filter((t: SalesTax) => t.is_active)
+                      .map((tax: SalesTax) => (
+                        <label key={tax.id}>
+                          <input
+                            type="checkbox"
+                            checked={itemForm.tax_ids.includes(tax.id)}
+                            onChange={() =>
+                              setItemForm((prev) => ({
+                                ...prev,
+                                tax_ids: prev.tax_ids.includes(tax.id)
+                                  ? prev.tax_ids.filter((id) => id !== tax.id)
+                                  : [...prev.tax_ids, tax.id],
+                              }))
+                            }
+                          />
+                          {tax.name} ({(parseFloat(tax.rate) * 100).toFixed(2)}%)
+                        </label>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
             <div className={styles.formGroup}>
