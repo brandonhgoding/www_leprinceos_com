@@ -11,6 +11,7 @@ import styles from './Modifiers.module.css';
 type ModalMode = 'closed' | 'create' | 'edit';
 
 interface OptionFormRow {
+  key: string;
   id?: number;
   name: string;
   price_adjustment: string;
@@ -25,7 +26,10 @@ interface ModifierFormData {
   options: OptionFormRow[];
 }
 
+let optionKeyCounter = 0;
+
 const newOptionRow = (): OptionFormRow => ({
+  key: `opt-${++optionKeyCounter}`,
   name: '',
   price_adjustment: '0.00',
   is_default: false,
@@ -98,6 +102,7 @@ export default function Modifiers() {
       max_selections: String(modifier.max_selections),
       display_order: String(modifier.display_order),
       options: modifier.options.map((opt) => ({
+        key: `opt-${++optionKeyCounter}`,
         id: opt.id,
         name: opt.name,
         price_adjustment: opt.price_adjustment,
@@ -364,7 +369,7 @@ export default function Modifiers() {
                 onChange={(e) => setFormData({ ...formData, max_selections: e.target.value })}
                 className={styles.input}
               />
-              <span style={{ fontSize: '0.75rem', color: 'var(--stone)' }}>0 = unlimited</span>
+              <span className={styles.hint}>0 = unlimited</span>
             </div>
             <div className={styles.formGroup}>
               <label className={styles.checkboxLabel}>
@@ -394,7 +399,7 @@ export default function Modifiers() {
             ) : (
               <div className={styles.optionRows}>
                 {formData.options.map((option, index) => (
-                  <div key={index} className={styles.optionRow}>
+                  <div key={option.key} className={styles.optionRow}>
                     <div className={styles.optionOrderButtons}>
                       <button
                         type="button"

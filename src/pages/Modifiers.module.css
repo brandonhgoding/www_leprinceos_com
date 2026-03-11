@@ -299,6 +299,11 @@
   cursor: pointer;
 }
 
+.hint {
+  font-size: 0.75rem;
+  color: var(--stone);
+}
+
 /* Options section in drawer */
 .optionsSection {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
