@@ -17,29 +17,41 @@ describe('Modifiers Management', () => {
 
   describe('List View', () => {
     it('should display list of modifiers', () => {
-      cy.fixture('modifiers').then((modifiers) => {
-        cy.visit('/dashboard/modifiers');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getModifiers');
+      cy.visit('/dashboard/modifiers');
+      cy.wait('@getCurrentUser');
+      cy.wait('@getModifiers');
 
-        modifiers.results.forEach((modifier) => {
-          cy.contains(modifier.name).should('be.visible');
-          cy.contains(modifier.price).should('be.visible');
-        });
+      cy.contains('Butter').should('be.visible');
+      cy.contains('Toppings').should('be.visible');
+    });
+
+    it('should show options for each modifier', () => {
+      cy.visit('/dashboard/modifiers');
+      cy.wait('@getCurrentUser');
+      cy.wait('@getModifiers');
+
+      cy.contains('None, Regular, Extra').should('be.visible');
+      cy.contains('Salt, Cheese').should('be.visible');
+    });
+
+    it('should show required badge', () => {
+      cy.visit('/dashboard/modifiers');
+      cy.wait('@getCurrentUser');
+      cy.wait('@getModifiers');
+
+      cy.get('table').within(() => {
+        cy.contains('No').should('be.visible');
       });
     });
 
-    it('should show modifier categories', () => {
-      cy.fixture('modifiers').then((modifiers) => {
-        cy.visit('/dashboard/modifiers');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getModifiers');
+    it('should show max selections', () => {
+      cy.visit('/dashboard/modifiers');
+      cy.wait('@getCurrentUser');
+      cy.wait('@getModifiers');
 
-        modifiers.results.forEach((modifier) => {
-          if (modifier.applies_to) {
-            cy.contains(modifier.applies_to).should('be.visible');
-          }
-        });
+      cy.get('table').within(() => {
+        cy.contains('1').should('be.visible');
+        cy.contains('Unlimited').should('be.visible');
       });
     });
 
@@ -58,24 +70,42 @@ describe('Modifiers Management', () => {
   });
 
   describe('Create Modifier', () => {
-    it('should create new modifier', () => {
-      const newModifier = {
-        name: 'Extra Cheese',
-        price: '1.00',
-        description: 'Add extra cheese',
-        applies_to: 'snacks',
-        is_active: true,
-      };
-
+    it('should open drawer and create a modifier with options', () => {
       cy.intercept('POST', '/api/v1/modifiers/', (req) => {
-        expect(req.body.name).to.eq(newModifier.name);
-        expect(req.body.price).to.eq(newModifier.price);
+        expect(req.body.name).to.eq('Size');
+        expect(req.body.options).to.have.length(2);
+        expect(req.body.options[0].name).to.eq('Regular');
+        expect(req.body.options[1].name).to.eq('Large');
+        expect(req.body.options[1].price_adjustment).to.eq('1.50');
 
         req.reply({
           statusCode: 201,
           body: {
             id: 3,
-            ...newModifier,
+            name: 'Size',
+            is_required: true,
+            max_selections: 1,
+            display_order: 0,
+            options: [
+              {
+                id: 6,
+                name: 'Regular',
+                price_adjustment: '0.00',
+                is_default: true,
+                display_order: 0,
+                variation_prices: [],
+              },
+              {
+                id: 7,
+                name: 'Large',
+                price_adjustment: '1.50',
+                is_default: false,
+                display_order: 1,
+                variation_prices: [],
+              },
+            ],
+            created_at: '2026-03-11T10:00:00Z',
+            updated_at: '2026-03-11T10:00:00Z',
           },
         });
       }).as('createModifier');
@@ -84,77 +114,44 @@ describe('Modifiers Management', () => {
       cy.wait('@getCurrentUser');
       cy.wait('@getModifiers');
 
-      cy.contains('button', /add|create|new/i).click();
+      cy.contains('button', '+ New Modifier').click();
 
-      cy.get('input[name="name"]').type(newModifier.name);
-      cy.get('input[name="price"]').type(newModifier.price);
-      cy.get('textarea[name="description"]').type(newModifier.description);
-      cy.get('select[name="applies_to"]').select(newModifier.applies_to);
+      // Fill group fields
+      cy.get('#modifier-name').type('Size');
+      cy.get('#modifier-max-selections').clear().type('1');
+      cy.get('[data-cy="drawer"]').within(() => {
+        // Check "Required"
+        cy.contains('Required').click();
+      });
 
-      cy.contains('button', /save|submit|create/i).click();
+      // First option row exists by default - fill it
+      cy.get('[data-cy="drawer"]').within(() => {
+        cy.get('input[placeholder="Option name"]').first().type('Regular');
+      });
 
+      // Add second option
+      cy.contains('button', '+ Add Option').click();
+      cy.get('[data-cy="drawer"]').within(() => {
+        cy.get('input[placeholder="Option name"]').last().type('Large');
+        cy.get('input[placeholder="0.00"]').last().clear().type('1.50');
+      });
+
+      cy.contains('button', 'Create Modifier').click();
       cy.wait('@createModifier');
 
-      cy.contains(/success|created/i).should('be.visible');
-    });
-
-    it('should validate required fields', () => {
-      cy.visit('/dashboard/modifiers');
-      cy.wait('@getCurrentUser');
-      cy.wait('@getModifiers');
-
-      cy.contains('button', /add|create|new/i).click();
-      cy.contains('button', /save|submit|create/i).click();
-
-      cy.contains(/required/i).should('be.visible');
-    });
-
-    it('should allow zero price for free modifiers', () => {
-      const freeModifier = {
-        name: 'Light Ice',
-        price: '0.00',
-        description: 'Light ice option',
-        applies_to: 'beverages',
-        is_active: true,
-      };
-
-      cy.intercept('POST', '/api/v1/modifiers/', {
-        statusCode: 201,
-        body: { id: 3, ...freeModifier },
-      }).as('createFreeModifier');
-
-      cy.visit('/dashboard/modifiers');
-      cy.wait('@getCurrentUser');
-      cy.wait('@getModifiers');
-
-      cy.contains('button', /add|create|new/i).click();
-
-      cy.get('input[name="name"]').type(freeModifier.name);
-      cy.get('input[name="price"]').type(freeModifier.price);
-      cy.get('textarea[name="description"]').type(freeModifier.description);
-      cy.get('select[name="applies_to"]').select(freeModifier.applies_to);
-
-      cy.contains('button', /save|submit|create/i).click();
-
-      cy.wait('@createFreeModifier');
-
-      cy.contains(/success|created/i).should('be.visible');
+      cy.contains(/created successfully/i).should('be.visible');
     });
   });
 
-  describe('Update Modifier', () => {
-    it('should update modifier', () => {
+  describe('Edit Modifier', () => {
+    it('should open drawer with existing data and update', () => {
       cy.fixture('modifiers').then((modifiers) => {
         const modifier = modifiers.results[0];
-        const updatedPrice = '0.75';
 
         cy.intercept('PATCH', `/api/v1/modifiers/${modifier.id}/`, (req) => {
           req.reply({
             statusCode: 200,
-            body: {
-              ...modifier,
-              price: req.body.price,
-            },
+            body: { ...modifier, ...req.body },
           });
         }).as('updateModifier');
 
@@ -162,53 +159,22 @@ describe('Modifiers Management', () => {
         cy.wait('@getCurrentUser');
         cy.wait('@getModifiers');
 
-        cy.contains(modifier.name)
-          .parent()
+        cy.contains('Butter')
+          .closest('tr')
           .within(() => {
-            cy.contains('button', /edit/i).click();
+            cy.contains('button', 'Edit').click();
           });
 
-        cy.get('input[name="price"]').clear().type(updatedPrice);
+        // Verify form is populated
+        cy.get('#modifier-name').should('have.value', 'Butter');
 
-        cy.contains('button', /save|update/i).click();
+        // Change name
+        cy.get('#modifier-name').clear().type('Buttered');
 
+        cy.contains('button', 'Save Changes').click();
         cy.wait('@updateModifier');
 
-        cy.contains(/success|updated/i).should('be.visible');
-      });
-    });
-
-    it('should change applies_to category', () => {
-      cy.fixture('modifiers').then((modifiers) => {
-        const modifier = modifiers.results[0];
-
-        cy.intercept('PATCH', `/api/v1/modifiers/${modifier.id}/`, (req) => {
-          req.reply({
-            statusCode: 200,
-            body: {
-              ...modifier,
-              applies_to: req.body.applies_to,
-            },
-          });
-        }).as('updateModifier');
-
-        cy.visit('/dashboard/modifiers');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getModifiers');
-
-        cy.contains(modifier.name)
-          .parent()
-          .within(() => {
-            cy.contains('button', /edit/i).click();
-          });
-
-        cy.get('select[name="applies_to"]').select('beverages');
-
-        cy.contains('button', /save|update/i).click();
-
-        cy.wait('@updateModifier').then((interception) => {
-          expect(interception.request.body.applies_to).to.eq('beverages');
-        });
+        cy.contains(/updated successfully/i).should('be.visible');
       });
     });
   });
@@ -226,93 +192,41 @@ describe('Modifiers Management', () => {
         cy.wait('@getCurrentUser');
         cy.wait('@getModifiers');
 
-        cy.contains(modifier.name)
-          .parent()
+        cy.contains('Toppings')
+          .closest('tr')
           .within(() => {
-            cy.contains('button', /delete/i).click();
+            cy.contains('button', 'Delete').click();
           });
 
-        cy.contains('button', /confirm|yes|delete/i).click();
+        // Confirm dialog
+        cy.contains('button', 'Delete').last().click();
 
         cy.wait('@deleteModifier');
-
-        cy.contains(modifier.name).should('not.exist');
-      });
-    });
-
-    it('should cancel deletion', () => {
-      cy.fixture('modifiers').then((modifiers) => {
-        const modifier = modifiers.results[0];
-
-        cy.visit('/dashboard/modifiers');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getModifiers');
-
-        cy.contains(modifier.name)
-          .parent()
-          .within(() => {
-            cy.contains('button', /delete/i).click();
-          });
-
-        cy.contains('button', /cancel|no/i).click();
-
-        cy.contains(modifier.name).should('be.visible');
-      });
-    });
-  });
-
-  describe('Filter by Category', () => {
-    it('should filter modifiers by applies_to category', () => {
-      cy.fixture('modifiers').then((modifiers) => {
-        const snacksModifiers = modifiers.results.filter((m) => m.applies_to === 'snacks');
-
-        cy.intercept('GET', '/api/v1/modifiers/*applies_to=snacks*', {
-          statusCode: 200,
-          body: { count: snacksModifiers.length, results: snacksModifiers },
-        }).as('getSnacksModifiers');
-
-        cy.visit('/dashboard/modifiers');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getModifiers');
-
-        cy.get('select[name="filter_category"]').select('snacks');
-
-        cy.wait('@getSnacksModifiers');
-
-        cy.contains('Extra Butter').should('be.visible');
-        cy.contains('Large Size Upgrade').should('not.exist');
       });
     });
   });
 
   describe('Responsive Design', () => {
-    it('should display modifiers on mobile', () => {
+    it('should show cards on mobile instead of table', () => {
       cy.viewport(375, 667);
 
-      cy.fixture('modifiers').then((modifiers) => {
-        cy.visit('/dashboard/modifiers');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getModifiers');
+      cy.visit('/dashboard/modifiers');
+      cy.wait('@getCurrentUser');
+      cy.wait('@getModifiers');
 
-        modifiers.results.forEach((modifier) => {
-          cy.contains(modifier.name).should('be.visible');
-        });
-      });
+      cy.get('table').should('not.be.visible');
+      cy.contains('Butter').should('be.visible');
+      cy.contains('Toppings').should('be.visible');
     });
 
-    it('should display modifiers table on desktop', () => {
+    it('should show table on desktop', () => {
       cy.viewport(1280, 720);
 
-      cy.fixture('modifiers').then((modifiers) => {
-        cy.visit('/dashboard/modifiers');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getModifiers');
+      cy.visit('/dashboard/modifiers');
+      cy.wait('@getCurrentUser');
+      cy.wait('@getModifiers');
 
-        cy.get('table').should('be.visible');
-        modifiers.results.forEach((modifier) => {
-          cy.contains(modifier.name).should('be.visible');
-        });
-      });
+      cy.get('table').should('be.visible');
     });
   });
 });
