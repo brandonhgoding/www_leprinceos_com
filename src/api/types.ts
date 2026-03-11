@@ -383,12 +383,18 @@ export interface MemberBenefits {
 }
 
 // Concessions
+export interface ModifierOptionVariationPrice {
+  variation_id: number;
+  price_adjustment: string;
+}
+
 export interface ModifierOption {
   id: number;
   name: string;
   price_adjustment: string;
   is_default: boolean;
   display_order: number;
+  variation_prices: ModifierOptionVariationPrice[];
 }
 
 export interface Modifier {
@@ -454,6 +460,11 @@ export interface ConcessionItemCreate {
   tax_ids?: number[];
   is_active?: boolean;
   modifier_ids?: number[];
+  modifier_variation_prices?: {
+    modifier_option_id: number;
+    variation_id: number;
+    price_adjustment: string;
+  }[];
 }
 
 export interface ConcessionVariationCreate {

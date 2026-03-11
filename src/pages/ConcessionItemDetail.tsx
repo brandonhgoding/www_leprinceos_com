@@ -1,5 +1,5 @@
 // src/pages/ConcessionItemDetail.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { concessionsApi, taxesApi } from '../api';
@@ -7,6 +7,7 @@ import type {
   ConcessionVariation,
   ConcessionVariationCreate,
   ConcessionItemCreate,
+  ConcessionItem,
   SalesTax,
   ConcessionCategory,
 } from '../api/types';
@@ -67,6 +68,10 @@ export default function ConcessionItemDetail() {
     is_active: true,
   });
 
+  // modifier_option_id -> variation_id -> price string (empty = use default)
+  const [modifierPrices, setModifierPrices] = useState<Record<number, Record<number, string>>>({});
+  const [savingModifierPrices, setSavingModifierPrices] = useState(false);
+
   // Queries
   const { data: item, isLoading } = useQuery({
     queryKey: ['concession-item', itemId],
@@ -83,6 +88,56 @@ export default function ConcessionItemDetail() {
     queryKey: ['sales-taxes'],
     queryFn: () => taxesApi.listSalesTaxes(),
   });
+
+  // Modifier pricing helpers
+  const initModifierPrices = (item: ConcessionItem): Record<number, Record<number, string>> => {
+    const prices: Record<number, Record<number, string>> = {};
+    for (const modifier of item.modifiers) {
+      for (const option of modifier.options) {
+        for (const vp of option.variation_prices) {
+          if (!prices[option.id]) prices[option.id] = {};
+          prices[option.id][vp.variation_id] = vp.price_adjustment;
+        }
+      }
+    }
+    return prices;
+  };
+
+  useEffect(() => {
+    if (item) {
+      setModifierPrices(initModifierPrices(item));
+    }
+  }, [item]);
+
+  const handleSaveModifierPrices = async () => {
+    if (!item) return;
+    setSavingModifierPrices(true);
+    try {
+      const prices: {
+        modifier_option_id: number;
+        variation_id: number;
+        price_adjustment: string;
+      }[] = [];
+      for (const [optionId, variations] of Object.entries(modifierPrices)) {
+        for (const [variationId, price] of Object.entries(variations)) {
+          if (price !== '') {
+            prices.push({
+              modifier_option_id: parseInt(optionId),
+              variation_id: parseInt(variationId),
+              price_adjustment: price,
+            });
+          }
+        }
+      }
+      await concessionsApi.updateItem(itemId, { modifier_variation_prices: prices });
+      queryClient.invalidateQueries({ queryKey: ['concession-item', itemId] });
+      addToast('Modifier prices saved.');
+    } catch (error) {
+      addToast(getErrorMessage(error, 'Failed to save modifier prices.'));
+    } finally {
+      setSavingModifierPrices(false);
+    }
+  };
 
   // Item mutations
   const updateItemMutation = useMutation({
@@ -436,6 +491,78 @@ export default function ConcessionItemDetail() {
           </>
         )}
       </section>
+
+      {/* Modifier Pricing by Variation */}
+      {item.modifiers.length > 0 && item.variations.length > 1 && (
+        <section className={styles.variationsSection}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Modifier Pricing by Variation</h2>
+            <button
+              className={styles.primaryButton}
+              onClick={handleSaveModifierPrices}
+              disabled={savingModifierPrices}
+            >
+              {savingModifierPrices ? 'Saving...' : 'Save Prices'}
+            </button>
+          </div>
+          <p className={styles.hint}>
+            Override modifier prices per variation. Leave blank to use the default price.
+          </p>
+          {item.modifiers.map((modifier) => (
+            <div key={modifier.id} className={styles.card} style={{ marginBottom: '1rem' }}>
+              <h3 className={styles.cardTitle}>{modifier.name}</h3>
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Option</th>
+                      <th>Default</th>
+                      {sortedVariations
+                        .filter((v) => v.is_active)
+                        .map((v) => (
+                          <th key={v.id}>{v.name}</th>
+                        ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {modifier.options.map((option) => (
+                      <tr key={option.id}>
+                        <td>{option.name}</td>
+                        <td className={styles.variationPrice}>
+                          {formatPrice(option.price_adjustment)}
+                        </td>
+                        {sortedVariations
+                          .filter((v) => v.is_active)
+                          .map((v) => (
+                            <td key={v.id}>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className={styles.priceInput}
+                                placeholder={formatPrice(option.price_adjustment)}
+                                value={modifierPrices[option.id]?.[v.id] ?? ''}
+                                onChange={(e) =>
+                                  setModifierPrices((prev) => ({
+                                    ...prev,
+                                    [option.id]: {
+                                      ...prev[option.id],
+                                      [v.id]: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </td>
+                          ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
 
       {/* Drawer */}
       <Drawer

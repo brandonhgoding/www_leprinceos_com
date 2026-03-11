@@ -419,6 +419,21 @@
 .hint {
   color: var(--color-text-muted, #888);
   font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.priceInput {
+  width: 5rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.priceInput::placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
 }
 
 /* Responsive */
