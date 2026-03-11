@@ -8,7 +8,7 @@ describe('Modifiers Management', () => {
     });
 
     cy.fixture('modifiers').then((modifiers) => {
-      cy.intercept('GET', '/api/v1/modifiers/*', {
+      cy.intercept('GET', /\/api\/v1\/modifiers\/(\?.*)?$/, {
         statusCode: 200,
         body: modifiers,
       }).as('getModifiers');
@@ -56,7 +56,7 @@ describe('Modifiers Management', () => {
     });
 
     it('should show empty state when no modifiers exist', () => {
-      cy.intercept('GET', '/api/v1/modifiers/*', {
+      cy.intercept('GET', /\/api\/v1\/modifiers\/(\?.*)?$/, {
         statusCode: 200,
         body: { count: 0, results: [] },
       }).as('getEmptyModifiers');
@@ -199,7 +199,7 @@ describe('Modifiers Management', () => {
           });
 
         // Confirm dialog
-        cy.contains('button', 'Delete').last().click();
+        cy.get('[data-confirm-ok]').click();
 
         cy.wait('@deleteModifier');
       });
@@ -215,8 +215,9 @@ describe('Modifiers Management', () => {
       cy.wait('@getModifiers');
 
       cy.get('table').should('not.be.visible');
-      cy.contains('Butter').should('be.visible');
-      cy.contains('Toppings').should('be.visible');
+      // Use :visible filter to avoid matching hidden table content
+      cy.contains(':visible', 'Butter').should('exist');
+      cy.contains(':visible', 'Toppings').should('exist');
     });
 
     it('should show table on desktop', () => {

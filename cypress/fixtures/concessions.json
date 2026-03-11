@@ -5,30 +5,168 @@
   "results": [
     {
       "id": 1,
-      "name": "Medium Popcorn",
-      "price": "8.50",
-      "category": "snacks",
-      "is_active": true,
+      "category": 1,
+      "category_name": "Snacks",
+      "name": "Popcorn",
       "description": "Freshly popped popcorn",
-      "cinema": 1
+      "image": null,
+      "price": null,
+      "taxes": [],
+      "is_active": true,
+      "variations": [
+        {
+          "id": 1,
+          "name": "Small",
+          "price": "6.50",
+          "sku": "POP-SM",
+          "display_order": 0,
+          "is_active": true,
+          "created_at": "2026-01-01T00:00:00Z",
+          "updated_at": "2026-01-01T00:00:00Z"
+        },
+        {
+          "id": 2,
+          "name": "Large",
+          "price": "9.50",
+          "sku": "POP-LG",
+          "display_order": 1,
+          "is_active": true,
+          "created_at": "2026-01-01T00:00:00Z",
+          "updated_at": "2026-01-01T00:00:00Z"
+        }
+      ],
+      "modifiers": [
+        {
+          "id": 1,
+          "name": "Butter",
+          "is_required": false,
+          "max_selections": 1,
+          "display_order": 0,
+          "options": [
+            {
+              "id": 1,
+              "name": "None",
+              "price_adjustment": "0.00",
+              "is_default": true,
+              "display_order": 0,
+              "variation_prices": []
+            },
+            {
+              "id": 2,
+              "name": "Regular",
+              "price_adjustment": "0.00",
+              "is_default": false,
+              "display_order": 1,
+              "variation_prices": []
+            },
+            {
+              "id": 3,
+              "name": "Extra",
+              "price_adjustment": "0.50",
+              "is_default": false,
+              "display_order": 2,
+              "variation_prices": []
+            }
+          ],
+          "created_at": "2026-01-15T10:00:00Z",
+          "updated_at": "2026-01-15T10:00:00Z"
+        }
+      ],
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
     },
     {
       "id": 2,
+      "category": 2,
+      "category_name": "Beverages",
       "name": "Large Soda",
-      "price": "5.00",
-      "category": "beverages",
-      "is_active": true,
       "description": "32oz fountain drink",
-      "cinema": 1
+      "image": null,
+      "price": "5.00",
+      "taxes": [],
+      "is_active": true,
+      "variations": [],
+      "modifiers": [],
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
     },
     {
       "id": 3,
+      "category": 1,
+      "category_name": "Snacks",
       "name": "Candy Bar",
-      "price": "3.50",
-      "category": "candy",
-      "is_active": true,
       "description": "Assorted candy selection",
-      "cinema": 1
+      "image": null,
+      "price": "3.50",
+      "taxes": [],
+      "is_active": true,
+      "variations": [],
+      "modifiers": [
+        {
+          "id": 1,
+          "name": "Butter",
+          "is_required": false,
+          "max_selections": 1,
+          "display_order": 0,
+          "options": [
+            {
+              "id": 1,
+              "name": "None",
+              "price_adjustment": "0.00",
+              "is_default": true,
+              "display_order": 0,
+              "variation_prices": []
+            },
+            {
+              "id": 2,
+              "name": "Regular",
+              "price_adjustment": "0.00",
+              "is_default": false,
+              "display_order": 1,
+              "variation_prices": []
+            },
+            {
+              "id": 3,
+              "name": "Extra",
+              "price_adjustment": "0.50",
+              "is_default": false,
+              "display_order": 2,
+              "variation_prices": []
+            }
+          ],
+          "created_at": "2026-01-15T10:00:00Z",
+          "updated_at": "2026-01-15T10:00:00Z"
+        },
+        {
+          "id": 2,
+          "name": "Toppings",
+          "is_required": false,
+          "max_selections": 0,
+          "display_order": 1,
+          "options": [
+            {
+              "id": 4,
+              "name": "Salt",
+              "price_adjustment": "0.00",
+              "is_default": false,
+              "display_order": 0,
+              "variation_prices": []
+            },
+            {
+              "id": 5,
+              "name": "Cheese",
+              "price_adjustment": "0.75",
+              "is_default": false,
+              "display_order": 1,
+              "variation_prices": []
+            }
+          ],
+          "created_at": "2026-01-15T10:00:00Z",
+          "updated_at": "2026-01-15T10:00:00Z"
+        }
+      ],
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
     }
   ]
 }

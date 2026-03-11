@@ -1,0 +1,25 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "Snacks",
+      "display_order": 0,
+      "is_active": true,
+      "items_count": 2,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Beverages",
+      "display_order": 1,
+      "is_active": true,
+      "items_count": 1,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  ]
+}

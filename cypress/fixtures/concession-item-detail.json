@@ -1,0 +1,91 @@
+{
+  "id": 1,
+  "category": 1,
+  "category_name": "Snacks",
+  "name": "Popcorn",
+  "description": "Freshly popped popcorn",
+  "image": null,
+  "price": null,
+  "taxes": [
+    {
+      "id": 1,
+      "name": "Maine State Tax",
+      "rate": "0.055",
+      "tax_type": "state",
+      "is_inclusive": false,
+      "is_active": true
+    }
+  ],
+  "is_active": true,
+  "variations": [
+    {
+      "id": 1,
+      "name": "Small",
+      "price": "6.50",
+      "sku": "POP-SM",
+      "display_order": 0,
+      "is_active": true,
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Medium",
+      "price": "8.50",
+      "sku": "POP-MD",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z"
+    },
+    {
+      "id": 3,
+      "name": "Large",
+      "price": "10.50",
+      "sku": "POP-LG",
+      "display_order": 2,
+      "is_active": true,
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z"
+    }
+  ],
+  "modifiers": [
+    {
+      "id": 1,
+      "name": "Butter",
+      "is_required": false,
+      "max_selections": 1,
+      "display_order": 0,
+      "options": [
+        {
+          "id": 1,
+          "name": "None",
+          "price_adjustment": "0.00",
+          "is_default": true,
+          "display_order": 0,
+          "variation_prices": []
+        },
+        {
+          "id": 2,
+          "name": "Regular",
+          "price_adjustment": "0.00",
+          "is_default": false,
+          "display_order": 1,
+          "variation_prices": []
+        },
+        {
+          "id": 3,
+          "name": "Extra",
+          "price_adjustment": "0.50",
+          "is_default": false,
+          "display_order": 2,
+          "variation_prices": [{ "variation_id": 3, "price_adjustment": "0.75" }]
+        }
+      ],
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z"
+    }
+  ],
+  "created_at": "2026-01-15T10:00:00Z",
+  "updated_at": "2026-01-15T10:00:00Z"
+}
