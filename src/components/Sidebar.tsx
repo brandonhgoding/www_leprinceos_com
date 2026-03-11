@@ -255,7 +255,14 @@ export default function Sidebar({
       ],
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
-    { path: '/concessions', label: 'Concessions', icon: <ConcessionsIcon /> },
+    {
+      label: 'Concessions',
+      icon: <ConcessionsIcon />,
+      items: [
+        { path: '/concessions', label: 'Items & Categories' },
+        { path: '/modifiers', label: 'Modifiers' },
+      ],
+    },
     { path: '/taxes', label: 'Taxes', icon: <TaxesIcon />, managerOnly: true },
     { path: '/pos', label: 'POS', icon: <POSIcon /> },
     {
