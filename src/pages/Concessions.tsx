@@ -8,6 +8,7 @@ import type {
   ConcessionCategoryCreate,
   ConcessionItem,
   ConcessionItemCreate,
+  Modifier,
 } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
@@ -30,6 +31,7 @@ interface ItemFormData {
   description: string;
   price: string;
   tax_ids: number[];
+  modifier_ids: number[];
   is_active: boolean;
 }
 
@@ -45,6 +47,7 @@ const initialItemFormData: ItemFormData = {
   description: '',
   price: '',
   tax_ids: [],
+  modifier_ids: [],
   is_active: true,
 };
 
@@ -75,6 +78,11 @@ export default function Concessions() {
   const { data: salesTaxes = [] } = useQuery({
     queryKey: ['sales-taxes'],
     queryFn: () => taxesApi.listSalesTaxes(),
+  });
+
+  const { data: modifiers = [] } = useQuery({
+    queryKey: ['modifiers'],
+    queryFn: () => concessionsApi.listModifiers(),
   });
 
   // Category Mutations
@@ -190,6 +198,7 @@ export default function Concessions() {
       description: itemFormData.description,
       price: itemFormData.price || null,
       tax_ids: itemFormData.tax_ids,
+      modifier_ids: itemFormData.modifier_ids,
       is_active: itemFormData.is_active,
     };
 
@@ -693,6 +702,34 @@ export default function Concessions() {
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Modifiers</label>
+              {modifiers.length === 0 ? (
+                <p className={styles.hint}>No modifiers created yet.</p>
+              ) : (
+                <div className={styles.checkboxList}>
+                  {modifiers.map((mod: Modifier) => (
+                    <label key={mod.id}>
+                      <input
+                        type="checkbox"
+                        checked={itemFormData.modifier_ids.includes(mod.id)}
+                        onChange={() =>
+                          setItemFormData((prev) => ({
+                            ...prev,
+                            modifier_ids: prev.modifier_ids.includes(mod.id)
+                              ? prev.modifier_ids.filter((id) => id !== mod.id)
+                              : [...prev.modifier_ids, mod.id],
+                          }))
+                        }
+                      />
+                      {mod.name}
+                      {mod.is_required && ' (required)'}
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className={styles.formGroup}>

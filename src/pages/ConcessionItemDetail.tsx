@@ -10,6 +10,7 @@ import type {
   ConcessionItem,
   SalesTax,
   ConcessionCategory,
+  Modifier,
 } from '../api/types';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
@@ -33,6 +34,7 @@ interface ItemFormData {
   description: string;
   price: string;
   tax_ids: number[];
+  modifier_ids: number[];
   is_active: boolean;
 }
 
@@ -65,6 +67,7 @@ export default function ConcessionItemDetail() {
     description: '',
     price: '',
     tax_ids: [],
+    modifier_ids: [],
     is_active: true,
   });
 
@@ -87,6 +90,11 @@ export default function ConcessionItemDetail() {
   const { data: salesTaxes = [] } = useQuery({
     queryKey: ['sales-taxes'],
     queryFn: () => taxesApi.listSalesTaxes(),
+  });
+
+  const { data: modifiers = [] } = useQuery({
+    queryKey: ['modifiers'],
+    queryFn: () => concessionsApi.listModifiers(),
   });
 
   // Modifier pricing helpers
@@ -200,6 +208,7 @@ export default function ConcessionItemDetail() {
       description: item.description,
       price: item.price || '',
       tax_ids: item.taxes.map((t: SalesTax) => t.id),
+      modifier_ids: item.modifiers.map((m: Modifier) => m.id),
       is_active: item.is_active,
     });
     setModalMode('edit-item');
@@ -232,6 +241,7 @@ export default function ConcessionItemDetail() {
       description: itemForm.description,
       price: itemForm.price || null,
       tax_ids: itemForm.tax_ids,
+      modifier_ids: itemForm.modifier_ids,
       is_active: itemForm.is_active,
     });
   };
@@ -515,26 +525,26 @@ export default function ConcessionItemDetail() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Option</th>
-                      <th>Default</th>
-                      {sortedVariations
-                        .filter((v) => v.is_active)
-                        .map((v) => (
-                          <th key={v.id}>{v.name}</th>
-                        ))}
+                      <th>Variation</th>
+                      {modifier.options.map((option) => (
+                        <th key={option.id}>
+                          {option.name}
+                          <br />
+                          <span style={{ fontWeight: 'normal', fontSize: '0.85em' }}>
+                            (default: {formatPrice(option.price_adjustment)})
+                          </span>
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {modifier.options.map((option) => (
-                      <tr key={option.id}>
-                        <td>{option.name}</td>
-                        <td className={styles.variationPrice}>
-                          {formatPrice(option.price_adjustment)}
-                        </td>
-                        {sortedVariations
-                          .filter((v) => v.is_active)
-                          .map((v) => (
-                            <td key={v.id}>
+                    {sortedVariations
+                      .filter((v) => v.is_active)
+                      .map((v) => (
+                        <tr key={v.id}>
+                          <td className={styles.variationName}>{v.name}</td>
+                          {modifier.options.map((option) => (
+                            <td key={option.id}>
                               <input
                                 type="number"
                                 min="0"
@@ -554,8 +564,8 @@ export default function ConcessionItemDetail() {
                               />
                             </td>
                           ))}
-                      </tr>
-                    ))}
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
@@ -738,6 +748,33 @@ export default function ConcessionItemDetail() {
                   </div>
                 )}
               </div>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Modifiers</label>
+              {modifiers.length === 0 ? (
+                <p className={styles.hint}>No modifiers created yet.</p>
+              ) : (
+                <div className={styles.checkboxList}>
+                  {modifiers.map((mod: Modifier) => (
+                    <label key={mod.id}>
+                      <input
+                        type="checkbox"
+                        checked={itemForm.modifier_ids.includes(mod.id)}
+                        onChange={() =>
+                          setItemForm((prev) => ({
+                            ...prev,
+                            modifier_ids: prev.modifier_ids.includes(mod.id)
+                              ? prev.modifier_ids.filter((id) => id !== mod.id)
+                              : [...prev.modifier_ids, mod.id],
+                          }))
+                        }
+                      />
+                      {mod.name}
+                      {mod.is_required && ' (required)'}
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
             <div className={styles.formGroup}>
               <label className={styles.checkboxLabel}>
