@@ -1,7 +1,14 @@
 // src/pages/POS.tsx
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { concessionsApi, membersApi, paymentsApi, showtimesApi, ticketsApi } from '../api';
+import {
+  concessionsApi,
+  membersApi,
+  paymentsApi,
+  showtimesApi,
+  ticketsApi,
+  benefitPreviewApi,
+} from '../api';
 import type {
   ConcessionCategory,
   ConcessionItem,
@@ -12,6 +19,8 @@ import type {
   POSSaleCreate,
   POSSaleResponse,
   PaymentMethod,
+  BenefitDiscount,
+  BenefitPreviewRequest,
 } from '../api/types';
 import { useToast } from '../contexts/ToastContext';
 import { getErrorMessage } from '../utils/errorMessage';
@@ -78,6 +87,13 @@ export default function POS() {
   const [debouncedMemberSearch, setDebouncedMemberSearch] = useState('');
   const memberSearchRef = useRef<HTMLDivElement>(null);
 
+  // Benefit preview state
+  const [ticketDiscounts, setTicketDiscounts] = useState<Record<number, BenefitDiscount>>({});
+  const [concessionDiscounts, setConcessionDiscounts] = useState<Record<number, BenefitDiscount>>(
+    {},
+  );
+  const [totalSavings, setTotalSavings] = useState<string>('0.00');
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedMemberSearch(memberSearch);
@@ -94,6 +110,65 @@ export default function POS() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Benefit preview — fetch when member + cart changes
+  const [debouncedPreviewKey, setDebouncedPreviewKey] = useState(0);
+  const previewKeyRef = useRef(0);
+
+  useEffect(() => {
+    previewKeyRef.current += 1;
+    const timer = setTimeout(() => {
+      setDebouncedPreviewKey(previewKeyRef.current);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [selectedMember, concessionCart, ticketCart, selectedShowtimeId]);
+
+  useEffect(() => {
+    if (!selectedMember || (concessionCart.length === 0 && ticketCart.length === 0)) {
+      setTicketDiscounts({});
+      setConcessionDiscounts({});
+      setTotalSavings('0.00');
+      return;
+    }
+
+    const data: BenefitPreviewRequest = {
+      member_id: selectedMember.id,
+      showtime_id: selectedShowtimeId,
+      ticket_items: ticketCart.map((t) => ({
+        ticket_type_id: t.ticket_type_id,
+        quantity: t.quantity,
+      })),
+      concession_items: concessionCart.map((c) => ({
+        variation_id: c.variation.id,
+        quantity: c.quantity,
+        modifier_option_ids: c.modifier_option_ids.length > 0 ? c.modifier_option_ids : undefined,
+      })),
+    };
+
+    benefitPreviewApi
+      .preview(data)
+      .then((result) => {
+        const td: Record<number, BenefitDiscount> = {};
+        const cd: Record<number, BenefitDiscount> = {};
+        for (const d of result.discounts) {
+          if (d.scope === 'TICKET' && d.ticket_type_id != null) {
+            td[d.ticket_type_id] = d;
+          } else if (d.scope === 'CONCESSION' && d.variation_id != null) {
+            cd[d.variation_id] = d;
+          }
+        }
+        setTicketDiscounts(td);
+        setConcessionDiscounts(cd);
+        setTotalSavings(result.total_savings);
+      })
+      .catch(() => {
+        // Preview failure is non-critical — just show full prices
+        setTicketDiscounts({});
+        setConcessionDiscounts({});
+        setTotalSavings('0.00');
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedPreviewKey]);
 
   // Queries
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
@@ -195,6 +270,9 @@ export default function POS() {
   const handleClearMember = () => {
     setSelectedMember(null);
     setMemberSearch('');
+    setTicketDiscounts({});
+    setConcessionDiscounts({});
+    setTotalSavings('0.00');
   };
 
   const handleItemClick = (item: ConcessionItem) => {
@@ -330,14 +408,33 @@ export default function POS() {
       concessionCart.reduce((sum, c) => {
         const basePrice = parseFloat(c.variation.price);
         const modAdj = getModifierPriceAdjustment(c.item, c.variation.id, c.modifier_option_ids);
-        return sum + (basePrice + modAdj) * c.quantity;
+        const fullUnitPrice = basePrice + modAdj;
+        const discount = concessionDiscounts[c.variation.id];
+        if (discount) {
+          const discountedUnitPrice = parseFloat(discount.discounted_price) + modAdj;
+          const discountedQty = Math.min(discount.applicable_quantity, c.quantity);
+          const fullPriceQty = c.quantity - discountedQty;
+          return sum + discountedUnitPrice * discountedQty + fullUnitPrice * fullPriceQty;
+        }
+        return sum + fullUnitPrice * c.quantity;
       }, 0),
-    [concessionCart],
+    [concessionCart, concessionDiscounts],
   );
 
   const ticketSubtotal = useMemo(
-    () => ticketCart.reduce((sum, t) => sum + parseFloat(t.price) * t.quantity, 0),
-    [ticketCart],
+    () =>
+      ticketCart.reduce((sum, t) => {
+        const fullPrice = parseFloat(t.price);
+        const discount = ticketDiscounts[t.ticket_type_id];
+        if (discount) {
+          const discountedPrice = parseFloat(discount.discounted_price);
+          const discountedQty = Math.min(discount.applicable_quantity, t.quantity);
+          const fullPriceQty = t.quantity - discountedQty;
+          return sum + discountedPrice * discountedQty + fullPrice * fullPriceQty;
+        }
+        return sum + fullPrice * t.quantity;
+      }, 0),
+    [ticketCart, ticketDiscounts],
   );
 
   const subtotal = concessionSubtotal + ticketSubtotal;
@@ -376,6 +473,9 @@ export default function POS() {
     setSaleResult(null);
     setSelectedMember(null);
     setMemberSearch('');
+    setTicketDiscounts({});
+    setConcessionDiscounts({});
+    setTotalSavings('0.00');
   };
 
   const selectedShowtime = showtimes.find((s: Showtime) => s.id === selectedShowtimeId);
@@ -677,6 +777,11 @@ export default function POS() {
             <h2 className={styles.successTitle}>Sale Complete</h2>
             <p className={styles.successDetail}>Order #{saleResult.uuid.slice(0, 8)}</p>
             <p className={styles.successTotal}>{formatPrice(saleResult.total_amount)}</p>
+            {saleResult.member_savings && parseFloat(saleResult.member_savings) > 0 && (
+              <p className={styles.successSavings}>
+                You saved {formatPrice(saleResult.member_savings)}
+              </p>
+            )}
             <button className={styles.newSaleButton} onClick={handleNewSale}>
               New Sale
             </button>
@@ -789,35 +894,63 @@ export default function POS() {
             ) : (
               <div className={styles.cartItems}>
                 {/* Ticket items */}
-                {ticketCart.map((t) => (
-                  <div key={`ticket-${t.ticket_type_id}`} className={styles.cartItem}>
-                    <div className={styles.cartItemDetails}>
-                      <div className={styles.cartItemName}>{t.ticket_type_name}</div>
-                      <div className={styles.cartItemMeta}>
-                        {selectedShowtime
-                          ? `${selectedShowtime.film_title} - ${selectedShowtime.screen_name}`
-                          : 'Ticket'}{' '}
-                        &times; {t.quantity} @ {formatPrice(t.price)}
+                {ticketCart.map((t) => {
+                  const discount = ticketDiscounts[t.ticket_type_id];
+                  const fullPrice = parseFloat(t.price);
+                  let lineTotal: number;
+                  if (discount) {
+                    const discountedPrice = parseFloat(discount.discounted_price);
+                    const discountedQty = Math.min(discount.applicable_quantity, t.quantity);
+                    const fullPriceQty = t.quantity - discountedQty;
+                    lineTotal = discountedPrice * discountedQty + fullPrice * fullPriceQty;
+                  } else {
+                    lineTotal = fullPrice * t.quantity;
+                  }
+                  return (
+                    <div key={`ticket-${t.ticket_type_id}`} className={styles.cartItem}>
+                      <div className={styles.cartItemDetails}>
+                        <div className={styles.cartItemName}>{t.ticket_type_name}</div>
+                        <div className={styles.cartItemMeta}>
+                          {selectedShowtime
+                            ? `${selectedShowtime.film_title} - ${selectedShowtime.screen_name}`
+                            : 'Ticket'}{' '}
+                          &times; {t.quantity} @{' '}
+                          {discount ? (
+                            <>
+                              <span className={styles.originalPrice}>{formatPrice(t.price)}</span>{' '}
+                              {formatPrice(discount.discounted_price)}
+                              {discount.applicable_quantity < t.quantity && (
+                                <span className={styles.partialDiscount}>
+                                  {' '}
+                                  ({discount.applicable_quantity} of {t.quantity})
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            formatPrice(t.price)
+                          )}
+                        </div>
+                        {discount && (
+                          <div className={styles.benefitName}>{discount.benefit_name}</div>
+                        )}
+                      </div>
+                      <div className={styles.cartItemRight}>
+                        <span className={styles.cartItemPrice}>{formatPrice(lineTotal)}</span>
+                        <button
+                          className={styles.removeButton}
+                          onClick={() =>
+                            setTicketCart((prev) =>
+                              prev.filter((item) => item.ticket_type_id !== t.ticket_type_id),
+                            )
+                          }
+                          aria-label={`Remove ${t.ticket_type_name}`}
+                        >
+                          &times;
+                        </button>
                       </div>
                     </div>
-                    <div className={styles.cartItemRight}>
-                      <span className={styles.cartItemPrice}>
-                        {formatPrice(parseFloat(t.price) * t.quantity)}
-                      </span>
-                      <button
-                        className={styles.removeButton}
-                        onClick={() =>
-                          setTicketCart((prev) =>
-                            prev.filter((item) => item.ticket_type_id !== t.ticket_type_id),
-                          )
-                        }
-                        aria-label={`Remove ${t.ticket_type_name}`}
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {/* Concession items */}
                 {concessionCart.map((c) => {
@@ -827,7 +960,17 @@ export default function POS() {
                     c.variation.id,
                     c.modifier_option_ids,
                   );
-                  const unitPrice = parseFloat(c.variation.price) + modAdj;
+                  const discount = concessionDiscounts[c.variation.id];
+                  const fullUnitPrice = parseFloat(c.variation.price) + modAdj;
+                  let lineTotal: number;
+                  if (discount) {
+                    const discountedUnitPrice = parseFloat(discount.discounted_price) + modAdj;
+                    const discountedQty = Math.min(discount.applicable_quantity, c.quantity);
+                    const fullPriceQty = c.quantity - discountedQty;
+                    lineTotal = discountedUnitPrice * discountedQty + fullUnitPrice * fullPriceQty;
+                  } else {
+                    lineTotal = fullUnitPrice * c.quantity;
+                  }
                   const optionNames = getSelectedOptionNames(c.item, c.modifier_option_ids);
                   return (
                     <div key={`concession-${key}`} className={styles.cartItem}>
@@ -836,9 +979,28 @@ export default function POS() {
                           {c.item.name} ({c.variation.name})
                         </div>
                         <div className={styles.cartItemMeta}>
-                          {formatPrice(unitPrice)} each
+                          {discount ? (
+                            <>
+                              <span className={styles.originalPrice}>
+                                {formatPrice(fullUnitPrice)}
+                              </span>{' '}
+                              {formatPrice(parseFloat(discount.discounted_price) + modAdj)}
+                              {discount.applicable_quantity < c.quantity && (
+                                <span className={styles.partialDiscount}>
+                                  {' '}
+                                  ({discount.applicable_quantity} of {c.quantity})
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            formatPrice(fullUnitPrice)
+                          )}{' '}
+                          each
                           {optionNames.length > 0 && ` — ${optionNames.join(', ')}`}
                         </div>
+                        {discount && (
+                          <div className={styles.benefitName}>{discount.benefit_name}</div>
+                        )}
                       </div>
                       <div className={styles.cartItemRight}>
                         <div className={styles.cartQuantityControls}>
@@ -858,9 +1020,7 @@ export default function POS() {
                             +
                           </button>
                         </div>
-                        <span className={styles.cartItemPrice}>
-                          {formatPrice(unitPrice * c.quantity)}
-                        </span>
+                        <span className={styles.cartItemPrice}>{formatPrice(lineTotal)}</span>
                         <button
                           className={styles.removeButton}
                           onClick={() => removeConcessionFromCart(key)}
@@ -883,6 +1043,12 @@ export default function POS() {
                     <span>Total</span>
                     <span>{formatPrice(total)}</span>
                   </div>
+                  {parseFloat(totalSavings) > 0 && (
+                    <div className={styles.savingsRow}>
+                      <span>Member savings</span>
+                      <span className={styles.savingsAmount}>-{formatPrice(totalSavings)}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Payment method */}
