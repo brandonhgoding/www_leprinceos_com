@@ -1,11 +1,12 @@
 // src/pages/POS.tsx
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { concessionsApi, paymentsApi, showtimesApi, ticketsApi } from '../api';
+import { concessionsApi, membersApi, paymentsApi, showtimesApi, ticketsApi } from '../api';
 import type {
   ConcessionCategory,
   ConcessionItem,
   ConcessionVariation,
+  Member,
   TicketType,
   Showtime,
   POSSaleCreate,
@@ -70,6 +71,30 @@ export default function POS() {
   // Success state
   const [saleResult, setSaleResult] = useState<POSSaleResponse | null>(null);
 
+  // Member search state
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [memberSearch, setMemberSearch] = useState('');
+  const [memberDropdownOpen, setMemberDropdownOpen] = useState(false);
+  const [debouncedMemberSearch, setDebouncedMemberSearch] = useState('');
+  const memberSearchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedMemberSearch(memberSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [memberSearch]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (memberSearchRef.current && !memberSearchRef.current.contains(e.target as Node)) {
+        setMemberDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // Queries
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ['concession-categories'],
@@ -92,6 +117,12 @@ export default function POS() {
       const now = new Date().toISOString();
       return showtimesApi.list({ starts_at_after: now });
     },
+  });
+
+  const { data: memberResults = [], isLoading: memberSearchLoading } = useQuery({
+    queryKey: ['member-search', debouncedMemberSearch],
+    queryFn: () => membersApi.list({ search: debouncedMemberSearch }),
+    enabled: debouncedMemberSearch.length >= 2 && !selectedMember,
   });
 
   // Sale mutation
@@ -153,6 +184,17 @@ export default function POS() {
       }
     }
     return names;
+  };
+
+  const handleSelectMember = (member: Member) => {
+    setSelectedMember(member);
+    setMemberSearch('');
+    setMemberDropdownOpen(false);
+  };
+
+  const handleClearMember = () => {
+    setSelectedMember(null);
+    setMemberSearch('');
   };
 
   const handleItemClick = (item: ConcessionItem) => {
@@ -310,6 +352,7 @@ export default function POS() {
     const data: POSSaleCreate = {
       payment_method: paymentMethod,
       showtime_id: selectedShowtimeId,
+      member_id: selectedMember?.id,
       ticket_items: ticketCart.map((t) => ({
         ticket_type_id: t.ticket_type_id,
         quantity: t.quantity,
@@ -331,6 +374,8 @@ export default function POS() {
     setSelectedShowtimeId(null);
     setPaymentMethod('CASH');
     setSaleResult(null);
+    setSelectedMember(null);
+    setMemberSearch('');
   };
 
   const selectedShowtime = showtimes.find((s: Showtime) => s.id === selectedShowtimeId);
@@ -641,6 +686,101 @@ export default function POS() {
             {/* Cart header */}
             <div className={styles.cartHeader}>
               <h2 className={styles.cartTitle}>Current Sale</h2>
+            </div>
+
+            {/* Member search */}
+            <div className={styles.memberSection}>
+              {selectedMember ? (
+                <div className={styles.memberChip}>
+                  <div className={styles.memberChipInfo}>
+                    <span className={styles.memberChipName}>{selectedMember.full_name}</span>
+                    {selectedMember.active_membership ? (
+                      <span
+                        className={
+                          selectedMember.active_membership.status === 'EXPIRED'
+                            ? styles.memberChipStatusExpired
+                            : selectedMember.active_membership.status === 'CANCELLED'
+                              ? styles.memberChipStatusCancelled
+                              : styles.memberChipStatus
+                        }
+                      >
+                        {selectedMember.active_membership.tier_name}
+                        {selectedMember.active_membership.status === 'ACTIVE'
+                          ? ` — expires ${new Date(
+                              selectedMember.active_membership.end_date,
+                            ).toLocaleDateString([], {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}`
+                          : ` (${
+                              selectedMember.active_membership.status.charAt(0) +
+                              selectedMember.active_membership.status.slice(1).toLowerCase()
+                            })`}
+                      </span>
+                    ) : (
+                      <span className={styles.memberChipStatusNone}>No active membership</span>
+                    )}
+                  </div>
+                  <button
+                    className={styles.memberChipRemove}
+                    onClick={handleClearMember}
+                    aria-label="Remove member from sale"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.memberSearchWrapper} ref={memberSearchRef}>
+                  <input
+                    type="text"
+                    className={styles.memberSearchInput}
+                    placeholder="Search member..."
+                    value={memberSearch}
+                    onChange={(e) => {
+                      setMemberSearch(e.target.value);
+                      setMemberDropdownOpen(true);
+                    }}
+                    onFocus={() => {
+                      if (memberSearch.length >= 2) setMemberDropdownOpen(true);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') setMemberDropdownOpen(false);
+                    }}
+                  />
+                  {memberDropdownOpen && memberSearch.length >= 2 && (
+                    <div className={styles.memberDropdown}>
+                      {memberSearchLoading ? (
+                        <div className={styles.memberDropdownMessage}>Searching...</div>
+                      ) : memberResults.length === 0 ? (
+                        <div className={styles.memberDropdownMessage}>No members found.</div>
+                      ) : (
+                        memberResults.map((member) => (
+                          <button
+                            key={member.id}
+                            className={styles.memberDropdownItem}
+                            onClick={() => handleSelectMember(member)}
+                          >
+                            <span className={styles.memberDropdownName}>
+                              {member.full_name}
+                              {member.member_number && (
+                                <span className={styles.memberDropdownNumber}>
+                                  #{member.member_number}
+                                </span>
+                              )}
+                            </span>
+                            <span className={styles.memberDropdownTier}>
+                              {member.active_membership
+                                ? member.active_membership.tier_name
+                                : 'No membership'}
+                            </span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Cart items */}
