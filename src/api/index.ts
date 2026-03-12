@@ -19,6 +19,7 @@ export {
   membershipsApi,
   benefitRulesApi,
   benefitConditionsApi,
+  benefitPreviewApi,
 } from './memberships';
 
 export { default as concessionsApi } from './concessions';

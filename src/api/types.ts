@@ -576,6 +576,39 @@ export interface POSSaleResponse {
   customer_phone: string;
   notes: string;
   created_at: string;
+  member_savings: string | null;
+  benefits_applied: {
+    benefit_name: string;
+    scope: string;
+    discount_amount: string;
+  }[];
+}
+
+// Benefit preview
+export interface BenefitDiscount {
+  scope: 'TICKET' | 'CONCESSION';
+  ticket_type_id?: number;
+  variation_id?: number;
+  benefit_rule_id: number;
+  benefit_name: string;
+  benefit_type: BenefitType;
+  original_price: string;
+  discount_amount: string;
+  discounted_price: string;
+  per_unit: boolean;
+  applicable_quantity: number;
+}
+
+export interface BenefitPreviewRequest {
+  member_id: number;
+  showtime_id?: number | null;
+  ticket_items?: POSTicketItem[];
+  concession_items?: POSConcessionItem[];
+}
+
+export interface BenefitPreviewResponse {
+  discounts: BenefitDiscount[];
+  total_savings: string;
 }
 
 // Reports
