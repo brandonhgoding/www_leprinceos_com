@@ -185,14 +185,17 @@ export interface TicketTypeCreate {
 // Memberships
 export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 export type BenefitType = 'FIXED_AMOUNT' | 'PERCENTAGE' | 'FREE_ITEM';
-export type BenefitScope = 'TICKET' | 'RENTAL';
+export type BenefitScope = 'TICKET' | 'CONCESSION' | 'RENTAL';
 export type ConditionType =
   | 'TIME_BEFORE'
   | 'TIME_AFTER'
   | 'DAY_OF_WEEK'
   | 'TICKET_TYPE'
   | 'BIRTHDAY_MONTH'
-  | 'COMPANION';
+  | 'COMPANION'
+  | 'CONCESSION_CATEGORY'
+  | 'CONCESSION_ITEM'
+  | 'CONCESSION_VARIATION';
 export type PeriodType = 'MONTHLY' | 'DAILY' | 'LIFETIME';
 export type AuditAction = 'CREATED' | 'ACTIVATED' | 'RENEWED' | 'CANCELLED' | 'EXPIRED';
 
