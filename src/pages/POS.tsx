@@ -23,6 +23,11 @@ interface VariationPickerState {
   variations: ConcessionVariation[];
 }
 
+interface ModifierPickerState {
+  item: ConcessionItem;
+  variation: ConcessionVariation;
+}
+
 interface CartConcessionItem {
   variation: ConcessionVariation;
   item: ConcessionItem;
@@ -57,6 +62,10 @@ export default function POS() {
 
   // Variation picker state
   const [variationPicker, setVariationPicker] = useState<VariationPickerState | null>(null);
+
+  // Modifier picker state
+  const [modifierPicker, setModifierPicker] = useState<ModifierPickerState | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<Record<number, number[]>>({});
 
   // Success state
   const [saleResult, setSaleResult] = useState<POSSaleResponse | null>(null);
@@ -115,45 +124,130 @@ export default function POS() {
   );
 
   // Cart helpers
+  const makeCartKey = (variationId: number, modifierOptionIds: number[]): string => {
+    const sorted = [...modifierOptionIds].sort((a, b) => a - b);
+    return `${variationId}:${sorted.join(',')}`;
+  };
+
+  const getModifierPriceAdjustment = (
+    item: ConcessionItem,
+    variationId: number,
+    optionIds: number[],
+  ): number => {
+    let total = 0;
+    for (const mod of item.modifiers) {
+      for (const opt of mod.options) {
+        if (!optionIds.includes(opt.id)) continue;
+        const varPrice = opt.variation_prices.find((vp) => vp.variation_id === variationId);
+        total += parseFloat(varPrice ? varPrice.price_adjustment : opt.price_adjustment);
+      }
+    }
+    return total;
+  };
+
+  const getSelectedOptionNames = (item: ConcessionItem, optionIds: number[]): string[] => {
+    const names: string[] = [];
+    for (const mod of item.modifiers) {
+      for (const opt of mod.options) {
+        if (optionIds.includes(opt.id)) names.push(opt.name);
+      }
+    }
+    return names;
+  };
+
   const handleItemClick = (item: ConcessionItem) => {
     const activeVariations = item.variations.filter((v) => v.is_active);
     if (activeVariations.length === 1) {
-      addConcessionToCart(item, activeVariations[0]);
+      handleVariationSelected(item, activeVariations[0]);
     } else if (activeVariations.length > 1) {
       setVariationPicker({ item, variations: activeVariations });
     }
   };
 
-  const addConcessionToCart = (item: ConcessionItem, variation: ConcessionVariation) => {
+  const handleVariationSelected = (item: ConcessionItem, variation: ConcessionVariation) => {
     setVariationPicker(null);
-    setConcessionCart((prev) => {
-      const existing = prev.find((c) => c.variation.id === variation.id);
-      if (existing) {
-        return prev.map((c) =>
-          c.variation.id === variation.id ? { ...c, quantity: c.quantity + 1 } : c,
-        );
+    if (item.modifiers.length > 0) {
+      // Initialize with default options
+      const defaults: Record<number, number[]> = {};
+      for (const mod of item.modifiers) {
+        const defaultIds = mod.options.filter((opt) => opt.is_default).map((opt) => opt.id);
+        if (defaultIds.length > 0) defaults[mod.id] = defaultIds;
       }
-      // Default modifier options: pick is_default options from each modifier
-      const defaultModifierOptionIds = item.modifiers.flatMap((mod) =>
-        mod.options.filter((opt) => opt.is_default).map((opt) => opt.id),
-      );
-      return [
-        ...prev,
-        { variation, item, quantity: 1, modifier_option_ids: defaultModifierOptionIds },
-      ];
+      setSelectedOptions(defaults);
+      setModifierPicker({ item, variation });
+    } else {
+      addConcessionToCart(item, variation, []);
+    }
+  };
+
+  const toggleOption = (modifierId: number, maxSelections: number, optionId: number) => {
+    setSelectedOptions((prev) => {
+      const current = prev[modifierId] ?? [];
+      if (current.includes(optionId)) {
+        return { ...prev, [modifierId]: current.filter((id) => id !== optionId) };
+      }
+      if (maxSelections === 1) {
+        return { ...prev, [modifierId]: [optionId] };
+      }
+      if (maxSelections > 0 && current.length >= maxSelections) {
+        return prev;
+      }
+      return { ...prev, [modifierId]: [...current, optionId] };
     });
   };
 
-  const updateConcessionQuantity = (variationId: number, delta: number) => {
+  const handleModifierConfirm = () => {
+    if (!modifierPicker) return;
+    const allOptionIds = Object.values(selectedOptions).flat();
+    addConcessionToCart(modifierPicker.item, modifierPicker.variation, allOptionIds);
+    setModifierPicker(null);
+    setSelectedOptions({});
+  };
+
+  const allRequiredMet = modifierPicker
+    ? modifierPicker.item.modifiers
+        .filter((m) => m.is_required)
+        .every((m) => (selectedOptions[m.id] ?? []).length > 0)
+    : false;
+
+  const addConcessionToCart = (
+    item: ConcessionItem,
+    variation: ConcessionVariation,
+    modifierOptionIds: number[],
+  ) => {
+    setVariationPicker(null);
+    const cartKey = makeCartKey(variation.id, modifierOptionIds);
+    setConcessionCart((prev) => {
+      const existing = prev.find(
+        (c) => makeCartKey(c.variation.id, c.modifier_option_ids) === cartKey,
+      );
+      if (existing) {
+        return prev.map((c) =>
+          makeCartKey(c.variation.id, c.modifier_option_ids) === cartKey
+            ? { ...c, quantity: c.quantity + 1 }
+            : c,
+        );
+      }
+      return [...prev, { variation, item, quantity: 1, modifier_option_ids: modifierOptionIds }];
+    });
+  };
+
+  const updateConcessionQuantity = (cartKey: string, delta: number) => {
     setConcessionCart((prev) => {
       return prev
-        .map((c) => (c.variation.id === variationId ? { ...c, quantity: c.quantity + delta } : c))
+        .map((c) =>
+          makeCartKey(c.variation.id, c.modifier_option_ids) === cartKey
+            ? { ...c, quantity: c.quantity + delta }
+            : c,
+        )
         .filter((c) => c.quantity > 0);
     });
   };
 
-  const removeConcessionFromCart = (variationId: number) => {
-    setConcessionCart((prev) => prev.filter((c) => c.variation.id !== variationId));
+  const removeConcessionFromCart = (cartKey: string) => {
+    setConcessionCart((prev) =>
+      prev.filter((c) => makeCartKey(c.variation.id, c.modifier_option_ids) !== cartKey),
+    );
   };
 
   const updateTicketQuantity = (ticketType: TicketType, delta: number) => {
@@ -190,7 +284,12 @@ export default function POS() {
 
   // Totals
   const concessionSubtotal = useMemo(
-    () => concessionCart.reduce((sum, c) => sum + parseFloat(c.variation.price) * c.quantity, 0),
+    () =>
+      concessionCart.reduce((sum, c) => {
+        const basePrice = parseFloat(c.variation.price);
+        const modAdj = getModifierPriceAdjustment(c.item, c.variation.id, c.modifier_option_ids);
+        return sum + (basePrice + modAdj) * c.quantity;
+      }, 0),
     [concessionCart],
   );
 
@@ -422,7 +521,7 @@ export default function POS() {
                 <button
                   key={variation.id}
                   className={styles.variationOption}
-                  onClick={() => addConcessionToCart(variationPicker.item, variation)}
+                  onClick={() => handleVariationSelected(variationPicker.item, variation)}
                 >
                   <span>{variation.name}</span>
                   <span className={styles.variationOptionPrice}>
@@ -434,6 +533,92 @@ export default function POS() {
             <button className={styles.variationCancel} onClick={() => setVariationPicker(null)}>
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modifier picker modal */}
+      {modifierPicker && (
+        <div
+          className={styles.variationOverlay}
+          onClick={() => {
+            setModifierPicker(null);
+            setSelectedOptions({});
+          }}
+        >
+          <div className={styles.modifierModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.variationModalTitle}>{modifierPicker.item.name}</h3>
+            <p className={styles.modifierSubtitle}>
+              {modifierPicker.variation.name} &mdash; {formatPrice(modifierPicker.variation.price)}
+            </p>
+            <div className={styles.modifierGroups}>
+              {modifierPicker.item.modifiers.map((mod) => (
+                <div key={mod.id} className={styles.modifierGroup}>
+                  <div className={styles.modifierGroupHeader}>
+                    <span className={styles.modifierGroupName}>{mod.name}</span>
+                    <span className={styles.modifierGroupMeta}>
+                      {mod.is_required ? 'Required' : 'Optional'}
+                      {mod.max_selections === 1
+                        ? ' - Pick 1'
+                        : mod.max_selections > 1
+                          ? ` - Pick up to ${mod.max_selections}`
+                          : ''}
+                    </span>
+                  </div>
+                  <div className={styles.modifierOptions}>
+                    {mod.options.map((opt) => {
+                      const isSelected = (selectedOptions[mod.id] ?? []).includes(opt.id);
+                      const varPrice = opt.variation_prices.find(
+                        (vp) => vp.variation_id === modifierPicker.variation.id,
+                      );
+                      const adj = parseFloat(
+                        varPrice ? varPrice.price_adjustment : opt.price_adjustment,
+                      );
+                      return (
+                        <label key={opt.id} className={styles.modifierOptionLabel}>
+                          <input
+                            type={mod.max_selections === 1 ? 'radio' : 'checkbox'}
+                            name={`modifier-${mod.id}`}
+                            checked={isSelected}
+                            onChange={() => toggleOption(mod.id, mod.max_selections, opt.id)}
+                            onClick={
+                              mod.max_selections === 1 && isSelected
+                                ? () => toggleOption(mod.id, mod.max_selections, opt.id)
+                                : undefined
+                            }
+                          />
+                          <span className={styles.modifierOptionName}>{opt.name}</span>
+                          {adj !== 0 && (
+                            <span className={styles.modifierOptionPrice}>
+                              {adj > 0 ? '+' : ''}
+                              {formatPrice(adj)}
+                            </span>
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className={styles.modifierActions}>
+              <button
+                className={styles.completeButton}
+                onClick={handleModifierConfirm}
+                disabled={!allRequiredMet}
+              >
+                Add to Cart
+              </button>
+              <button
+                className={styles.variationCancel}
+                onClick={() => {
+                  setModifierPicker(null);
+                  setSelectedOptions({});
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -495,47 +680,58 @@ export default function POS() {
                 ))}
 
                 {/* Concession items */}
-                {concessionCart.map((c) => (
-                  <div key={`concession-${c.variation.id}`} className={styles.cartItem}>
-                    <div className={styles.cartItemDetails}>
-                      <div className={styles.cartItemName}>
-                        {c.item.name} ({c.variation.name})
+                {concessionCart.map((c) => {
+                  const key = makeCartKey(c.variation.id, c.modifier_option_ids);
+                  const modAdj = getModifierPriceAdjustment(
+                    c.item,
+                    c.variation.id,
+                    c.modifier_option_ids,
+                  );
+                  const unitPrice = parseFloat(c.variation.price) + modAdj;
+                  const optionNames = getSelectedOptionNames(c.item, c.modifier_option_ids);
+                  return (
+                    <div key={`concession-${key}`} className={styles.cartItem}>
+                      <div className={styles.cartItemDetails}>
+                        <div className={styles.cartItemName}>
+                          {c.item.name} ({c.variation.name})
+                        </div>
+                        <div className={styles.cartItemMeta}>
+                          {formatPrice(unitPrice)} each
+                          {optionNames.length > 0 && ` — ${optionNames.join(', ')}`}
+                        </div>
                       </div>
-                      <div className={styles.cartItemMeta}>
-                        {formatPrice(c.variation.price)} each
+                      <div className={styles.cartItemRight}>
+                        <div className={styles.cartQuantityControls}>
+                          <button
+                            className={styles.cartQuantityButton}
+                            onClick={() => updateConcessionQuantity(key, -1)}
+                            aria-label={`Decrease ${c.item.name} quantity`}
+                          >
+                            -
+                          </button>
+                          <span className={styles.cartQuantityValue}>{c.quantity}</span>
+                          <button
+                            className={styles.cartQuantityButton}
+                            onClick={() => updateConcessionQuantity(key, 1)}
+                            aria-label={`Increase ${c.item.name} quantity`}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <span className={styles.cartItemPrice}>
+                          {formatPrice(unitPrice * c.quantity)}
+                        </span>
+                        <button
+                          className={styles.removeButton}
+                          onClick={() => removeConcessionFromCart(key)}
+                          aria-label={`Remove ${c.item.name}`}
+                        >
+                          &times;
+                        </button>
                       </div>
                     </div>
-                    <div className={styles.cartItemRight}>
-                      <div className={styles.cartQuantityControls}>
-                        <button
-                          className={styles.cartQuantityButton}
-                          onClick={() => updateConcessionQuantity(c.variation.id, -1)}
-                          aria-label={`Decrease ${c.item.name} quantity`}
-                        >
-                          -
-                        </button>
-                        <span className={styles.cartQuantityValue}>{c.quantity}</span>
-                        <button
-                          className={styles.cartQuantityButton}
-                          onClick={() => updateConcessionQuantity(c.variation.id, 1)}
-                          aria-label={`Increase ${c.item.name} quantity`}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <span className={styles.cartItemPrice}>
-                        {formatPrice(parseFloat(c.variation.price) * c.quantity)}
-                      </span>
-                      <button
-                        className={styles.removeButton}
-                        onClick={() => removeConcessionFromCart(c.variation.id)}
-                        aria-label={`Remove ${c.item.name}`}
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

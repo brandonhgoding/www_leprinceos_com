@@ -247,6 +247,102 @@
   border-color: rgba(0, 0, 0, 0.2);
 }
 
+/* Modifier picker modal */
+.modifierModal {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-width: 320px;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.modifierSubtitle {
+  font-size: 0.875rem;
+  color: var(--stone);
+  text-align: center;
+  margin: -0.5rem 0 1rem 0;
+}
+
+.modifierGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.modifierGroup {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.modifierGroupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.modifierGroupName {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--charcoal);
+}
+
+.modifierGroupMeta {
+  font-size: 0.75rem;
+  color: var(--stone);
+}
+
+.modifierOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.modifierOptionLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.875rem;
+  color: var(--charcoal);
+  background: var(--cream);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modifierOptionLabel:hover {
+  border-color: var(--brass);
+  background: rgba(184, 149, 108, 0.06);
+}
+
+.modifierOptionLabel:has(input:checked) {
+  border-color: var(--brass);
+  background: rgba(184, 149, 108, 0.1);
+}
+
+.modifierOptionName {
+  flex: 1;
+}
+
+.modifierOptionPrice {
+  font-size: 0.8125rem;
+  color: var(--stone);
+  font-weight: 500;
+}
+
+.modifierActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 /* Tickets tab */
 .showtimeSelector {
   margin-bottom: 1.25rem;
