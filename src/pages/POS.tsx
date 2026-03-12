@@ -1,6 +1,7 @@
 // src/pages/POS.tsx
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useOutletContext } from 'react-router-dom';
 import {
   concessionsApi,
   membersApi,
@@ -22,6 +23,7 @@ import type {
   BenefitDiscount,
   BenefitPreviewRequest,
 } from '../api/types';
+import type { LayoutContext } from '../components/Layout';
 import { useToast } from '../contexts/ToastContext';
 import { getErrorMessage } from '../utils/errorMessage';
 import styles from './POS.module.css';
@@ -59,6 +61,7 @@ const formatPrice = (price: string | number): string => {
 
 export default function POS() {
   const { addToast } = useToast();
+  const { isFullscreen, toggleFullscreen } = useOutletContext<LayoutContext>();
 
   // UI state
   const [activeTab, setActiveTab] = useState<ActiveTab>('concessions');
@@ -483,7 +486,7 @@ export default function POS() {
   const isLoading = categoriesLoading || itemsLoading;
 
   return (
-    <div className={styles.posLayout}>
+    <div className={isFullscreen ? styles.posLayoutFullscreen : styles.posLayout}>
       {/* Left panel — Menu/Selection */}
       <div className={styles.menuPanel}>
         {/* Tabs */}
@@ -499,6 +502,46 @@ export default function POS() {
             onClick={() => setActiveTab('tickets')}
           >
             Tickets
+          </button>
+          <button
+            className={styles.fullscreenToggle}
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen'}
+          >
+            {isFullscreen ? (
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="4 14 10 14 10 20" />
+                <polyline points="20 10 14 10 14 4" />
+                <line x1="14" y1="10" x2="21" y2="3" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            ) : (
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            )}
           </button>
         </div>
 
