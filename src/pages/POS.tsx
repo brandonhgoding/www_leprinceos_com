@@ -67,6 +67,7 @@ export default function POS() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('concessions');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedShowtimeId, setSelectedShowtimeId] = useState<number | null>(null);
+  const [selectedFilmTitle, setSelectedFilmTitle] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
 
   // Cart state
@@ -190,10 +191,16 @@ export default function POS() {
   });
 
   const { data: showtimes = [] } = useQuery({
-    queryKey: ['showtimes-upcoming'],
+    queryKey: ['showtimes-today'],
     queryFn: () => {
-      const now = new Date().toISOString();
-      return showtimesApi.list({ starts_at_after: now });
+      const today = new Date();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+      return showtimesApi.list({
+        starts_at_after: startOfDay.toISOString(),
+        starts_at_before: endOfDay.toISOString(),
+      });
     },
   });
 
@@ -231,6 +238,27 @@ export default function POS() {
     () => ticketTypes.filter((t: TicketType) => t.is_active),
     [ticketTypes],
   );
+
+  // Group today's showtimes by film
+  const filmShowtimes = useMemo(() => {
+    const grouped = new Map<string, { posterUrl: string | null; showtimes: Showtime[] }>();
+    for (const st of showtimes) {
+      if (st.is_cancelled) continue;
+      const existing = grouped.get(st.film_title);
+      if (existing) {
+        existing.showtimes.push(st);
+      } else {
+        grouped.set(st.film_title, { posterUrl: st.film_poster_url, showtimes: [st] });
+      }
+    }
+    // Sort showtimes within each film by start time
+    for (const film of grouped.values()) {
+      film.showtimes.sort(
+        (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime(),
+      );
+    }
+    return grouped;
+  }, [showtimes]);
 
   // Cart helpers
   const makeCartKey = (variationId: number, modifierOptionIds: number[]): string => {
@@ -636,62 +664,158 @@ export default function POS() {
         {/* Tickets tab */}
         {activeTab === 'tickets' && (
           <>
-            <div className={styles.showtimeSelector}>
-              <label htmlFor="pos-showtime">Showtime</label>
-              <select
-                id="pos-showtime"
-                className={styles.showtimeSelect}
-                value={selectedShowtimeId ?? ''}
-                onChange={(e) =>
-                  setSelectedShowtimeId(e.target.value ? Number(e.target.value) : null)
-                }
-              >
-                <option value="">Select a showtime...</option>
-                {showtimes.map((st: Showtime) => (
-                  <option key={st.id} value={st.id}>
-                    {st.film_title} &mdash; {st.screen_name} &mdash;{' '}
-                    {new Date(st.starts_at).toLocaleString([], {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {selectedShowtimeId === null ? (
-              <div className={styles.selectShowtimePrompt}>
-                Select a showtime above to add tickets.
-              </div>
+            {filmShowtimes.size === 0 ? (
+              <div className={styles.selectShowtimePrompt}>No showtimes scheduled for today.</div>
+            ) : selectedShowtimeId !== null ? (
+              /* Ticket type selection — showtime is chosen */
+              <>
+                <button
+                  className={styles.backButton}
+                  onClick={() => {
+                    setSelectedShowtimeId(null);
+                    setTicketCart([]);
+                  }}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                  {(() => {
+                    const st = showtimes.find((s: Showtime) => s.id === selectedShowtimeId);
+                    return st
+                      ? `${st.film_title} — ${new Date(st.starts_at).toLocaleTimeString([], {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                        })}`
+                      : 'Back';
+                  })()}
+                </button>
+                <div className={styles.ticketTypeList}>
+                  {activeTicketTypes.map((tt: TicketType) => (
+                    <div key={tt.id} className={styles.ticketTypeRow}>
+                      <div className={styles.ticketTypeInfo}>
+                        <div className={styles.ticketTypeName}>{tt.name}</div>
+                        <div className={styles.ticketTypePrice}>{formatPrice(tt.price)}</div>
+                      </div>
+                      <div className={styles.quantityControls}>
+                        <button
+                          className={styles.quantityButton}
+                          onClick={() => updateTicketQuantity(tt, -1)}
+                          disabled={getTicketQuantity(tt.id) === 0}
+                          aria-label={`Remove one ${tt.name} ticket`}
+                        >
+                          -
+                        </button>
+                        <span className={styles.quantityValue}>{getTicketQuantity(tt.id)}</span>
+                        <button
+                          className={styles.quantityButton}
+                          onClick={() => updateTicketQuantity(tt, 1)}
+                          aria-label={`Add one ${tt.name} ticket`}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : selectedFilmTitle !== null ? (
+              /* Showtime selection — film is chosen */
+              <>
+                <button className={styles.backButton} onClick={() => setSelectedFilmTitle(null)}>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                  {selectedFilmTitle}
+                </button>
+                <div className={styles.showtimeGrid}>
+                  {filmShowtimes.get(selectedFilmTitle)?.showtimes.map((st) => (
+                    <button
+                      key={st.id}
+                      className={styles.showtimeCard}
+                      onClick={() => setSelectedShowtimeId(st.id)}
+                    >
+                      <span className={styles.showtimeTime}>
+                        {new Date(st.starts_at).toLocaleTimeString([], {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                      <span className={styles.showtimeScreen}>{st.screen_name}</span>
+                      {st.presentation_format === '3d' && (
+                        <span className={styles.showtimeBadge}>3D</span>
+                      )}
+                      {st.captions && <span className={styles.showtimeBadge}>{st.captions}</span>}
+                    </button>
+                  ))}
+                </div>
+              </>
             ) : (
-              <div className={styles.ticketTypeList}>
-                {activeTicketTypes.map((tt: TicketType) => (
-                  <div key={tt.id} className={styles.ticketTypeRow}>
-                    <div className={styles.ticketTypeInfo}>
-                      <div className={styles.ticketTypeName}>{tt.name}</div>
-                      <div className={styles.ticketTypePrice}>{formatPrice(tt.price)}</div>
+              /* Film selection — top level */
+              <div className={styles.filmGrid}>
+                {Array.from(filmShowtimes.entries()).map(([title, film]) => (
+                  <button
+                    key={title}
+                    className={styles.filmCard}
+                    onClick={() => setSelectedFilmTitle(title)}
+                  >
+                    {film.posterUrl ? (
+                      <img
+                        src={film.posterUrl}
+                        alt={title}
+                        className={styles.filmPoster}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className={styles.filmPosterPlaceholder}>
+                        <svg
+                          width="32"
+                          height="32"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+                          <line x1="7" y1="2" x2="7" y2="22" />
+                          <line x1="17" y1="2" x2="17" y2="22" />
+                          <line x1="2" y1="12" x2="22" y2="12" />
+                          <line x1="2" y1="7" x2="7" y2="7" />
+                          <line x1="2" y1="17" x2="7" y2="17" />
+                          <line x1="17" y1="7" x2="22" y2="7" />
+                          <line x1="17" y1="17" x2="22" y2="17" />
+                        </svg>
+                      </div>
+                    )}
+                    <div className={styles.filmInfo}>
+                      <span className={styles.filmTitle}>{title}</span>
+                      <span className={styles.filmShowtimeCount}>
+                        {film.showtimes.length} showtime
+                        {film.showtimes.length !== 1 ? 's' : ''} today
+                      </span>
                     </div>
-                    <div className={styles.quantityControls}>
-                      <button
-                        className={styles.quantityButton}
-                        onClick={() => updateTicketQuantity(tt, -1)}
-                        disabled={getTicketQuantity(tt.id) === 0}
-                        aria-label={`Remove one ${tt.name} ticket`}
-                      >
-                        -
-                      </button>
-                      <span className={styles.quantityValue}>{getTicketQuantity(tt.id)}</span>
-                      <button
-                        className={styles.quantityButton}
-                        onClick={() => updateTicketQuantity(tt, 1)}
-                        aria-label={`Add one ${tt.name} ticket`}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
