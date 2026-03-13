@@ -136,6 +136,7 @@ export function buildTicketStub(data: TicketStubData): Uint8Array {
   b.textln(data.uuid);
   b.textln(SEPARATOR);
 
+  b.newline().newline().newline().newline();
   b.cut();
   return b.build();
 }
@@ -170,6 +171,7 @@ export function buildReceipt(data: ReceiptData): Uint8Array {
   b.align('center');
   b.textln('Thank you!');
 
+  b.newline().newline().newline().newline();
   b.cut();
   return b.build();
 }
