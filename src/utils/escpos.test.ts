@@ -69,9 +69,10 @@ describe('buildReceipt', () => {
     const bytes = buildReceipt({
       cinema_name: 'Test Cinema',
       payment_method: 'CASH',
-      total_amount: '25.00',
+      total_amount: '25.40',
+      tax_total: '0.40',
       tickets: [{ ticket_type_name: 'Adult', quantity: 2, price_paid: '10.00' }],
-      concession_items: [{ name: 'Popcorn', quantity: 1, total: '5.00' }],
+      concession_items: [{ name: 'Popcorn', quantity: 1, subtotal: '5.00', total: '5.40' }],
     });
     expect(bytes.length).toBeGreaterThan(0);
   });

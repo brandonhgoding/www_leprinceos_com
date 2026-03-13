@@ -78,8 +78,9 @@ export interface ReceiptData {
   cinema_name: string;
   payment_method: string;
   total_amount: string;
+  tax_total: string;
   tickets: { ticket_type_name: string; quantity: number; price_paid: string }[];
-  concession_items: { name: string; quantity: number; total: string }[];
+  concession_items: { name: string; quantity: number; subtotal: string; total: string }[];
 }
 
 function formatShowtime(isoString: string): { date: string; time: string } {
@@ -151,17 +152,22 @@ export function buildReceipt(data: ReceiptData): Uint8Array {
   b.textln('RECEIPT');
   b.textln(SEPARATOR);
 
-  // Items
+  // Items (show pre-tax prices)
   b.align('left');
   for (const t of data.tickets) {
     b.textln(`${t.quantity}x ${t.ticket_type_name}  $${t.price_paid}`);
   }
   for (const c of data.concession_items) {
-    b.textln(`${c.quantity}x ${c.name}  $${c.total}`);
+    b.textln(`${c.quantity}x ${c.name}  $${c.subtotal}`);
   }
 
-  // Total
+  // Subtotal, tax, total
   b.textln(SEPARATOR);
+  const subtotal = (parseFloat(data.total_amount) - parseFloat(data.tax_total)).toFixed(2);
+  b.textln(`Subtotal: $${subtotal}`);
+  if (parseFloat(data.tax_total) > 0) {
+    b.textln(`Tax: $${data.tax_total}`);
+  }
   b.bold(true);
   b.textln(`TOTAL: $${data.total_amount}`);
   b.bold(false);

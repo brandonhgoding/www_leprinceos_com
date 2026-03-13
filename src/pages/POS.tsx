@@ -1056,6 +1056,17 @@ export default function POS() {
               <div className={styles.successIcon}>&#10003;</div>
               <h2 className={styles.successTitle}>Sale Complete</h2>
               <p className={styles.successDetail}>Order #{saleResult.uuid.slice(0, 8)}</p>
+              {parseFloat(saleResult.tax_total) > 0 && (
+                <p className={styles.successDetail}>
+                  Subtotal:{' '}
+                  {formatPrice(
+                    (
+                      parseFloat(saleResult.total_amount) - parseFloat(saleResult.tax_total)
+                    ).toFixed(2),
+                  )}
+                  {' · '}Tax: {formatPrice(saleResult.tax_total)}
+                </p>
+              )}
               <p className={styles.successTotal}>{formatPrice(saleResult.total_amount)}</p>
               {saleResult.member_savings && parseFloat(saleResult.member_savings) > 0 && (
                 <p className={styles.successSavings}>
@@ -1132,6 +1143,7 @@ export default function POS() {
                     cinema_name: currentCinema?.cinema_name ?? '',
                     payment_method: saleResult.payment_method,
                     total_amount: saleResult.total_amount,
+                    tax_total: saleResult.tax_total,
                     tickets: saleResult.tickets.map((t) => ({
                       ticket_type_name: t.ticket_type_name,
                       quantity: 1,

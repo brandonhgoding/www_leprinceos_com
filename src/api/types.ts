@@ -596,7 +596,14 @@ export interface POSSaleResponse {
     discount_amount: string;
   }[];
   tickets: POSSaleTicket[];
-  concession_items: { name: string; quantity: number; total: string }[];
+  concession_items: {
+    name: string;
+    quantity: number;
+    subtotal: string;
+    tax_amount: string;
+    total: string;
+  }[];
+  tax_total: string;
 }
 
 // Benefit preview
