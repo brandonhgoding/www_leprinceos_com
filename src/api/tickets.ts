@@ -83,6 +83,14 @@ export const ticketsApi = {
   deleteRule: async (ruleId: number): Promise<void> => {
     await apiClient.delete(`/v1/ticket-type-rules/${ruleId}/`);
   },
+
+  // Ticket printing
+  markPrinted: async (ticketUuids: string[]): Promise<{ marked: number }> => {
+    const response = await apiClient.post<{ marked: number }>('/v1/tickets/mark-printed/', {
+      ticket_uuids: ticketUuids,
+    });
+    return response.data;
+  },
 };
 
 export default ticketsApi;
