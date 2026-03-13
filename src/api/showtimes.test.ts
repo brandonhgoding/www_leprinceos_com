@@ -31,6 +31,7 @@ describe('Showtimes API', () => {
     is_outside_engagement_range: false,
     presentation_format: '2d',
     presentation_format_display: '2D',
+    film_runtime_minutes: 120,
   };
 
   const mockPaginatedResponse: PaginatedResponse<Showtime> = {

@@ -264,11 +264,24 @@ export default function POS() {
     [ticketTypes],
   );
 
-  // Group today's showtimes by film
+  // Group today's showtimes by film, filtering out past showtimes.
+  // A showtime is "past" if:
+  // - it ended (start + runtime), or
+  // - it started more than 1 hour ago (we won't sell tickets that late)
+  // If runtime is unknown, we only use the 1-hour-after-start cutoff.
   const filmShowtimes = useMemo(() => {
+    const now = Date.now();
+    const oneHourMs = 60 * 60 * 1000;
     const grouped = new Map<string, { posterUrl: string | null; showtimes: Showtime[] }>();
     for (const st of showtimes) {
       if (st.is_cancelled) continue;
+      const startMs = new Date(st.starts_at).getTime();
+      const runtime = st.film_runtime_minutes;
+      if (runtime) {
+        const endMs = startMs + runtime * 60 * 1000;
+        if (endMs <= now) continue;
+      }
+      if (startMs + oneHourMs <= now) continue;
       const existing = grouped.get(st.film_title);
       if (existing) {
         existing.showtimes.push(st);
@@ -889,7 +902,14 @@ export default function POS() {
                     <button
                       key={title}
                       className={styles.filmCard}
-                      onClick={() => setSelectedFilmTitle(title)}
+                      onClick={() => {
+                        if (film.showtimes.length === 1) {
+                          setSelectedFilmTitle(title);
+                          setSelectedShowtimeId(film.showtimes[0].id);
+                        } else {
+                          setSelectedFilmTitle(title);
+                        }
+                      }}
                     >
                       {film.posterUrl ? (
                         <img

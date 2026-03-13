@@ -92,6 +92,7 @@ export interface Showtime {
   is_outside_engagement_range: boolean;
   presentation_format: '2d' | '3d';
   presentation_format_display: string;
+  film_runtime_minutes: number | null;
 }
 
 export interface ShowtimeCreate {
