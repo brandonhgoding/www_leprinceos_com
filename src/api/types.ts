@@ -183,6 +183,14 @@ export interface TicketTypeCreate {
   description?: string;
 }
 
+export interface AvailableTicketType {
+  id: number;
+  name: string;
+  price: string;
+  description: string;
+  matched_rule_name: string | null;
+}
+
 // Memberships
 export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 export type BenefitType = 'FIXED_AMOUNT' | 'PERCENTAGE' | 'FREE_ITEM';

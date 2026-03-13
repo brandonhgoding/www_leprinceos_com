@@ -1,6 +1,7 @@
 // src/api/showtimes.ts
 import apiClient from './client';
 import type {
+  AvailableTicketType,
   Showtime,
   ShowtimeCreate,
   ShowtimeFilters,
@@ -47,6 +48,13 @@ export const showtimesApi = {
 
   bulkCreate: async (data: BulkShowtimeCreate): Promise<Showtime[]> => {
     const response = await apiClient.post<Showtime[]>('/v1/showtimes/bulk-create/', data);
+    return response.data;
+  },
+
+  availableTicketTypes: async (showtimeId: number): Promise<AvailableTicketType[]> => {
+    const response = await apiClient.get<AvailableTicketType[]>(
+      `/v1/showtimes/${showtimeId}/available-ticket-types/`,
+    );
     return response.data;
   },
 };

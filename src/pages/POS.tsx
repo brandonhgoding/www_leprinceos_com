@@ -11,11 +11,11 @@ import {
   benefitPreviewApi,
 } from '../api';
 import type {
+  AvailableTicketType,
   ConcessionCategory,
   ConcessionItem,
   ConcessionVariation,
   Member,
-  TicketType,
   Showtime,
   POSSaleCreate,
   POSSaleResponse,
@@ -214,9 +214,10 @@ export default function POS() {
     queryFn: () => concessionsApi.listItems(),
   });
 
-  const { data: ticketTypes = [] } = useQuery({
-    queryKey: ['ticket-types'],
-    queryFn: () => ticketsApi.list(),
+  const { data: availableTicketTypes = [] } = useQuery({
+    queryKey: ['available-ticket-types', selectedShowtimeId],
+    queryFn: () => showtimesApi.availableTicketTypes(selectedShowtimeId!),
+    enabled: selectedShowtimeId !== null,
   });
 
   const { data: showtimes = [] } = useQuery({
@@ -258,11 +259,6 @@ export default function POS() {
     if (selectedCategory === null) return activeItems;
     return activeItems.filter((i: ConcessionItem) => i.category === selectedCategory);
   }, [items, selectedCategory]);
-
-  const activeTicketTypes = useMemo(
-    () => ticketTypes.filter((t: TicketType) => t.is_active),
-    [ticketTypes],
-  );
 
   // Group today's showtimes by film, filtering out past showtimes.
   // A showtime is "past" if:
@@ -439,7 +435,7 @@ export default function POS() {
     );
   };
 
-  const updateTicketQuantity = (ticketType: TicketType, delta: number) => {
+  const updateTicketQuantity = (ticketType: AvailableTicketType, delta: number) => {
     setTicketCart((prev) => {
       const existing = prev.find((t) => t.ticket_type_id === ticketType.id);
       if (existing) {
@@ -826,7 +822,7 @@ export default function POS() {
                     })()}
                   </button>
                   <div className={styles.ticketTypeList}>
-                    {activeTicketTypes.map((tt: TicketType) => (
+                    {availableTicketTypes.map((tt: AvailableTicketType) => (
                       <div key={tt.id} className={styles.ticketTypeRow}>
                         <div className={styles.ticketTypeInfo}>
                           <div className={styles.ticketTypeName}>{tt.name}</div>
