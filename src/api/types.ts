@@ -570,6 +570,16 @@ export interface POSSaleCreate {
   concession_items?: POSConcessionItem[];
 }
 
+export interface POSSaleTicket {
+  uuid: string;
+  film_title: string;
+  starts_at: string;
+  screen_name: string;
+  ticket_type_name: string;
+  price_paid: string;
+  printed_at: string | null;
+}
+
 export interface POSSaleResponse {
   uuid: string;
   total_amount: string;
@@ -585,6 +595,8 @@ export interface POSSaleResponse {
     scope: string;
     discount_amount: string;
   }[];
+  tickets: POSSaleTicket[];
+  concession_items: { name: string; quantity: number; total: string }[];
 }
 
 // Benefit preview
