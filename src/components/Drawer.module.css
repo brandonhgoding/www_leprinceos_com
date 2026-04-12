@@ -138,8 +138,9 @@
   flex-shrink: 0;
 }
 
-/* Mobile: full width */
-@media (max-width: 480px) {
+/* Phone & small tablet: full width — avoids the half-covered look
+   on devices wider than 480px but narrower than the panel. */
+@media (max-width: 640px) {
   .sm,
   .md,
   .lg {
