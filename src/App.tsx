@@ -20,7 +20,6 @@ import MembershipDetail from './pages/MembershipDetail';
 import OnlineOrders from './pages/OnlineOrders';
 import Concessions from './pages/Concessions';
 import ConcessionItemDetail from './pages/ConcessionItemDetail';
-import POS from './pages/POS';
 import Modifiers from './pages/Modifiers';
 import Taxes from './pages/Taxes';
 import ShowtimeReport from './pages/reports/ShowtimeReport';
@@ -106,7 +105,6 @@ function App() {
           <Route path="tickets/:id" element={<TicketDetail />} />
           <Route path="concessions" element={<Concessions />} />
           <Route path="concessions/:id" element={<ConcessionItemDetail />} />
-          <Route path="pos" element={<POS />} />
           <Route path="modifiers" element={<Modifiers />} />
           <Route
             path="taxes"
