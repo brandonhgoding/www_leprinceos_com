@@ -41,9 +41,9 @@ export default function Layout() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Transform cinema memberships for Sidebar component
+  // Transform cinema memberships for Sidebar component (single-tenant: empty)
   const cinemas =
-    user?.cinemas.map((c) => ({
+    user?.cinemas?.map((c) => ({
       id: c.cinema_id,
       name: c.cinema_name,
     })) || [];

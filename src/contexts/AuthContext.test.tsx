@@ -98,6 +98,26 @@ describe('AuthContext', () => {
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.currentCinema).toBeNull();
     });
+
+    it('stays authenticated when the API user has no cinemas (single-tenant)', async () => {
+      // Regression: the de-tenanted API no longer returns `cinemas`. Unguarded
+      // access to userData.cinemas threw, was swallowed as "no session", and
+      // caused an infinite login redirect loop.
+      const { cinemas: _omit, ...userWithoutCinemas } = mockUser;
+      vi.mocked(authApi.getCurrentUser).mockResolvedValue(
+        userWithoutCinemas as typeof mockUser,
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.isAuthenticated).toBe(true);
+      expect(result.current.user).not.toBeNull();
+      expect(result.current.currentCinema).toBeNull();
+    });
   });
 
   describe('Cinema Selection', () => {

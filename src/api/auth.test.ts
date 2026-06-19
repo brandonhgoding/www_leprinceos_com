@@ -162,8 +162,8 @@ describe('Auth API', () => {
       const result = await authApi.getCurrentUser();
 
       expect(result.cinemas).toHaveLength(2);
-      expect(result.cinemas[0].cinema_name).toBe('First Cinema');
-      expect(result.cinemas[1].cinema_name).toBe('Second Cinema');
+      expect(result.cinemas?.[0].cinema_name).toBe('First Cinema');
+      expect(result.cinemas?.[1].cinema_name).toBe('Second Cinema');
     });
 
     it('should handle superuser', async () => {

@@ -16,7 +16,9 @@ export interface User {
   first_name: string;
   last_name: string;
   is_superuser: boolean;
-  cinemas: CinemaMembership[];
+  // Single-tenant: the API no longer returns cinema memberships. Optional so the
+  // app tolerates the de-tenanted response shape.
+  cinemas?: CinemaMembership[];
 }
 
 export interface LoginCredentials {

@@ -29,14 +29,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userData = await authApi.getCurrentUser();
         setUser(userData);
 
-        // Restore selected cinema from localStorage or use first cinema
+        // Single-tenant: the API no longer returns cinema memberships. Tolerate
+        // an absent `cinemas` so an authenticated session is never misread as
+        // logged-out (which previously caused an infinite login redirect loop).
+        const cinemas = userData.cinemas ?? [];
         const savedCinemaId = localStorage.getItem('selected_cinema_id');
         if (savedCinemaId) {
-          const cinema = userData.cinemas.find((c) => c.cinema_id === parseInt(savedCinemaId));
-          setCurrentCinema(cinema || userData.cinemas[0] || null);
-        } else if (userData.cinemas.length > 0) {
-          setCurrentCinema(userData.cinemas[0]);
-          localStorage.setItem('selected_cinema_id', String(userData.cinemas[0].cinema_id));
+          const cinema = cinemas.find((c) => c.cinema_id === parseInt(savedCinemaId));
+          setCurrentCinema(cinema || cinemas[0] || null);
+        } else if (cinemas.length > 0) {
+          setCurrentCinema(cinemas[0]);
+          localStorage.setItem('selected_cinema_id', String(cinemas[0].cinema_id));
         }
       } catch {
         // No valid session - user not authenticated
@@ -54,10 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userData = await authApi.login({ username, password });
     setUser(userData);
 
-    // Set initial cinema
-    if (userData.cinemas.length > 0) {
-      setCurrentCinema(userData.cinemas[0]);
-      localStorage.setItem('selected_cinema_id', String(userData.cinemas[0].cinema_id));
+    // Set initial cinema (single-tenant: `cinemas` is normally absent).
+    const cinemas = userData.cinemas ?? [];
+    if (cinemas.length > 0) {
+      setCurrentCinema(cinemas[0]);
+      localStorage.setItem('selected_cinema_id', String(cinemas[0].cinema_id));
     }
   }, []);
 
@@ -71,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (cinemaId: number) => {
       if (!user) return;
 
-      const cinema = user.cinemas.find((c) => c.cinema_id === cinemaId);
+      const cinema = (user.cinemas ?? []).find((c) => c.cinema_id === cinemaId);
       if (cinema) {
         setCurrentCinema(cinema);
         localStorage.setItem('selected_cinema_id', String(cinemaId));
