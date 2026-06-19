@@ -86,18 +86,6 @@ const IntegrationsIcon = () => (
   </svg>
 );
 
-const EmbedsIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path
-      d="M7 6l-4 4 4 4M13 6l4 4-4 4"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 const ApiDocsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <rect x="4" y="2" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5" />
@@ -211,7 +199,6 @@ export default function Sidebar({
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
     { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon />, managerOnly: true },
-    { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
     { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },
   ];
 

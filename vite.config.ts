@@ -11,11 +11,6 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-      // Proxy embed requests to Django backend
-      '/embeds': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
     },
   },
 });
