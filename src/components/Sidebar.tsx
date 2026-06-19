@@ -130,29 +130,6 @@ const MembershipsIcon = () => (
   </svg>
 );
 
-const ConcessionsIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path
-      d="M4 7h12l-1 9H5L4 7zM7 7V5a3 3 0 016 0v2"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const TaxesIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path
-      d="M10 3v14M6 7l8 6M6 13l8-6"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-  </svg>
-);
-
 const LogoutIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path
@@ -233,15 +210,6 @@ export default function Sidebar({
       ],
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
-    {
-      label: 'Concessions',
-      icon: <ConcessionsIcon />,
-      items: [
-        { path: '/concessions', label: 'Items & Categories' },
-        { path: '/modifiers', label: 'Modifiers' },
-      ],
-    },
-    { path: '/taxes', label: 'Taxes', icon: <TaxesIcon />, managerOnly: true },
     { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon />, managerOnly: true },
     { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
     { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },

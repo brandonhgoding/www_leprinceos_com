@@ -17,10 +17,6 @@ import MembershipTiers from './pages/MembershipTiers';
 import TierDetail from './pages/TierDetail';
 import Memberships from './pages/Memberships';
 import MembershipDetail from './pages/MembershipDetail';
-import Concessions from './pages/Concessions';
-import ConcessionItemDetail from './pages/ConcessionItemDetail';
-import Modifiers from './pages/Modifiers';
-import Taxes from './pages/Taxes';
 import ShowtimeReport from './pages/reports/ShowtimeReport';
 import EngagementReport from './pages/reports/EngagementReport';
 import TicketDetailReport from './pages/reports/TicketDetailReport';
@@ -102,17 +98,6 @@ function App() {
           <Route path="screens" element={<Screens />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
-          <Route path="concessions" element={<Concessions />} />
-          <Route path="concessions/:id" element={<ConcessionItemDetail />} />
-          <Route path="modifiers" element={<Modifiers />} />
-          <Route
-            path="taxes"
-            element={
-              <ManagerRoute>
-                <Taxes />
-              </ManagerRoute>
-            }
-          />
           <Route path="embeds" element={<Embeds />} />
           <Route
             path="integrations"
