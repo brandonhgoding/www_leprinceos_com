@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { membershipTiersApi, benefitRulesApi, benefitConditionsApi } from '../api/memberships';
 import { ticketsApi } from '../api/tickets';
-import { concessionsApi } from '../api/concessions';
 import type {
   MembershipTierCreate,
   BenefitRuleCreate,
@@ -38,12 +37,6 @@ const CONDITION_TYPES_BY_SCOPE: Record<string, { value: ConditionType; label: st
     { value: 'TICKET_TYPE', label: 'Ticket Type' },
     { value: 'BIRTHDAY_MONTH', label: 'Birthday Month' },
     { value: 'COMPANION', label: 'Companion Required' },
-  ],
-  CONCESSION: [
-    { value: 'CONCESSION_CATEGORY', label: 'Concession Category' },
-    { value: 'CONCESSION_ITEM', label: 'Concession Item' },
-    { value: 'CONCESSION_VARIATION', label: 'Concession Variation' },
-    { value: 'BIRTHDAY_MONTH', label: 'Birthday Month' },
   ],
   RENTAL: [{ value: 'BIRTHDAY_MONTH', label: 'Birthday Month' }],
 };
@@ -149,29 +142,6 @@ export default function TierDetail() {
       return ticketType ? ticketType.name : reference_value;
     }
 
-    // For concession category, show category name
-    if (condition_type === 'CONCESSION_CATEGORY') {
-      const category = concessionCategories.find((c) => String(c.id) === reference_value);
-      return category ? category.name : reference_value;
-    }
-
-    // For concession item, show item name
-    if (condition_type === 'CONCESSION_ITEM') {
-      const item = concessionItems.find((i) => String(i.id) === reference_value);
-      return item ? item.name : reference_value;
-    }
-
-    // For concession variation, show "variation — item" format
-    if (condition_type === 'CONCESSION_VARIATION') {
-      for (const item of concessionItems) {
-        const variation = item.variations.find((v) => String(v.id) === reference_value);
-        if (variation) {
-          return `${variation.name} — ${item.name}`;
-        }
-      }
-      return reference_value;
-    }
-
     // For time values, return as-is (already in HH:MM format)
     return reference_value;
   };
@@ -187,15 +157,6 @@ export default function TierDetail() {
     queryFn: () => ticketsApi.list(),
   });
 
-  const { data: concessionCategories = [] } = useQuery({
-    queryKey: ['concession-categories'],
-    queryFn: () => concessionsApi.listCategories(),
-  });
-
-  const { data: concessionItems = [] } = useQuery({
-    queryKey: ['concession-items'],
-    queryFn: () => concessionsApi.listItems(),
-  });
 
   // Mutations
   const updateTierMutation = useMutation({
@@ -642,91 +603,6 @@ export default function TierDetail() {
                           </select>
                         )}
 
-                        {/* Concession category selector */}
-                        {conditionFormData.condition_type === 'CONCESSION_CATEGORY' && (
-                          <select
-                            value={conditionFormData.reference_value}
-                            onChange={(e) =>
-                              setConditionFormData({
-                                ...conditionFormData,
-                                reference_value: e.target.value,
-                              })
-                            }
-                            className={styles.conditionInput}
-                          >
-                            <option value="">Select category...</option>
-                            {concessionCategories
-                              .filter((cat) => cat.is_active)
-                              .map((cat) => (
-                                <option key={cat.id} value={String(cat.id)}>
-                                  {cat.name}
-                                </option>
-                              ))}
-                          </select>
-                        )}
-
-                        {/* Concession item selector */}
-                        {conditionFormData.condition_type === 'CONCESSION_ITEM' && (
-                          <select
-                            value={conditionFormData.reference_value}
-                            onChange={(e) =>
-                              setConditionFormData({
-                                ...conditionFormData,
-                                reference_value: e.target.value,
-                              })
-                            }
-                            className={styles.conditionInput}
-                          >
-                            <option value="">Select item...</option>
-                            {concessionCategories
-                              .filter((cat) => cat.is_active)
-                              .map((cat) => {
-                                const categoryItems = concessionItems.filter(
-                                  (item) => item.category === cat.id && item.is_active,
-                                );
-                                if (categoryItems.length === 0) return null;
-                                return (
-                                  <optgroup key={cat.id} label={cat.name}>
-                                    {categoryItems.map((item) => (
-                                      <option key={item.id} value={String(item.id)}>
-                                        {item.name}
-                                      </option>
-                                    ))}
-                                  </optgroup>
-                                );
-                              })}
-                          </select>
-                        )}
-
-                        {/* Concession variation selector */}
-                        {conditionFormData.condition_type === 'CONCESSION_VARIATION' && (
-                          <select
-                            value={conditionFormData.reference_value}
-                            onChange={(e) =>
-                              setConditionFormData({
-                                ...conditionFormData,
-                                reference_value: e.target.value,
-                              })
-                            }
-                            className={styles.conditionInput}
-                          >
-                            <option value="">Select variation...</option>
-                            {concessionItems
-                              .filter((item) => item.is_active && item.variations.length > 0)
-                              .map((item) => (
-                                <optgroup key={item.id} label={item.name}>
-                                  {item.variations
-                                    .filter((v) => v.is_active)
-                                    .map((v) => (
-                                      <option key={v.id} value={String(v.id)}>
-                                        {v.name} — ${parseFloat(v.price).toFixed(2)}
-                                      </option>
-                                    ))}
-                                </optgroup>
-                              ))}
-                          </select>
-                        )}
-
                         {/* No input needed for BIRTHDAY_MONTH and COMPANION */}
                         {conditionFormData.condition_type === 'BIRTHDAY_MONTH' && (
                           <span className={styles.conditionHint}>
@@ -999,7 +875,6 @@ export default function TierDetail() {
               >
                 <option value="">Select scope...</option>
                 <option value="TICKET">Ticket</option>
-                <option value="CONCESSION">Concession</option>
                 <option value="RENTAL">Rental</option>
               </select>
             </div>
