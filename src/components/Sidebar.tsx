@@ -86,20 +86,6 @@ const IntegrationsIcon = () => (
   </svg>
 );
 
-const OnlineOrdersIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <circle cx="8" cy="16" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-    <circle cx="15" cy="16" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-    <path
-      d="M2 3h2l2.5 9h9l2-6H7"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 const EmbedsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path
@@ -256,12 +242,6 @@ export default function Sidebar({
       ],
     },
     { path: '/taxes', label: 'Taxes', icon: <TaxesIcon />, managerOnly: true },
-    {
-      path: '/online-orders',
-      label: 'Online Orders',
-      icon: <OnlineOrdersIcon />,
-      managerOnly: true,
-    },
     { path: '/integrations', label: 'Integrations', icon: <IntegrationsIcon />, managerOnly: true },
     { path: '/embeds', label: 'Embeds', icon: <EmbedsIcon /> },
     { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },

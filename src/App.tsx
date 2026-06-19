@@ -17,7 +17,6 @@ import MembershipTiers from './pages/MembershipTiers';
 import TierDetail from './pages/TierDetail';
 import Memberships from './pages/Memberships';
 import MembershipDetail from './pages/MembershipDetail';
-import OnlineOrders from './pages/OnlineOrders';
 import Concessions from './pages/Concessions';
 import ConcessionItemDetail from './pages/ConcessionItemDetail';
 import Modifiers from './pages/Modifiers';
@@ -115,14 +114,6 @@ function App() {
             }
           />
           <Route path="embeds" element={<Embeds />} />
-          <Route
-            path="online-orders"
-            element={
-              <ManagerRoute>
-                <OnlineOrders />
-              </ManagerRoute>
-            }
-          />
           <Route
             path="integrations"
             element={
