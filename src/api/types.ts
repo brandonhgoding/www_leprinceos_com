@@ -391,24 +391,6 @@ export interface MemberBenefits {
   allocations: BenefitAllocation[];
 }
 
-// Tax types
-export interface SalesTax {
-  id: number;
-  name: string;
-  rate: string;
-  tax_type: string;
-  is_inclusive: boolean;
-  is_active: boolean;
-}
-
-export interface SalesTaxCreate {
-  name: string;
-  rate: string;
-  tax_type?: string;
-  is_inclusive?: boolean;
-  is_active?: boolean;
-}
-
 // Payments
 export type PaymentStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'REFUNDED';
 export type PaymentMethodType = 'CARD_ONLINE' | 'CARD_TERMINAL';
