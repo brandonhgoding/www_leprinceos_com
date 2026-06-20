@@ -99,7 +99,7 @@ export default function Integrations() {
                     <div>
                       <div className={styles.integrationName}>Stripe Connect</div>
                       <div className={styles.integrationDescription}>
-                        Accept card payments online and at the POS
+                        Accept card payments online
                       </div>
                     </div>
                   </div>
@@ -206,7 +206,7 @@ export default function Integrations() {
                   <div>
                     <div className={styles.integrationName}>Stripe Terminal</div>
                     <div className={styles.integrationDescription}>
-                      In-person card reader for POS transactions
+                      In-person card reader for transactions
                     </div>
                   </div>
                 </div>

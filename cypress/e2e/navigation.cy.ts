@@ -36,23 +36,6 @@ describe('Navigation and Routing', () => {
       });
     });
 
-    it('should navigate to Concessions page', () => {
-      cy.fixture('concessions').then((concessions) => {
-        cy.intercept('GET', '/api/v1/concessions/*', {
-          statusCode: 200,
-          body: concessions,
-        }).as('getConcessions');
-
-        cy.visit('/dashboard');
-        cy.wait('@getCurrentUser');
-
-        cy.contains('a', 'Concessions').click();
-
-        cy.url().should('include', '/dashboard/concessions');
-        cy.wait('@getConcessions');
-      });
-    });
-
     it('should navigate to Tickets page', () => {
       cy.fixture('tickets').then((tickets) => {
         cy.intercept('GET', '/api/v1/tickets/*', {
@@ -67,23 +50,6 @@ describe('Navigation and Routing', () => {
 
         cy.url().should('include', '/dashboard/tickets');
         cy.wait('@getTickets');
-      });
-    });
-
-    it('should navigate to Modifiers page', () => {
-      cy.fixture('modifiers').then((modifiers) => {
-        cy.intercept('GET', '/api/v1/modifiers/*', {
-          statusCode: 200,
-          body: modifiers,
-        }).as('getModifiers');
-
-        cy.visit('/dashboard');
-        cy.wait('@getCurrentUser');
-
-        cy.contains('a', 'Modifiers').click();
-
-        cy.url().should('include', '/dashboard/modifiers');
-        cy.wait('@getModifiers');
       });
     });
 
@@ -118,21 +84,6 @@ describe('Navigation and Routing', () => {
         cy.wait('@getEngagements');
 
         cy.url().should('include', '/dashboard/engagements');
-      });
-    });
-
-    it('should load Concessions page via direct URL', () => {
-      cy.fixture('concessions').then((concessions) => {
-        cy.intercept('GET', '/api/v1/concessions/*', {
-          statusCode: 200,
-          body: concessions,
-        }).as('getConcessions');
-
-        cy.visit('/dashboard/concessions');
-        cy.wait('@getCurrentUser');
-        cy.wait('@getConcessions');
-
-        cy.url().should('include', '/dashboard/concessions');
       });
     });
 
@@ -198,40 +149,6 @@ describe('Navigation and Routing', () => {
       });
     });
 
-    it('should maintain state when navigating back and forth', () => {
-      cy.fixture('engagements').then((engagements) => {
-        cy.fixture('concessions').then((concessions) => {
-          cy.intercept('GET', '/api/v1/engagements/*', {
-            statusCode: 200,
-            body: engagements,
-          }).as('getEngagements');
-
-          cy.intercept('GET', '/api/v1/concessions/*', {
-            statusCode: 200,
-            body: concessions,
-          }).as('getConcessions');
-
-          cy.visit('/dashboard');
-          cy.wait('@getCurrentUser');
-
-          // Navigate to engagements
-          cy.contains('a', 'Engagements').click();
-          cy.wait('@getEngagements');
-
-          // Navigate to concessions
-          cy.contains('a', 'Concessions').click();
-          cy.wait('@getConcessions');
-
-          // Go back to engagements
-          cy.go('back');
-          cy.url().should('include', '/dashboard/engagements');
-
-          // Go back to home
-          cy.go('back');
-          cy.url().should('eq', `${Cypress.config().baseUrl}/dashboard/`);
-        });
-      });
-    });
   });
 
   describe('Layout and Sidebar', () => {
@@ -242,9 +159,7 @@ describe('Navigation and Routing', () => {
       // Check for common navigation elements
       cy.contains('a', 'Dashboard').should('be.visible');
       cy.contains('a', 'Engagements').should('be.visible');
-      cy.contains('a', 'Concessions').should('be.visible');
       cy.contains('a', 'Tickets').should('be.visible');
-      cy.contains('a', 'Modifiers').should('be.visible');
       cy.contains('a', 'Screens').should('be.visible');
     });
 
