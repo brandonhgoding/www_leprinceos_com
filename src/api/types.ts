@@ -391,38 +391,6 @@ export interface MemberBenefits {
   allocations: BenefitAllocation[];
 }
 
-// Payments
-export type PaymentStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'REFUNDED';
-export type PaymentMethodType = 'CARD_ONLINE' | 'CARD_TERMINAL';
-
-export interface StripeAccountStatus {
-  has_account: boolean;
-  stripe_account_id: string | null;
-  charges_enabled: boolean;
-  payouts_enabled: boolean;
-  onboarding_complete: boolean;
-}
-
-export interface PaymentRecord {
-  id: number;
-  stripe_payment_intent_id: string;
-  amount: string;
-  platform_fee: string;
-  currency: string;
-  status: PaymentStatus;
-  payment_method_type: PaymentMethodType;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PaymentIntentResponse {
-  id: number;
-  stripe_payment_intent_id: string;
-  client_secret: string;
-  amount: string;
-  status: PaymentStatus;
-}
-
 // Reports
 export interface TicketTypeBreakdown {
   ticket_type__name: string;

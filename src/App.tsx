@@ -9,7 +9,6 @@ import EngagementDetail from './pages/EngagementDetail';
 import Screens from './pages/Screens';
 import Tickets from './pages/Tickets';
 import TicketDetail from './pages/TicketDetail';
-import Integrations from './pages/Integrations';
 import Members from './pages/Members';
 import MemberDetail from './pages/MemberDetail';
 import MembershipTiers from './pages/MembershipTiers';
@@ -97,14 +96,6 @@ function App() {
           <Route path="screens" element={<Screens />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
-          <Route
-            path="integrations"
-            element={
-              <ManagerRoute>
-                <Integrations />
-              </ManagerRoute>
-            }
-          />
           <Route path="members" element={<Members />} />
           <Route path="members/:id" element={<MemberDetail />} />
           <Route path="membership-tiers" element={<MembershipTiers />} />
