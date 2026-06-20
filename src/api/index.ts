@@ -20,6 +20,4 @@ export {
   benefitConditionsApi,
 } from './memberships';
 
-export { default as paymentsApi } from './payments';
-
 export * from './types';
