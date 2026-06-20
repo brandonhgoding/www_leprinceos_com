@@ -5,8 +5,6 @@ import apiClient from './client';
 import type {
   PaymentIntentResponse,
   PaymentRecord,
-  POSSaleCreate,
-  POSSaleResponse,
   StripeAccountStatus,
 } from './types';
 
@@ -77,11 +75,6 @@ export const paymentsApi = {
     return response.data;
   },
 
-  // POS Sales
-  createPOSSale: async (data: POSSaleCreate): Promise<POSSaleResponse> => {
-    const response = await apiClient.post<POSSaleResponse>('/v1/pos/sales/', data);
-    return response.data;
-  },
 };
 
 export default paymentsApi;

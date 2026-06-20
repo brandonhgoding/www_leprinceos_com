@@ -11,7 +11,6 @@ export { default as filmsApi } from './films';
 export { default as screensApi } from './screens';
 export { default as ticketsApi } from './tickets';
 export { default as reportsApi } from './reports';
-export { default as onlineOrdersApi } from './onlineOrders';
 
 export {
   membersApi,
@@ -19,11 +18,8 @@ export {
   membershipsApi,
   benefitRulesApi,
   benefitConditionsApi,
-  benefitPreviewApi,
 } from './memberships';
 
-export { default as concessionsApi } from './concessions';
 export { default as paymentsApi } from './payments';
-export { taxesApi } from './taxes';
 
 export * from './types';

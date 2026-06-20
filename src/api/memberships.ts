@@ -20,8 +20,6 @@ import type {
   PaginatedResponse,
   MemberFilters,
   MembershipFilters,
-  BenefitPreviewRequest,
-  BenefitPreviewResponse,
 } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- accepts various filter interfaces
@@ -248,17 +246,6 @@ export const membershipsApi = {
   getAuditLog: async (id: number): Promise<MembershipAuditLog[]> => {
     // This endpoint returns a plain array, not paginated
     const response = await apiClient.get<MembershipAuditLog[]>(`/v1/memberships/${id}/audit-log/`);
-    return response.data;
-  },
-};
-
-// =============================================================================
-// Benefit Preview API
-// =============================================================================
-
-export const benefitPreviewApi = {
-  preview: async (data: BenefitPreviewRequest): Promise<BenefitPreviewResponse> => {
-    const response = await apiClient.post<BenefitPreviewResponse>('/v1/pos/benefit-preview/', data);
     return response.data;
   },
 };

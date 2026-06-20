@@ -194,17 +194,14 @@ export interface AvailableTicketType {
 // Memberships
 export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 export type BenefitType = 'FIXED_AMOUNT' | 'PERCENTAGE' | 'FREE_ITEM';
-export type BenefitScope = 'TICKET' | 'CONCESSION' | 'RENTAL';
+export type BenefitScope = 'TICKET' | 'RENTAL';
 export type ConditionType =
   | 'TIME_BEFORE'
   | 'TIME_AFTER'
   | 'DAY_OF_WEEK'
   | 'TICKET_TYPE'
   | 'BIRTHDAY_MONTH'
-  | 'COMPANION'
-  | 'CONCESSION_CATEGORY'
-  | 'CONCESSION_ITEM'
-  | 'CONCESSION_VARIATION';
+  | 'COMPANION';
 export type PeriodType = 'MONTHLY' | 'DAILY' | 'LIFETIME';
 export type AuditAction = 'CREATED' | 'ACTIVATED' | 'RENEWED' | 'CANCELLED' | 'EXPIRED';
 
@@ -394,133 +391,6 @@ export interface MemberBenefits {
   allocations: BenefitAllocation[];
 }
 
-// Concessions
-export interface ModifierOptionVariationPrice {
-  variation_id: number;
-  price_adjustment: string;
-}
-
-export interface ModifierOption {
-  id: number;
-  name: string;
-  price_adjustment: string;
-  is_default: boolean;
-  display_order: number;
-  variation_prices: ModifierOptionVariationPrice[];
-}
-
-export interface Modifier {
-  id: number;
-  name: string;
-  is_required: boolean;
-  max_selections: number;
-  display_order: number;
-  options: ModifierOption[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ModifierOptionWrite {
-  id?: number;
-  name: string;
-  price_adjustment: string;
-  is_default?: boolean;
-  display_order?: number;
-}
-
-export interface ModifierWrite {
-  name: string;
-  is_required?: boolean;
-  max_selections?: number;
-  display_order?: number;
-  options?: ModifierOptionWrite[];
-}
-
-export interface ConcessionVariation {
-  id: number;
-  name: string;
-  price: string;
-  sku: string;
-  display_order: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ConcessionItem {
-  id: number;
-  category: number;
-  category_name: string;
-  name: string;
-  description: string;
-  image: string | null;
-  price: string | null;
-  taxes: SalesTax[];
-  is_active: boolean;
-  variations: ConcessionVariation[];
-  modifiers: Modifier[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ConcessionItemCreate {
-  category: number;
-  name: string;
-  description?: string;
-  image?: string | null;
-  price?: string | null;
-  tax_ids?: number[];
-  is_active?: boolean;
-  modifier_ids?: number[];
-  modifier_variation_prices?: {
-    modifier_option_id: number;
-    variation_id: number;
-    price_adjustment: string;
-  }[];
-}
-
-export interface ConcessionVariationCreate {
-  name: string;
-  price: string;
-  sku?: string;
-  display_order?: number;
-  is_active?: boolean;
-}
-
-export interface ConcessionCategory {
-  id: number;
-  name: string;
-  display_order: number;
-  is_active: boolean;
-  items_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ConcessionCategoryCreate {
-  name: string;
-  display_order?: number;
-  is_active?: boolean;
-}
-
-// Tax types
-export interface SalesTax {
-  id: number;
-  name: string;
-  rate: string;
-  tax_type: string;
-  is_inclusive: boolean;
-  is_active: boolean;
-}
-
-export interface SalesTaxCreate {
-  name: string;
-  rate: string;
-  tax_type?: string;
-  is_inclusive?: boolean;
-  is_active?: boolean;
-}
-
 // Payments
 export type PaymentStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'REFUNDED';
 export type PaymentMethodType = 'CARD_ONLINE' | 'CARD_TERMINAL';
@@ -551,95 +421,6 @@ export interface PaymentIntentResponse {
   client_secret: string;
   amount: string;
   status: PaymentStatus;
-}
-
-// POS
-export interface POSTicketItem {
-  ticket_type_id: number;
-  quantity: number;
-}
-
-export interface POSConcessionItem {
-  variation_id: number;
-  quantity: number;
-  modifier_option_ids?: number[];
-}
-
-export type PaymentMethod = 'CASH' | 'CARD' | 'COMP' | 'OTHER';
-
-export interface POSSaleCreate {
-  showtime_id?: number | null;
-  payment_method: PaymentMethod;
-  customer_name?: string;
-  customer_email?: string;
-  customer_phone?: string;
-  notes?: string;
-  member_id?: number | null;
-  ticket_items?: POSTicketItem[];
-  concession_items?: POSConcessionItem[];
-}
-
-export interface POSSaleTicket {
-  uuid: string;
-  film_title: string;
-  starts_at: string;
-  screen_name: string;
-  ticket_type_name: string;
-  price_paid: string;
-  printed_at: string | null;
-}
-
-export interface POSSaleResponse {
-  uuid: string;
-  total_amount: string;
-  payment_method: PaymentMethod;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
-  notes: string;
-  created_at: string;
-  member_savings: string | null;
-  benefits_applied: {
-    benefit_name: string;
-    scope: string;
-    discount_amount: string;
-  }[];
-  tickets: POSSaleTicket[];
-  concession_items: {
-    name: string;
-    quantity: number;
-    subtotal: string;
-    tax_amount: string;
-    total: string;
-  }[];
-  tax_total: string;
-}
-
-// Benefit preview
-export interface BenefitDiscount {
-  scope: 'TICKET' | 'CONCESSION';
-  ticket_type_id?: number;
-  variation_id?: number;
-  benefit_rule_id: number;
-  benefit_name: string;
-  benefit_type: BenefitType;
-  original_price: string;
-  discount_amount: string;
-  discounted_price: string;
-  per_unit: boolean;
-  applicable_quantity: number;
-}
-
-export interface BenefitPreviewRequest {
-  member_id: number;
-  showtime_id?: number | null;
-  ticket_items?: POSTicketItem[];
-  concession_items?: POSConcessionItem[];
-}
-
-export interface BenefitPreviewResponse {
-  discounts: BenefitDiscount[];
-  total_savings: string;
 }
 
 // Reports
