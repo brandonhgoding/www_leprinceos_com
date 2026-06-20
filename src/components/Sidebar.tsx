@@ -81,18 +81,6 @@ const ApiDocsIcon = () => (
   </svg>
 );
 
-const ReportsIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-    <path
-      d="M7 13V9M10 13V7M13 13V10"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-  </svg>
-);
-
 const MembershipsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <rect x="2" y="6" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -172,17 +160,6 @@ export default function Sidebar({
         { path: '/members', label: 'Members' },
         { path: '/membership-tiers', label: 'Tiers' },
         { path: '/memberships', label: 'Memberships' },
-      ],
-    },
-    {
-      label: 'Reports',
-      icon: <ReportsIcon />,
-      managerOnly: true,
-      items: [
-        { path: '/reports/showtime', label: 'Showtime Report' },
-        { path: '/reports/engagement', label: 'Engagement Report' },
-        { path: '/reports/tickets', label: 'Ticket Detail' },
-        { path: '/reports/summary', label: 'Engagement Summary' },
       ],
     },
     { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },

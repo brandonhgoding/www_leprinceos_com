@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
-import ManagerRoute from './components/ManagerRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Engagements from './pages/Engagements';
@@ -15,10 +14,6 @@ import MembershipTiers from './pages/MembershipTiers';
 import TierDetail from './pages/TierDetail';
 import Memberships from './pages/Memberships';
 import MembershipDetail from './pages/MembershipDetail';
-import ShowtimeReport from './pages/reports/ShowtimeReport';
-import EngagementReport from './pages/reports/EngagementReport';
-import TicketDetailReport from './pages/reports/TicketDetailReport';
-import EngagementSummaryReport from './pages/reports/EngagementSummaryReport';
 
 function NotFound() {
   return (
@@ -102,38 +97,6 @@ function App() {
           <Route path="membership-tiers/:id" element={<TierDetail />} />
           <Route path="memberships" element={<Memberships />} />
           <Route path="memberships/:id" element={<MembershipDetail />} />
-          <Route
-            path="reports/showtime"
-            element={
-              <ManagerRoute>
-                <ShowtimeReport />
-              </ManagerRoute>
-            }
-          />
-          <Route
-            path="reports/engagement"
-            element={
-              <ManagerRoute>
-                <EngagementReport />
-              </ManagerRoute>
-            }
-          />
-          <Route
-            path="reports/tickets"
-            element={
-              <ManagerRoute>
-                <TicketDetailReport />
-              </ManagerRoute>
-            }
-          />
-          <Route
-            path="reports/summary"
-            element={
-              <ManagerRoute>
-                <EngagementSummaryReport />
-              </ManagerRoute>
-            }
-          />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
