@@ -199,5 +199,12 @@ describe('AuthContext', () => {
       expect(typeof result.current.login).toBe('function');
       expect(typeof result.current.logout).toBe('function');
     });
+
+    it('should set isManager true for a superuser', async () => {
+      vi.mocked(authApi.getCurrentUser).mockResolvedValue({ ...mockUser, is_superuser: true });
+      const { result } = renderHook(() => useAuth(), { wrapper });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.isManager).toBe(true);
+    });
   });
 });
