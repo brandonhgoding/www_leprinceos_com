@@ -41,6 +41,7 @@ const KIND_OPTIONS: { value: EngagementKind; label: string }[] = [
   { value: 'DOUBLE_FEATURE', label: 'Double Feature' },
 ];
 
+// SHORT labels used exclusively for the badge display in the list view (distinct from KIND_OPTIONS' longer form-select labels)
 const KIND_LABELS: Record<EngagementKind, string> = {
   REGULAR: 'Regular',
   SPECIAL_EVENT: 'Event',

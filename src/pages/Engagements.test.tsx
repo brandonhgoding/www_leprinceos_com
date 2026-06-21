@@ -97,12 +97,14 @@ describe('Engagements list', () => {
 
   it('renders display_title and a type badge for special screenings', async () => {
     const { engagementsApi } = await import('../api');
+    // Title is deliberately free of "Double Feature" so the badge assertion below
+    // cannot be satisfied by the title text — it must come from the kindBadge span.
     vi.mocked(engagementsApi.list).mockResolvedValue([
       {
         id: 7,
         kind: 'DOUBLE_FEATURE',
-        event_title: 'Creature Double Feature',
-        display_title: 'Creature Double Feature',
+        event_title: 'Creature Creature Night',
+        display_title: 'Creature Creature Night',
         films: [mockFilm, { ...mockFilm, id: 102, title: 'Second Film' }],
         film_title: mockFilm.title,
         film_poster_url: mockFilm.poster_url,
@@ -119,8 +121,13 @@ describe('Engagements list', () => {
       },
     ]);
     renderWithProviders(<Engagements />);
-    expect(await screen.findAllByText('Creature Double Feature')).not.toHaveLength(0);
-    expect(screen.getAllByText(/double feature/i).length).toBeGreaterThan(0);
+    // Title renders (desktop table + mobile card = ≥1 match)
+    expect(await screen.findAllByText('Creature Creature Night')).not.toHaveLength(0);
+    // Kind badge: must come from <span className={styles.kindBadge}>Double Feature</span>,
+    // not the title (which no longer contains those words).
+    expect(screen.getAllByText('Double Feature').length).toBeGreaterThan(0);
+    // Hidden indicator: <span className={styles.hiddenBadge}>Hidden</span>
+    expect(screen.getAllByText('Hidden').length).toBeGreaterThan(0);
   });
 });
 
