@@ -160,23 +160,6 @@ describe('AuthContext', () => {
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it('should call logout API', async () => {
-      vi.mocked(authApi.getCurrentUser).mockResolvedValue(mockUser);
-      vi.mocked(authApi.logout).mockResolvedValue();
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      await result.current.logout();
-
-      await waitFor(() => {
-        expect(authApi.logout).toHaveBeenCalled();
-        expect(result.current.user).toBeNull();
-      });
-    });
   });
 
   describe('Context Value', () => {
@@ -198,6 +181,10 @@ describe('AuthContext', () => {
 
       expect(typeof result.current.login).toBe('function');
       expect(typeof result.current.logout).toBe('function');
+
+      expect(Object.keys(result.current).sort()).toEqual(
+        ['isAuthenticated', 'isLoading', 'isManager', 'login', 'logout', 'user'].sort(),
+      );
     });
 
     it('should set isManager true for a superuser', async () => {

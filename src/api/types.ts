@@ -8,17 +8,6 @@ export interface PaginatedResponse<T> {
   results: T[];
 }
 
-export interface Cinema {
-  id: number;
-  name: string;
-  slug: string;
-  timezone: string;
-  address: string;
-  city: string;
-  state: string;
-  postal_code: string;
-}
-
 export interface Film {
   id: number;
   title: string;
