@@ -67,30 +67,10 @@ const ScreensIcon = () => (
   </svg>
 );
 
-const BillingIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M3 8h14M7 12h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
 const ApiDocsIcon = () => (
   <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
     <rect x="4" y="2" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5" />
     <path d="M7 6h6M7 9h6M7 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
-const MembershipsIcon = () => (
-  <svg className={styles.sidebarIcon} width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="2" y="6" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
-    <path
-      d="M6 6V5a1 1 0 011-1h6a1 1 0 011 1v1M10 10v3"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <circle cx="10" cy="11" r="1.5" fill="currentColor" />
   </svg>
 );
 
@@ -153,16 +133,6 @@ export default function Sidebar({
     { path: '/', label: 'Home', icon: <HomeIcon /> },
     { path: '/engagements', label: 'Engagements', icon: <EngagementsIcon /> },
     { path: '/screens', label: 'Screens', icon: <ScreensIcon /> },
-    {
-      label: 'Memberships',
-      icon: <MembershipsIcon />,
-      items: [
-        { path: '/members', label: 'Members' },
-        { path: '/membership-tiers', label: 'Tiers' },
-        { path: '/memberships', label: 'Memberships' },
-      ],
-    },
-    { path: '/tickets', label: 'Tickets', icon: <BillingIcon /> },
     { path: '/api-docs/', label: 'API Docs', icon: <ApiDocsIcon />, external: true },
   ];
 
