@@ -34,6 +34,30 @@ vi.mock('../contexts/ToastContext', () => ({
   useToast: () => ({ addToast: vi.fn(), toasts: [], dismissToast: vi.fn() }),
 }));
 
+// Mutable registry so individual tests can queue distinct films for the stub to emit.
+// Each click pops from the front; falls back to the default film (id 101) if the queue is empty.
+const stubFilmQueue: Array<{
+  id: number;
+  title: string;
+  runtime_minutes: number;
+  rating: string;
+  synopsis: string;
+  poster_url: string;
+  tmdb_id: string;
+  imdb_id: string;
+}> = [];
+
+const defaultStubFilm = {
+  id: 101,
+  title: 'Test Movie',
+  runtime_minutes: 120,
+  rating: 'PG-13',
+  synopsis: 'A test movie',
+  poster_url: 'https://example.com/poster.jpg',
+  tmdb_id: '12345',
+  imdb_id: 'tt1234567',
+};
+
 // FilmSearchCombo is heavy (TMDB/debounce); stub it to a button that selects a test film.
 vi.mock('../components/FilmSearchCombo', () => ({
   default: ({
@@ -52,18 +76,10 @@ vi.mock('../components/FilmSearchCombo', () => ({
   }) => (
     <button
       type="button"
-      onClick={() =>
-        onFilmSelected({
-          id: 101,
-          title: 'Test Movie',
-          runtime_minutes: 120,
-          rating: 'PG-13',
-          synopsis: 'A test movie',
-          poster_url: 'https://example.com/poster.jpg',
-          tmdb_id: '12345',
-          imdb_id: 'tt1234567',
-        })
-      }
+      onClick={() => {
+        const film = stubFilmQueue.length > 0 ? stubFilmQueue.shift()! : defaultStubFilm;
+        onFilmSelected(film);
+      }}
     >
       stub-add-film
     </button>
@@ -73,6 +89,8 @@ vi.mock('../components/FilmSearchCombo', () => ({
 describe('Engagements form', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Drain any queued stub films left over from a previous test.
+    stubFilmQueue.length = 0;
     // BrowserRouter in helpers uses basename="/dashboard"; set URL to match
     window.history.pushState({}, '', '/dashboard/engagements');
   });
@@ -129,5 +147,85 @@ describe('Engagements form', () => {
   it('visibility checkbox is present in the form', async () => {
     await openCreate();
     expect(await screen.findByLabelText(/show in main listings/i)).toBeInTheDocument();
+  });
+
+  it('REGULAR engagement: create is called with correct payload shape', async () => {
+    const { engagementsApi } = await import('../api');
+    await openCreate();
+
+    // Select screen
+    fireEvent.change(await screen.findByLabelText(/screen/i), { target: { value: '1' } });
+    // Set dates
+    fireEvent.change(screen.getByLabelText(/start date/i), {
+      target: { value: '2026-07-01' },
+    });
+    fireEvent.change(screen.getByLabelText(/end date/i), {
+      target: { value: '2026-07-14' },
+    });
+    // Add one film (default stub: id 101)
+    fireEvent.click(screen.getByText('stub-add-film'));
+
+    // Submit
+    fireEvent.click(screen.getByRole('button', { name: /create engagement/i }));
+
+    await waitFor(() => {
+      expect(engagementsApi.create).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(engagementsApi.create).mock.calls[0][0];
+    expect(payload.films).toEqual([101]);
+    expect(payload.kind).toBe('REGULAR');
+    expect(payload.show_in_main_listings).toBe(true);
+    // event_title must be omitted (not sent) when left blank
+    expect(payload.event_title).toBeUndefined();
+  });
+
+  it('DOUBLE_FEATURE engagement: create is called with two distinct film ids and event_title', async () => {
+    const { engagementsApi } = await import('../api');
+    await openCreate();
+
+    // Switch kind to DOUBLE_FEATURE
+    fireEvent.change(await screen.findByLabelText(/type/i), {
+      target: { value: 'DOUBLE_FEATURE' },
+    });
+
+    // Select screen
+    fireEvent.change(screen.getByLabelText(/screen/i), { target: { value: '1' } });
+    // Set dates
+    fireEvent.change(screen.getByLabelText(/start date/i), {
+      target: { value: '2026-08-01' },
+    });
+    fireEvent.change(screen.getByLabelText(/end date/i), {
+      target: { value: '2026-08-02' },
+    });
+
+    // Set an event title (visible for non-REGULAR kinds)
+    fireEvent.change(screen.getByLabelText(/event title/i), {
+      target: { value: 'Creature Double Feature' },
+    });
+
+    // Queue two distinct films so the stub emits different ids on each click
+    stubFilmQueue.push(
+      { id: 101, title: 'Test Movie', runtime_minutes: 120, rating: 'PG-13', synopsis: 'A test movie', poster_url: 'https://example.com/poster.jpg', tmdb_id: '12345', imdb_id: 'tt1234567' },
+      { id: 102, title: 'Second Movie', runtime_minutes: 90, rating: 'PG', synopsis: 'Another test movie', poster_url: 'https://example.com/poster2.jpg', tmdb_id: '67890', imdb_id: 'tt7654321' },
+    );
+
+    fireEvent.click(screen.getByText('stub-add-film'));
+    fireEvent.click(screen.getByText('stub-add-film'));
+
+    // With two films the submit button should now be enabled
+    const submit = screen.getByRole('button', { name: /create engagement/i });
+    expect(submit).not.toBeDisabled();
+
+    fireEvent.click(submit);
+
+    await waitFor(() => {
+      expect(engagementsApi.create).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = vi.mocked(engagementsApi.create).mock.calls[0][0];
+    expect(payload.films).toEqual([101, 102]);
+    expect(payload.kind).toBe('DOUBLE_FEATURE');
+    expect(payload.event_title).toBe('Creature Double Feature');
   });
 });
