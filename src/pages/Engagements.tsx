@@ -142,7 +142,7 @@ export default function Engagements() {
 
   const openEditModal = (engagement: Engagement) => {
     setFormData({
-      film: engagement.film,
+      film: engagement.film ?? '',
       screen: engagement.screen,
       start_date: engagement.start_date,
       end_date: engagement.end_date,

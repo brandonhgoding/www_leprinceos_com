@@ -20,7 +20,21 @@ describe('Engagements API', () => {
 
   const mockEngagement: Engagement = {
     id: 1,
-    film: 101,
+    kind: 'REGULAR',
+    event_title: '',
+    display_title: 'Test Movie',
+    films: [
+      {
+        id: 101,
+        title: 'Test Movie',
+        runtime_minutes: 120,
+        rating: 'PG-13',
+        synopsis: '',
+        poster_url: 'https://example.com/poster.jpg',
+        tmdb_id: '12345',
+        imdb_id: 'tt1234567',
+      },
+    ],
     film_title: 'Test Movie',
     film_poster_url: 'https://example.com/poster.jpg',
     screen: 1,
@@ -29,6 +43,7 @@ describe('Engagements API', () => {
     end_date: '2026-02-07',
     presentation_format: '2d',
     status: 'CONFIRMED',
+    show_in_main_listings: true,
     notes: 'Test notes',
     is_active: true,
     created_at: '2026-01-20T10:00:00Z',
@@ -56,16 +71,24 @@ describe('Engagements API', () => {
 
       const filters = {
         status: 'CONFIRMED',
-        film: 101,
+        films: 101,
         screen: 1,
       };
 
       const result = await engagementsApi.list(filters);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/v1/engagements/?status=CONFIRMED&film=101&screen=1',
+        '/v1/engagements/?status=CONFIRMED&films=101&screen=1',
       );
       expect(result).toEqual([mockEngagement]);
+    });
+
+    it('should serialize kind and visibility filters', async () => {
+      vi.mocked(apiClient.get).mockResolvedValue({ data: mockPaginatedResponse });
+      await engagementsApi.list({ kind: 'DOUBLE_FEATURE', show_in_main_listings: false });
+      const calledUrl = vi.mocked(apiClient.get).mock.calls[0][0] as string;
+      expect(calledUrl).toContain('kind=DOUBLE_FEATURE');
+      expect(calledUrl).toContain('show_in_main_listings=false');
     });
 
     it('should filter out undefined and null values from query string', async () => {
@@ -73,7 +96,7 @@ describe('Engagements API', () => {
 
       const filters = {
         status: 'CONFIRMED',
-        film: undefined,
+        films: undefined,
         screen: undefined,
       };
 
@@ -87,12 +110,12 @@ describe('Engagements API', () => {
 
       const filters = {
         status: '',
-        film: 101,
+        films: 101,
       };
 
       await engagementsApi.list(filters);
 
-      expect(apiClient.get).toHaveBeenCalledWith('/v1/engagements/?film=101');
+      expect(apiClient.get).toHaveBeenCalledWith('/v1/engagements/?films=101');
     });
 
     it('should handle date filters', async () => {

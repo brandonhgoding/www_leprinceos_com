@@ -70,7 +70,7 @@ export default function EngagementDetail() {
   // Fetch film details
   const { data: film } = useQuery({
     queryKey: ['film', engagement?.film],
-    queryFn: () => filmsApi.get(engagement!.film),
+    queryFn: () => filmsApi.get(engagement!.film!),
     enabled: !!engagement?.film,
   });
 

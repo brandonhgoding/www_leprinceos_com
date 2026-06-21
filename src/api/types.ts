@@ -42,9 +42,15 @@ export interface Screen {
   supports_3d: boolean;
 }
 
+export type EngagementKind = 'REGULAR' | 'SPECIAL_EVENT' | 'CLASSIC' | 'DOUBLE_FEATURE';
+
 export interface Engagement {
   id: number;
-  film: number;
+  kind: EngagementKind;
+  event_title: string;
+  display_title: string;
+  films: Film[];
+  film?: number; // deprecated/transitional — removed from API; kept until consumers migrate
   film_title: string;
   film_poster_url: string | null;
   screen: number;
@@ -53,6 +59,7 @@ export interface Engagement {
   end_date: string;
   presentation_format: '2d' | '3d';
   status: 'DRAFT' | 'CONFIRMED' | 'CANCELLED' | 'ENDED';
+  show_in_main_listings: boolean;
   notes: string;
   is_active: boolean;
   created_at: string;
@@ -104,8 +111,10 @@ export interface BulkShowtimeCreate {
 // Filter types
 export interface EngagementFilters {
   status?: string;
-  film?: number;
+  kind?: string;
+  films?: number;
   screen?: number;
+  show_in_main_listings?: boolean;
   start_date_after?: string;
   start_date_before?: string;
   end_date_after?: string;

@@ -14,6 +14,28 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Shared base for inline Engagement objects — provides all new required fields
+// so individual test objects only need to override what varies.
+const baseEngagement: Engagement = {
+  id: 1,
+  kind: 'REGULAR',
+  event_title: '',
+  display_title: 'Test Movie',
+  films: [],
+  film_title: 'Test Movie',
+  film_poster_url: 'https://example.com/poster.jpg',
+  screen: 1,
+  screen_name: 'Screen 1',
+  start_date: '2026-02-01',
+  end_date: '2026-02-07',
+  presentation_format: '2d',
+  status: 'CONFIRMED',
+  show_in_main_listings: true,
+  notes: '',
+  is_active: true,
+  created_at: '2026-01-20T10:00:00Z',
+};
+
 describe('useSmartAlerts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -75,21 +97,7 @@ describe('useSmartAlerts', () => {
   describe('Missing Showtimes Detection', () => {
     it('should alert when no showtimes scheduled for tomorrow but engagements exist', () => {
       const engagements: Engagement[] = [
-        {
-          id: 1,
-          film: 101,
-          film_title: 'Test Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
-          start_date: '2026-02-01',
-          end_date: '2026-02-07',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
-        },
+        { ...baseEngagement },
       ];
 
       const { result } = renderHook(
@@ -116,21 +124,7 @@ describe('useSmartAlerts', () => {
 
     it('should not alert when showtimes exist for tomorrow', () => {
       const engagements: Engagement[] = [
-        {
-          id: 1,
-          film: 101,
-          film_title: 'Test Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
-          start_date: '2026-02-01',
-          end_date: '2026-02-07',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
-        },
+        { ...baseEngagement },
       ];
 
       const tomorrowShowtimes: Showtime[] = [
@@ -203,21 +197,12 @@ describe('useSmartAlerts', () => {
     it('should alert for engagement ending today', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Ending Today',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           // Due to timezone handling in the hook, we need to use 2026-02-04 to get 0 days
           // when the mocked time is 2026-02-03T12:00:00Z
           end_date: '2026-02-04',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -241,21 +226,12 @@ describe('useSmartAlerts', () => {
     it('should alert for engagement ending tomorrow', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Ending Tomorrow',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           // Today is 2026-02-03, so to get "1 day" remaining we need 2026-02-04
           // But due to timezone handling, we need to use 2026-02-05 to get the hook to calculate 1 day
           end_date: '2026-02-05',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -278,20 +254,11 @@ describe('useSmartAlerts', () => {
     it('should alert for engagement ending in 2 days', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Ending Soon',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           // Today is 2026-02-03, to get "2 days" we need 2026-02-06 due to timezone handling
           end_date: '2026-02-06',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -314,20 +281,11 @@ describe('useSmartAlerts', () => {
     it('should not alert for engagement ending in 3 days', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Not Ending Soon',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           // Today is 2026-02-03, to get >2 days (no alert), we need 2026-02-07 or later
           end_date: '2026-02-07',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -349,17 +307,10 @@ describe('useSmartAlerts', () => {
     it('should not alert for engagement that already ended', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Already Ended',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-20',
           end_date: '2026-02-02',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
           is_active: false,
           created_at: '2026-01-15T10:00:00Z',
         },
@@ -383,34 +334,24 @@ describe('useSmartAlerts', () => {
     it('should only alert for CONFIRMED engagements', () => {
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'Draft Ending Soon',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           end_date: '2026-02-04',
-          presentation_format: '2d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Cancelled Ending Soon',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
           screen_name: 'Screen 2',
           start_date: '2026-01-28',
           end_date: '2026-02-04',
-          presentation_format: '2d',
           status: 'CANCELLED',
-          notes: '',
           is_active: false,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -434,24 +375,17 @@ describe('useSmartAlerts', () => {
     it('should generate alerts for multiple engagements ending soon', () => {
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'First Movie',
           film_poster_url: 'https://example.com/poster1.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           // Adjusted for timezone handling - needs to be within 2 days
           end_date: '2026-02-05',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Second Movie',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
@@ -460,10 +394,6 @@ describe('useSmartAlerts', () => {
           // Adjusted for timezone handling - needs to be within 2 days
           end_date: '2026-02-06',
           presentation_format: '3d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -489,24 +419,16 @@ describe('useSmartAlerts', () => {
     it('should use correct singular/plural for days remaining', () => {
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'One Day Left',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           // Today is 2026-02-03, to get "1 day" we need 2026-02-05 due to timezone handling
           end_date: '2026-02-05',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Two Days Left',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
@@ -515,10 +437,6 @@ describe('useSmartAlerts', () => {
           // Today is 2026-02-03, to get "2 days" we need 2026-02-06 due to timezone handling
           end_date: '2026-02-06',
           presentation_format: '3d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -544,19 +462,11 @@ describe('useSmartAlerts', () => {
     it('should alert when there is 1 draft engagement', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
-          film_title: 'Draft Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
+          ...baseEngagement,
           start_date: '2026-02-10',
           end_date: '2026-02-16',
-          presentation_format: '2d',
+          film_title: 'Draft Movie',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -583,23 +493,16 @@ describe('useSmartAlerts', () => {
     it('should alert when there are multiple draft engagements', () => {
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'Draft Movie 1',
-          film_poster_url: 'https://example.com/poster1.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-02-10',
           end_date: '2026-02-16',
-          presentation_format: '2d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Draft Movie 2',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
@@ -608,24 +511,15 @@ describe('useSmartAlerts', () => {
           end_date: '2026-02-23',
           presentation_format: '3d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 3,
-          film: 103,
           film_title: 'Draft Movie 3',
           film_poster_url: 'https://example.com/poster3.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-02-24',
           end_date: '2026-03-02',
-          presentation_format: '2d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -648,19 +542,10 @@ describe('useSmartAlerts', () => {
     it('should not alert when there are no draft engagements', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Confirmed Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-02-10',
           end_date: '2026-02-16',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -682,23 +567,17 @@ describe('useSmartAlerts', () => {
     it('should count only DRAFT status engagements', () => {
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'Draft Movie',
           film_poster_url: 'https://example.com/poster1.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-02-10',
           end_date: '2026-02-16',
-          presentation_format: '2d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Confirmed Movie',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
@@ -707,24 +586,16 @@ describe('useSmartAlerts', () => {
           end_date: '2026-02-23',
           presentation_format: '3d',
           status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 3,
-          film: 103,
           film_title: 'Cancelled Movie',
           film_poster_url: 'https://example.com/poster3.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-02-24',
           end_date: '2026-03-02',
-          presentation_format: '2d',
           status: 'CANCELLED',
-          notes: '',
           is_active: false,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -822,19 +693,11 @@ describe('useSmartAlerts', () => {
       rerender({
         engagements: [
           {
-            id: 1,
-            film: 101,
+            ...baseEngagement,
             film_title: 'New Movie',
-            film_poster_url: 'https://example.com/poster.jpg',
-            screen: 1,
-            screen_name: 'Screen 1',
             start_date: '2026-02-10',
             end_date: '2026-02-16',
-            presentation_format: '2d',
             status: 'DRAFT',
-            notes: '',
-            is_active: true,
-            created_at: '2026-01-20T10:00:00Z',
           },
         ],
       });
@@ -901,23 +764,16 @@ describe('useSmartAlerts', () => {
     it('should generate multiple types of alerts simultaneously', () => {
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'Ending Soon Movie',
           film_poster_url: 'https://example.com/poster1.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           end_date: '2026-02-05',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Draft Movie',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
@@ -926,9 +782,6 @@ describe('useSmartAlerts', () => {
           end_date: '2026-02-16',
           presentation_format: '3d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -954,19 +807,11 @@ describe('useSmartAlerts', () => {
     it('should generate alerts in consistent order', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Draft Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-02-10',
           end_date: '2026-02-16',
-          presentation_format: '2d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -1001,19 +846,11 @@ describe('useSmartAlerts', () => {
     it('should ensure all alerts have required properties', () => {
       const engagements: Engagement[] = [
         {
-          id: 1,
-          film: 101,
+          ...baseEngagement,
           film_title: 'Draft Movie',
-          film_poster_url: 'https://example.com/poster.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-02-10',
           end_date: '2026-02-16',
-          presentation_format: '2d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -1047,23 +884,16 @@ describe('useSmartAlerts', () => {
 
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'Ending Soon Movie',
           film_poster_url: 'https://example.com/poster1.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           end_date: '2026-02-05',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Draft Movie',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
@@ -1072,9 +902,6 @@ describe('useSmartAlerts', () => {
           end_date: '2026-02-16',
           presentation_format: '3d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
@@ -1102,23 +929,16 @@ describe('useSmartAlerts', () => {
 
       const engagements: Engagement[] = [
         {
+          ...baseEngagement,
           id: 1,
-          film: 101,
           film_title: 'Ending Soon Movie',
           film_poster_url: 'https://example.com/poster1.jpg',
-          screen: 1,
-          screen_name: 'Screen 1',
           start_date: '2026-01-28',
           end_date: '2026-02-05',
-          presentation_format: '2d',
-          status: 'CONFIRMED',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
         {
+          ...baseEngagement,
           id: 2,
-          film: 102,
           film_title: 'Draft Movie',
           film_poster_url: 'https://example.com/poster2.jpg',
           screen: 2,
@@ -1127,9 +947,6 @@ describe('useSmartAlerts', () => {
           end_date: '2026-02-16',
           presentation_format: '3d',
           status: 'DRAFT',
-          notes: '',
-          is_active: true,
-          created_at: '2026-01-20T10:00:00Z',
         },
       ];
 
