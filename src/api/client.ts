@@ -32,11 +32,6 @@ export const clearCsrfToken = (): void => {
   csrfToken = null;
 };
 
-// Get current cinema ID from localStorage
-export const getCurrentCinemaId = (): string | null => {
-  return localStorage.getItem('selected_cinema_id');
-};
-
 // Create axios instance with credentials for session cookies
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -67,7 +62,6 @@ apiClient.interceptors.response.use(
     // If 401 and not already on login page, redirect to login
     if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
       clearCsrfToken();
-      localStorage.removeItem('selected_cinema_id');
       window.location.href = '/login';
     }
 

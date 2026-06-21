@@ -21,7 +21,6 @@ vi.mock('../api/client', () => ({
   clearCsrfToken: vi.fn(),
   setCsrfToken: vi.fn(),
   getCsrfToken: vi.fn(),
-  getCurrentCinemaId: vi.fn(),
   apiClient: {},
 }));
 

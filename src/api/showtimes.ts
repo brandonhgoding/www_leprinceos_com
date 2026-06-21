@@ -1,7 +1,6 @@
 // src/api/showtimes.ts
 import apiClient from './client';
 import type {
-  AvailableTicketType,
   Showtime,
   ShowtimeCreate,
   ShowtimeFilters,
@@ -51,12 +50,6 @@ export const showtimesApi = {
     return response.data;
   },
 
-  availableTicketTypes: async (showtimeId: number): Promise<AvailableTicketType[]> => {
-    const response = await apiClient.get<AvailableTicketType[]>(
-      `/v1/showtimes/${showtimeId}/available-ticket-types/`,
-    );
-    return response.data;
-  },
 };
 
 export default showtimesApi;

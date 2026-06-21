@@ -63,22 +63,6 @@ export const mockUser = {
   first_name: 'Test',
   last_name: 'User',
   is_superuser: false,
-  cinemas: [
-    {
-      cinema_id: 1,
-      cinema_name: 'Test Cinema',
-      cinema_slug: 'test-cinema',
-      cinema_timezone: 'America/New_York',
-      is_manager: true,
-    },
-    {
-      cinema_id: 2,
-      cinema_name: 'Second Cinema',
-      cinema_slug: 'second-cinema',
-      cinema_timezone: 'America/Los_Angeles',
-      is_manager: false,
-    },
-  ],
 };
 
 // Mock engagement data
@@ -135,18 +119,6 @@ export const mockFilm = {
   poster_url: 'https://example.com/poster.jpg',
   tmdb_id: '12345',
   imdb_id: 'tt1234567',
-};
-
-// Mock ticket type data
-export const mockTicketType = {
-  id: 1,
-  name: 'Adult',
-  price: '12.00',
-  is_active: true,
-  description: 'Standard adult ticket',
-  rules_count: 2,
-  created_at: '2026-01-15T10:00:00Z',
-  updated_at: '2026-01-15T10:00:00Z',
 };
 
 // Wait for loading states to resolve

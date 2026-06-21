@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 // src/contexts/AuthContext.tsx
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { authApi, type User, type CinemaMembership } from '../api';
+import { authApi, type User } from '../api';
 import { clearCsrfToken } from '../api/client';
 
 interface AuthContextType {
@@ -9,17 +9,14 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   isManager: boolean;
-  currentCinema: CinemaMembership | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  selectCinema: (cinemaId: number) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [currentCinema, setCurrentCinema] = useState<CinemaMembership | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Check session on mount by trying to get current user
@@ -28,19 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const userData = await authApi.getCurrentUser();
         setUser(userData);
-
-        // Single-tenant: the API no longer returns cinema memberships. Tolerate
-        // an absent `cinemas` so an authenticated session is never misread as
-        // logged-out (which previously caused an infinite login redirect loop).
-        const cinemas = userData.cinemas ?? [];
-        const savedCinemaId = localStorage.getItem('selected_cinema_id');
-        if (savedCinemaId) {
-          const cinema = cinemas.find((c) => c.cinema_id === parseInt(savedCinemaId));
-          setCurrentCinema(cinema || cinemas[0] || null);
-        } else if (cinemas.length > 0) {
-          setCurrentCinema(cinemas[0]);
-          localStorage.setItem('selected_cinema_id', String(cinemas[0].cinema_id));
-        }
       } catch {
         // No valid session - user not authenticated
         setUser(null);
@@ -56,45 +40,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (username: string, password: string) => {
     const userData = await authApi.login({ username, password });
     setUser(userData);
-
-    // Set initial cinema (single-tenant: `cinemas` is normally absent).
-    const cinemas = userData.cinemas ?? [];
-    if (cinemas.length > 0) {
-      setCurrentCinema(cinemas[0]);
-      localStorage.setItem('selected_cinema_id', String(cinemas[0].cinema_id));
-    }
   }, []);
 
   const logout = useCallback(async () => {
     await authApi.logout();
     setUser(null);
-    setCurrentCinema(null);
   }, []);
 
-  const selectCinema = useCallback(
-    (cinemaId: number) => {
-      if (!user) return;
-
-      const cinema = (user.cinemas ?? []).find((c) => c.cinema_id === cinemaId);
-      if (cinema) {
-        setCurrentCinema(cinema);
-        localStorage.setItem('selected_cinema_id', String(cinemaId));
-      }
-    },
-    [user],
-  );
-
-  const isManager = !!(currentCinema?.is_manager || user?.is_superuser);
+  const isManager = !!user?.is_superuser;
 
   const value: AuthContextType = {
     user,
     isLoading,
     isAuthenticated: !!user,
     isManager,
-    currentCinema,
     login,
     logout,
-    selectCinema,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

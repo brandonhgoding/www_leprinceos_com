@@ -1,14 +1,6 @@
 // src/api/auth.ts
 import apiClient, { setCsrfToken, clearCsrfToken } from './client';
 
-export interface CinemaMembership {
-  cinema_id: number;
-  cinema_name: string;
-  cinema_slug: string;
-  cinema_timezone: string;
-  is_manager: boolean;
-}
-
 export interface User {
   id: number;
   username: string;
@@ -16,9 +8,6 @@ export interface User {
   first_name: string;
   last_name: string;
   is_superuser: boolean;
-  // Single-tenant: the API no longer returns cinema memberships. Optional so the
-  // app tolerates the de-tenanted response shape.
-  cinemas?: CinemaMembership[];
 }
 
 export interface LoginCredentials {
@@ -34,7 +23,6 @@ export interface LoginResponse {
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<User> => {
     const response = await apiClient.post<LoginResponse>('/v1/auth/login/', credentials);
-    // Store CSRF token for future requests
     setCsrfToken(response.data.csrfToken);
     return response.data.user;
   },
@@ -43,9 +31,7 @@ export const authApi = {
     try {
       await apiClient.post('/v1/auth/logout/');
     } finally {
-      // Clear local state regardless of API response
       clearCsrfToken();
-      localStorage.removeItem('selected_cinema_id');
     }
   },
 

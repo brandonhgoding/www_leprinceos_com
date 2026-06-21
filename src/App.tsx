@@ -6,14 +6,6 @@ import Home from './pages/Home';
 import Engagements from './pages/Engagements';
 import EngagementDetail from './pages/EngagementDetail';
 import Screens from './pages/Screens';
-import Tickets from './pages/Tickets';
-import TicketDetail from './pages/TicketDetail';
-import Members from './pages/Members';
-import MemberDetail from './pages/MemberDetail';
-import MembershipTiers from './pages/MembershipTiers';
-import TierDetail from './pages/TierDetail';
-import Memberships from './pages/Memberships';
-import MembershipDetail from './pages/MembershipDetail';
 
 function NotFound() {
   return (
@@ -89,14 +81,6 @@ function App() {
           <Route path="engagements" element={<Engagements />} />
           <Route path="engagements/:id" element={<EngagementDetail />} />
           <Route path="screens" element={<Screens />} />
-          <Route path="tickets" element={<Tickets />} />
-          <Route path="tickets/:id" element={<TicketDetail />} />
-          <Route path="members" element={<Members />} />
-          <Route path="members/:id" element={<MemberDetail />} />
-          <Route path="membership-tiers" element={<MembershipTiers />} />
-          <Route path="membership-tiers/:id" element={<TierDetail />} />
-          <Route path="memberships" element={<Memberships />} />
-          <Route path="memberships/:id" element={<MembershipDetail />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

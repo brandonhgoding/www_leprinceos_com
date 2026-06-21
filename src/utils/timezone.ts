@@ -2,6 +2,9 @@
 // Timezone utility functions for displaying and formatting dates/times
 // in the cinema's local timezone
 
+/** Single-tenant default display timezone (per-site SiteConfig timezone is backlog work). */
+export const DEFAULT_TIMEZONE = 'America/New_York';
+
 /**
  * Format a date in the specified timezone using Intl.DateTimeFormat
  */
