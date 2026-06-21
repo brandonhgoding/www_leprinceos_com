@@ -86,6 +86,44 @@ vi.mock('../components/FilmSearchCombo', () => ({
   ),
 }));
 
+const mockFilm = defaultStubFilm;
+
+describe('Engagements list', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    stubFilmQueue.length = 0;
+    window.history.pushState({}, '', '/dashboard/engagements');
+  });
+
+  it('renders display_title and a type badge for special screenings', async () => {
+    const { engagementsApi } = await import('../api');
+    vi.mocked(engagementsApi.list).mockResolvedValue([
+      {
+        id: 7,
+        kind: 'DOUBLE_FEATURE',
+        event_title: 'Creature Double Feature',
+        display_title: 'Creature Double Feature',
+        films: [mockFilm, { ...mockFilm, id: 102, title: 'Second Film' }],
+        film_title: mockFilm.title,
+        film_poster_url: mockFilm.poster_url,
+        screen: 1,
+        screen_name: 'Screen 1',
+        start_date: '2026-10-31',
+        end_date: '2026-10-31',
+        presentation_format: '2d',
+        status: 'CONFIRMED',
+        show_in_main_listings: false,
+        notes: '',
+        is_active: true,
+        created_at: '2026-01-01T00:00:00Z',
+      },
+    ]);
+    renderWithProviders(<Engagements />);
+    expect(await screen.findAllByText('Creature Double Feature')).not.toHaveLength(0);
+    expect(screen.getAllByText(/double feature/i).length).toBeGreaterThan(0);
+  });
+});
+
 describe('Engagements form', () => {
   beforeEach(() => {
     vi.clearAllMocks();

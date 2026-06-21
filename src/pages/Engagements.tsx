@@ -41,6 +41,13 @@ const KIND_OPTIONS: { value: EngagementKind; label: string }[] = [
   { value: 'DOUBLE_FEATURE', label: 'Double Feature' },
 ];
 
+const KIND_LABELS: Record<EngagementKind, string> = {
+  REGULAR: 'Regular',
+  SPECIAL_EVENT: 'Event',
+  CLASSIC: 'Classic',
+  DOUBLE_FEATURE: 'Double Feature',
+};
+
 const defaultVisibilityForKind = (kind: EngagementKind): boolean => kind === 'REGULAR';
 
 const initialFormData: FormData = {
@@ -393,6 +400,14 @@ export default function Engagements() {
                           />
                         )}
                         <span className={styles.filmTitle}>{engagement.display_title}</span>
+                        {engagement.kind !== 'REGULAR' && (
+                          <span className={styles.kindBadge}>{KIND_LABELS[engagement.kind]}</span>
+                        )}
+                        {!engagement.show_in_main_listings && (
+                          <span className={styles.hiddenBadge} title="Hidden from public listings">
+                            Hidden
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td>{engagement.screen_name}</td>
@@ -447,6 +462,14 @@ export default function Engagements() {
                   )}
                   <div className={styles.cardTitleSection}>
                     <h3 className={styles.cardTitle}>{engagement.display_title}</h3>
+                    {engagement.kind !== 'REGULAR' && (
+                      <span className={styles.kindBadge}>{KIND_LABELS[engagement.kind]}</span>
+                    )}
+                    {!engagement.show_in_main_listings && (
+                      <span className={styles.hiddenBadge} title="Hidden from public listings">
+                        Hidden
+                      </span>
+                    )}
                     <div className={styles.cardBadges}>
                       <StatusDropdown
                         value={engagement.status}
