@@ -21,7 +21,7 @@ vi.mock('../api', () => ({
       id: 7,
       kind: 'DOUBLE_FEATURE',
       event_title: 'Creature Double Feature',
-      display_title: 'Creature Double Feature',
+      display_title: 'Alien + Aliens',
       films: [
         {
           id: 101,
@@ -75,8 +75,10 @@ describe('EngagementDetail', () => {
 
   it('renders the combined title and all films of a double feature', async () => {
     renderWithProviders(<EngagementDetail />);
-    // Title appears in the page heading (h1) and film card heading (h3)
-    expect((await screen.findAllByText('Creature Double Feature')).length).toBeGreaterThan(0);
+    // display_title appears in the page heading (h1) and film card heading (h3)
+    expect((await screen.findAllByText('Alien + Aliens')).length).toBeGreaterThan(0);
+    // event_title differs from display_title, so the "Event:" detail row must render separately
+    expect(await screen.findByText('Creature Double Feature')).toBeInTheDocument();
     // Both films of the double feature must appear in the film list
     expect(await screen.findByText('Second Film')).toBeInTheDocument();
   });

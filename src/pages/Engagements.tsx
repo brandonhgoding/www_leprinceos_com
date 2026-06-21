@@ -35,6 +35,10 @@ interface FormData {
   notes: string;
 }
 
+// These are the form-select (dropdown) labels — intentionally longer/more descriptive than the
+// short badge/detail labels in KIND_LABELS (src/utils/engagementKinds.ts).
+// e.g. SPECIAL_EVENT → 'Special Event' here vs. 'Event' in KIND_LABELS.
+// Do not "fix" one set to match the other; the divergence is intentional.
 const KIND_OPTIONS: { value: EngagementKind; label: string }[] = [
   { value: 'REGULAR', label: 'Regular' },
   { value: 'SPECIAL_EVENT', label: 'Special Event' },

@@ -321,7 +321,7 @@ export default function EngagementDetail() {
               <span className={styles.label}>Kind:</span>
               <span>{KIND_LABELS[engagement.kind]}</span>
             </div>
-            {engagement.event_title && (
+            {engagement.event_title && engagement.event_title !== engagement.display_title && (
               <div className={styles.infoRow}>
                 <span className={styles.label}>Event:</span>
                 <span>{engagement.event_title}</span>
