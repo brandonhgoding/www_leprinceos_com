@@ -187,7 +187,7 @@ describe('Engagements API', () => {
   describe('create', () => {
     it('should create an engagement', async () => {
       const createData: EngagementCreate = {
-        film: 101,
+        films: [101],
         screen: 1,
         start_date: '2026-02-01',
         end_date: '2026-02-07',
@@ -206,7 +206,7 @@ describe('Engagements API', () => {
 
     it('should create engagement with minimal data', async () => {
       const minimalData: EngagementCreate = {
-        film: 101,
+        films: [101],
         screen: 1,
         start_date: '2026-02-01',
         end_date: '2026-02-07',
@@ -223,7 +223,7 @@ describe('Engagements API', () => {
 
     it('should handle validation errors', async () => {
       const invalidData: EngagementCreate = {
-        film: 101,
+        films: [101],
         screen: 1,
         start_date: '2026-02-07',
         end_date: '2026-02-01', // End before start

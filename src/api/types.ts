@@ -66,12 +66,15 @@ export interface Engagement {
 }
 
 export interface EngagementCreate {
-  film: number;
+  films: number[];
+  kind?: EngagementKind;
+  event_title?: string;
   screen: number;
   start_date: string;
   end_date: string;
   presentation_format?: '2d' | '3d';
   status?: 'DRAFT' | 'CONFIRMED' | 'CANCELLED' | 'ENDED';
+  show_in_main_listings?: boolean;
   notes?: string;
 }
 
