@@ -10,6 +10,7 @@ import FilmSearchCombo from '../components/FilmSearchCombo';
 import { useToast } from '../contexts/ToastContext';
 import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
+import { KIND_LABELS } from '../utils/engagementKinds';
 import styles from './Engagements.module.css';
 
 function getLocalDateString(): string {
@@ -40,14 +41,6 @@ const KIND_OPTIONS: { value: EngagementKind; label: string }[] = [
   { value: 'CLASSIC', label: 'Classic' },
   { value: 'DOUBLE_FEATURE', label: 'Double Feature' },
 ];
-
-// SHORT labels used exclusively for the badge display in the list view (distinct from KIND_OPTIONS' longer form-select labels)
-const KIND_LABELS: Record<EngagementKind, string> = {
-  REGULAR: 'Regular',
-  SPECIAL_EVENT: 'Event',
-  CLASSIC: 'Classic',
-  DOUBLE_FEATURE: 'Double Feature',
-};
 
 const defaultVisibilityForKind = (kind: EngagementKind): boolean => kind === 'REGULAR';
 

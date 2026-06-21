@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
-import { renderWithProviders, mockFilm, mockScreen } from '../test/helpers';
+import { renderWithProviders } from '../test/helpers';
 import EngagementDetail from './EngagementDetail';
 
 vi.mock('react-router-dom', async (orig) => ({
@@ -66,11 +66,6 @@ vi.mock('../api', () => ({
     logout: vi.fn(),
   },
 }));
-
-// Suppress unused import warnings — mockFilm/mockScreen are referenced to satisfy
-// the brief's test template shape even though they cannot be used inside vi.mock.
-void mockFilm;
-void mockScreen;
 
 describe('EngagementDetail', () => {
   beforeEach(() => {

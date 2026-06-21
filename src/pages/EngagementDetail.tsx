@@ -15,6 +15,7 @@ import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
 import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
+import { KIND_LABELS } from '../utils/engagementKinds';
 import styles from './EngagementDetail.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
@@ -289,6 +290,7 @@ export default function EngagementDetail() {
                     {engagement.films.length > 1 && (
                       <span className={styles.filmOrder}>{idx + 1}</span>
                     )}
+                    {/* Skip the thumbnail for the first film — its poster already shows in the hero above. */}
                     {film.poster_url && idx > 0 && (
                       <img src={film.poster_url} alt="" className={styles.posterThumb} />
                     )}
@@ -317,7 +319,7 @@ export default function EngagementDetail() {
             </div>
             <div className={styles.infoRow}>
               <span className={styles.label}>Kind:</span>
-              <span>{engagement.kind.replace(/_/g, ' ')}</span>
+              <span>{KIND_LABELS[engagement.kind]}</span>
             </div>
             {engagement.event_title && (
               <div className={styles.infoRow}>
