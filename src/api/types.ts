@@ -50,7 +50,6 @@ export interface Engagement {
   event_title: string;
   display_title: string;
   films: Film[];
-  film?: number; // deprecated/transitional — removed from API; kept until consumers migrate
   film_title: string;
   film_poster_url: string | null;
   screen: number;
