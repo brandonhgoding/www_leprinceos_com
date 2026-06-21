@@ -4,12 +4,12 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, showtimesApi, filmsApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate } from '../api/types';
-import { useAuth } from '../contexts/AuthContext';
 import {
   formatDateTime,
   formatDate,
   getDateInTimezone,
   getTimeInTimezone,
+  DEFAULT_TIMEZONE,
 } from '../utils/timezone';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
@@ -53,8 +53,7 @@ export default function EngagementDetail() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const { confirm } = useConfirm();
-  const { currentCinema } = useAuth();
-  const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
+  const cinemaTimezone = DEFAULT_TIMEZONE;
 
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedShowtime, setSelectedShowtime] = useState<Showtime | null>(null);

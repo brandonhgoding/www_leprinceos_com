@@ -13,7 +13,7 @@ export interface LayoutContext {
 }
 
 export default function Layout() {
-  const { user, currentCinema, isManager, selectCinema } = useAuth();
+  const { user, isManager } = useAuth();
   const { toasts, dismissToast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -40,24 +40,6 @@ export default function Layout() {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
-
-  // Transform cinema memberships for Sidebar component (single-tenant: empty)
-  const cinemas =
-    user?.cinemas?.map((c) => ({
-      id: c.cinema_id,
-      name: c.cinema_name,
-    })) || [];
-
-  const currentCinemaForSidebar = currentCinema
-    ? {
-        id: currentCinema.cinema_id,
-        name: currentCinema.cinema_name,
-      }
-    : null;
-
-  const handleCinemaChange = (cinemaId: number) => {
-    selectCinema(cinemaId);
-  };
 
   const handleLogout = () => {
     // Redirect to Django's logout endpoint (full page navigation)
@@ -97,11 +79,8 @@ export default function Layout() {
       {/* Sidebar */}
       {!isFullscreen && (
         <Sidebar
-          currentCinema={currentCinemaForSidebar}
-          cinemas={cinemas}
           username={user?.username || ''}
           isManager={isManager}
-          onCinemaChange={handleCinemaChange}
           onLogout={handleLogout}
           isOpen={isSidebarOpen}
           onClose={closeSidebar}

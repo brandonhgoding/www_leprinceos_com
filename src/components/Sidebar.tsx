@@ -3,11 +3,6 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 
-interface Cinema {
-  id: number;
-  name: string;
-}
-
 interface NavLink {
   path: string;
   label: string;
@@ -30,11 +25,8 @@ function isGroup(item: NavItem): item is NavGroup {
 }
 
 interface SidebarProps {
-  currentCinema?: Cinema | null;
-  cinemas?: Cinema[];
   username?: string;
   isManager?: boolean;
-  onCinemaChange?: (cinemaId: number) => void;
   onLogout?: () => void;
   isOpen: boolean;
   onClose: () => void;
@@ -98,16 +90,12 @@ const ChevronIcon = ({ open }: { open?: boolean }) => (
 );
 
 export default function Sidebar({
-  currentCinema,
-  cinemas = [],
   username,
   isManager = false,
-  onCinemaChange,
   onLogout,
   isOpen,
   onClose,
 }: SidebarProps) {
-  const [isCinemaDropdownOpen, setIsCinemaDropdownOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const location = useLocation();
 
@@ -160,38 +148,6 @@ export default function Sidebar({
             LeprinceOS
           </Link>
         </div>
-
-        {/* Cinema Selector */}
-        {currentCinema && cinemas.length > 1 && (
-          <div className={styles.sidebarCinemaSelector} data-cy="cinema-selector">
-            <button
-              className={styles.cinemaSelectorToggle}
-              onClick={() => setIsCinemaDropdownOpen(!isCinemaDropdownOpen)}
-              data-cy="cinema-selector-toggle"
-            >
-              <span className={styles.cinemaName}>{currentCinema.name}</span>
-              <ChevronIcon open={isCinemaDropdownOpen} />
-            </button>
-            {isCinemaDropdownOpen && (
-              <div className={styles.cinemaSelectorMenu}>
-                {cinemas.map((cinema) => (
-                  <button
-                    key={cinema.id}
-                    className={`${styles.cinemaSelectorItem} ${
-                      cinema.id === currentCinema.id ? styles.active : ''
-                    }`}
-                    onClick={() => {
-                      onCinemaChange?.(cinema.id);
-                      setIsCinemaDropdownOpen(false);
-                    }}
-                  >
-                    {cinema.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Navigation */}
         <nav className={styles.sidebarNav} data-cy="sidebar-nav">

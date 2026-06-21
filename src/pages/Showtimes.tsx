@@ -9,8 +9,7 @@ import type {
   Engagement,
   Screen,
 } from '../api/types';
-import { useAuth } from '../contexts/AuthContext';
-import { formatDateTime, getDateInTimezone, getTimeInTimezone } from '../utils/timezone';
+import { formatDateTime, getDateInTimezone, getTimeInTimezone, DEFAULT_TIMEZONE } from '../utils/timezone';
 import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
 import { useConfirm } from '../contexts/ConfirmContext';
@@ -59,8 +58,7 @@ export default function Showtimes() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const { confirm } = useConfirm();
-  const { currentCinema } = useAuth();
-  const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
+  const cinemaTimezone = DEFAULT_TIMEZONE;
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedShowtime, setSelectedShowtime] = useState<Showtime | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);

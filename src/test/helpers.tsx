@@ -63,22 +63,6 @@ export const mockUser = {
   first_name: 'Test',
   last_name: 'User',
   is_superuser: false,
-  cinemas: [
-    {
-      cinema_id: 1,
-      cinema_name: 'Test Cinema',
-      cinema_slug: 'test-cinema',
-      cinema_timezone: 'America/New_York',
-      is_manager: true,
-    },
-    {
-      cinema_id: 2,
-      cinema_name: 'Second Cinema',
-      cinema_slug: 'second-cinema',
-      cinema_timezone: 'America/Los_Angeles',
-      is_manager: false,
-    },
-  ],
 };
 
 // Mock engagement data

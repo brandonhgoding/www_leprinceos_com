@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { engagementsApi, showtimesApi, screensApi } from '../api';
 import type { Showtime } from '../api/types';
 import { useAuth } from '../contexts/AuthContext';
-import { formatTime, getTodayInTimezone } from '../utils/timezone';
+import { formatTime, getTodayInTimezone, DEFAULT_TIMEZONE } from '../utils/timezone';
 import { useSmartAlerts } from '../hooks/useSmartAlerts';
 import AlertBanner from '../components/AlertBanner';
 import styles from './Home.module.css';
@@ -76,8 +76,8 @@ function SummaryCard({
 }
 
 export default function Home() {
-  const { user, currentCinema } = useAuth();
-  const cinemaTimezone = currentCinema?.cinema_timezone || 'America/New_York';
+  const { user } = useAuth();
+  const cinemaTimezone = DEFAULT_TIMEZONE;
   const today = getTodayInTimezone(cinemaTimezone);
 
   // Calculate tomorrow's date
