@@ -65,10 +65,25 @@ export const mockUser = {
   is_superuser: false,
 };
 
+// Mock film data (defined before mockEngagement to avoid use-before-declaration)
+export const mockFilm = {
+  id: 101,
+  title: 'Test Movie',
+  runtime_minutes: 120,
+  rating: 'PG-13',
+  synopsis: 'A test movie synopsis',
+  poster_url: 'https://example.com/poster.jpg',
+  tmdb_id: '12345',
+  imdb_id: 'tt1234567',
+};
+
 // Mock engagement data
 export const mockEngagement = {
   id: 1,
-  film: 101,
+  kind: 'REGULAR' as const,
+  event_title: '',
+  display_title: 'Test Movie',
+  films: [mockFilm],
   film_title: 'Test Movie',
   film_poster_url: 'https://example.com/poster.jpg',
   screen: 1,
@@ -77,6 +92,7 @@ export const mockEngagement = {
   end_date: '2026-02-07',
   presentation_format: '2d' as const,
   status: 'CONFIRMED' as const,
+  show_in_main_listings: true,
   notes: 'Test notes',
   is_active: true,
   created_at: '2026-01-20T10:00:00Z',
@@ -107,18 +123,6 @@ export const mockScreen = {
   aspect_ratio: 'scope' as const,
   sound_system: 'dolby_atmos' as const,
   supports_3d: false,
-};
-
-// Mock film data
-export const mockFilm = {
-  id: 101,
-  title: 'Test Movie',
-  runtime_minutes: 120,
-  rating: 'PG-13',
-  synopsis: 'A test movie synopsis',
-  poster_url: 'https://example.com/poster.jpg',
-  tmdb_id: '12345',
-  imdb_id: 'tt1234567',
 };
 
 // Wait for loading states to resolve

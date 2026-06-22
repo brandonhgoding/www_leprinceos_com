@@ -109,6 +109,60 @@
   line-height: 1.5;
 }
 
+/* Film list (ordered films within a card) */
+.filmList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.filmRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filmOrder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--stone);
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.posterThumb {
+  width: 32px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.filmRowTitle {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.filmRowMeta {
+  font-size: 0.8125rem;
+  color: var(--stone);
+}
+
+/* Hidden-from-listings note */
+.hiddenNote {
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--stone);
+}
+
 /* Engagement Card */
 .engagementInfo {
   display: flex;

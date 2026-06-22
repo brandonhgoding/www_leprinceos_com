@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { engagementsApi, showtimesApi, filmsApi } from '../api';
+import { engagementsApi, showtimesApi } from '../api';
 import type { Showtime, ShowtimeCreate, BulkShowtimeCreate } from '../api/types';
 import {
   formatDateTime,
@@ -15,6 +15,7 @@ import Drawer from '../components/Drawer';
 import { useToast } from '../contexts/ToastContext';
 import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
+import { KIND_LABELS } from '../utils/engagementKinds';
 import styles from './EngagementDetail.module.css';
 
 type ModalMode = 'closed' | 'create' | 'edit' | 'bulk';
@@ -65,13 +66,6 @@ export default function EngagementDetail() {
     queryKey: ['engagement', engagementId],
     queryFn: () => engagementsApi.get(engagementId),
     enabled: engagementId > 0,
-  });
-
-  // Fetch film details
-  const { data: film } = useQuery({
-    queryKey: ['film', engagement?.film],
-    queryFn: () => filmsApi.get(engagement!.film),
-    enabled: !!engagement?.film,
   });
 
   // Fetch showtimes for this engagement
@@ -270,7 +264,7 @@ export default function EngagementDetail() {
           <Link to="/engagements" className={styles.backLink}>
             &larr; Back to Engagements
           </Link>
-          <h1 className={styles.title}>{engagement.film_title}</h1>
+          <h1 className={styles.title}>{engagement.display_title}</h1>
           <p className={styles.subtitle}>Engagement Details & Showtimes</p>
         </div>
       </div>
@@ -281,30 +275,34 @@ export default function EngagementDetail() {
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>Film Details</h2>
           <div className={styles.cardContent}>
-            {engagement.film_poster_url && (
+            {engagement.films[0]?.poster_url && (
               <img
-                src={engagement.film_poster_url}
-                alt={engagement.film_title}
+                src={engagement.films[0].poster_url}
+                alt={engagement.display_title}
                 className={styles.poster}
               />
             )}
             <div className={styles.filmInfo}>
-              <h3 className={styles.filmTitle}>{engagement.film_title}</h3>
-              {film && (
-                <>
-                  {film.runtime_minutes && (
-                    <p className={styles.filmMeta}>
-                      <span className={styles.label}>Runtime:</span> {film.runtime_minutes} min
-                    </p>
-                  )}
-                  {film.rating && (
-                    <p className={styles.filmMeta}>
-                      <span className={styles.label}>Rating:</span> {film.rating}
-                    </p>
-                  )}
-                  {film.synopsis && <p className={styles.synopsis}>{film.synopsis}</p>}
-                </>
-              )}
+              <h3 className={styles.filmTitle}>{engagement.display_title}</h3>
+              <div className={styles.filmList}>
+                {engagement.films.map((film, idx) => (
+                  <div key={film.id} className={styles.filmRow}>
+                    {engagement.films.length > 1 && (
+                      <span className={styles.filmOrder}>{idx + 1}</span>
+                    )}
+                    {/* Skip the thumbnail for the first film — its poster already shows in the hero above. */}
+                    {film.poster_url && idx > 0 && (
+                      <img src={film.poster_url} alt="" className={styles.posterThumb} />
+                    )}
+                    <div>
+                      <div className={styles.filmRowTitle}>{film.title}</div>
+                      {film.runtime_minutes != null && (
+                        <div className={styles.filmRowMeta}>{film.runtime_minutes} min</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -319,6 +317,21 @@ export default function EngagementDetail() {
                 {engagement.status}
               </span>
             </div>
+            <div className={styles.infoRow}>
+              <span className={styles.label}>Kind:</span>
+              <span>{KIND_LABELS[engagement.kind]}</span>
+            </div>
+            {engagement.event_title && engagement.event_title !== engagement.display_title && (
+              <div className={styles.infoRow}>
+                <span className={styles.label}>Event:</span>
+                <span>{engagement.event_title}</span>
+              </div>
+            )}
+            {!engagement.show_in_main_listings && (
+              <div className={styles.infoRow}>
+                <span className={styles.hiddenNote}>Hidden from public listings</span>
+              </div>
+            )}
             <div className={styles.infoRow}>
               <span className={styles.label}>Screen:</span>
               <span>{engagement.screen_name}</span>

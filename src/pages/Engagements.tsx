@@ -3,13 +3,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { engagementsApi, screensApi } from '../api';
-import type { Engagement, EngagementCreate, Film, Screen } from '../api/types';
+import type { Engagement, EngagementCreate, EngagementKind, Film, Screen } from '../api/types';
 import Drawer from '../components/Drawer';
 import StatusDropdown from '../components/StatusDropdown';
 import FilmSearchCombo from '../components/FilmSearchCombo';
 import { useToast } from '../contexts/ToastContext';
 import { useConfirm } from '../contexts/ConfirmContext';
 import { getErrorMessage } from '../utils/errorMessage';
+import { KIND_LABELS } from '../utils/engagementKinds';
 import styles from './Engagements.module.css';
 
 function getLocalDateString(): string {
@@ -22,22 +23,41 @@ function getLocalDateString(): string {
 type ModalMode = 'closed' | 'create' | 'edit' | 'showtimes';
 
 interface FormData {
-  film: number | '';
+  kind: EngagementKind;
+  films: number[];
+  event_title: string;
   screen: number | '';
   start_date: string;
   end_date: string;
   presentation_format: '2d' | '3d';
   status: 'DRAFT' | 'CONFIRMED' | 'CANCELLED' | 'ENDED';
+  show_in_main_listings: boolean;
   notes: string;
 }
 
+// These are the form-select (dropdown) labels — intentionally longer/more descriptive than the
+// short badge/detail labels in KIND_LABELS (src/utils/engagementKinds.ts).
+// e.g. SPECIAL_EVENT → 'Special Event' here vs. 'Event' in KIND_LABELS.
+// Do not "fix" one set to match the other; the divergence is intentional.
+const KIND_OPTIONS: { value: EngagementKind; label: string }[] = [
+  { value: 'REGULAR', label: 'Regular' },
+  { value: 'SPECIAL_EVENT', label: 'Special Event' },
+  { value: 'CLASSIC', label: 'Classic' },
+  { value: 'DOUBLE_FEATURE', label: 'Double Feature' },
+];
+
+const defaultVisibilityForKind = (kind: EngagementKind): boolean => kind === 'REGULAR';
+
 const initialFormData: FormData = {
-  film: '',
+  kind: 'REGULAR',
+  films: [],
+  event_title: '',
   screen: '',
   start_date: '',
   end_date: '',
   presentation_format: '2d',
   status: 'DRAFT',
+  show_in_main_listings: true,
   notes: '',
 };
 
@@ -48,10 +68,12 @@ export default function Engagements() {
   const [modalMode, setModalMode] = useState<ModalMode>('closed');
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [filmCache, setFilmCache] = useState<Record<number, Film>>({});
   const [statusFilter, setStatusFilter] = useState<string>('CURRENT');
 
   const openCreateModal = useCallback(() => {
     setFormData(initialFormData);
+    setFilmCache({});
     setSelectedEngagement(null);
     setModalMode('create');
   }, []);
@@ -135,19 +157,44 @@ export default function Engagements() {
 
   // Handlers
   const handleFilmSelected = (film: Film) => {
-    setFormData({ ...formData, film: film.id });
-    // Invalidate films query to ensure the new film appears in future searches
+    setFilmCache((prev) => ({ ...prev, [film.id]: film }));
+    setFormData((prev) => {
+      if (prev.kind === 'DOUBLE_FEATURE') {
+        if (prev.films.includes(film.id)) return prev; // no duplicates
+        return { ...prev, films: [...prev.films, film.id] };
+      }
+      return { ...prev, films: [film.id] }; // single-film kinds: replace
+    });
     queryClient.invalidateQueries({ queryKey: ['films'] });
   };
 
+  const removeFilm = (filmId: number) =>
+    setFormData((prev) => ({ ...prev, films: prev.films.filter((id) => id !== filmId) }));
+
+  const handleKindChange = (kind: EngagementKind) =>
+    setFormData((prev) => ({
+      ...prev,
+      kind,
+      // trim to one film when leaving double-feature
+      films: kind === 'DOUBLE_FEATURE' ? prev.films : prev.films.slice(0, 1),
+      show_in_main_listings: defaultVisibilityForKind(kind),
+    }));
+
   const openEditModal = (engagement: Engagement) => {
+    setFilmCache((prev) => ({
+      ...prev,
+      ...Object.fromEntries(engagement.films.map((f) => [f.id, f])),
+    }));
     setFormData({
-      film: engagement.film,
+      kind: engagement.kind,
+      films: engagement.films.map((f) => f.id),
+      event_title: engagement.event_title,
       screen: engagement.screen,
       start_date: engagement.start_date,
       end_date: engagement.end_date,
       presentation_format: engagement.presentation_format,
       status: engagement.status,
+      show_in_main_listings: engagement.show_in_main_listings,
       notes: engagement.notes,
     });
     setSelectedEngagement(engagement);
@@ -158,20 +205,29 @@ export default function Engagements() {
     setModalMode('closed');
     setSelectedEngagement(null);
     setFormData(initialFormData);
+    setFilmCache({});
+  };
+
+  const isFormValid = (): boolean => {
+    if (formData.screen === '' || !formData.start_date || !formData.end_date) return false;
+    if (formData.kind === 'DOUBLE_FEATURE') return formData.films.length >= 2;
+    return formData.films.length === 1;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (formData.film === '' || formData.screen === '') return;
+    if (!isFormValid()) return;
 
     const data: EngagementCreate = {
-      film: formData.film as number,
+      kind: formData.kind,
+      films: formData.films,
+      event_title: formData.event_title.trim() || undefined,
       screen: formData.screen as number,
       start_date: formData.start_date,
       end_date: formData.end_date,
       presentation_format: formData.presentation_format,
       status: formData.status,
+      show_in_main_listings: formData.show_in_main_listings,
       notes: formData.notes,
     };
 
@@ -186,7 +242,7 @@ export default function Engagements() {
     if (
       await confirm({
         title: 'Delete Engagement',
-        message: `Are you sure you want to delete the engagement for "${engagement.film_title}"?`,
+        message: `Are you sure you want to delete the engagement for "${engagement.display_title}"?`,
         confirmLabel: 'Delete',
         variant: 'danger',
       })
@@ -341,7 +397,15 @@ export default function Engagements() {
                             className={styles.posterThumb}
                           />
                         )}
-                        <span className={styles.filmTitle}>{engagement.film_title}</span>
+                        <span className={styles.filmTitle}>{engagement.display_title}</span>
+                        {engagement.kind !== 'REGULAR' && (
+                          <span className={styles.kindBadge}>{KIND_LABELS[engagement.kind]}</span>
+                        )}
+                        {!engagement.show_in_main_listings && (
+                          <span className={styles.hiddenBadge} title="Hidden from public listings">
+                            Hidden
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td>{engagement.screen_name}</td>
@@ -395,7 +459,15 @@ export default function Engagements() {
                     <img src={engagement.film_poster_url} alt="" className={styles.cardPoster} />
                   )}
                   <div className={styles.cardTitleSection}>
-                    <h3 className={styles.cardTitle}>{engagement.film_title}</h3>
+                    <h3 className={styles.cardTitle}>{engagement.display_title}</h3>
+                    {engagement.kind !== 'REGULAR' && (
+                      <span className={styles.kindBadge}>{KIND_LABELS[engagement.kind]}</span>
+                    )}
+                    {!engagement.show_in_main_listings && (
+                      <span className={styles.hiddenBadge} title="Hidden from public listings">
+                        Hidden
+                      </span>
+                    )}
                     <div className={styles.cardBadges}>
                       <StatusDropdown
                         value={engagement.status}
@@ -457,7 +529,7 @@ export default function Engagements() {
               type="submit"
               form="engagement-form"
               className={styles.submitButton}
-              disabled={createMutation.isPending || updateMutation.isPending}
+              disabled={createMutation.isPending || updateMutation.isPending || !isFormValid()}
             >
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'
@@ -470,13 +542,71 @@ export default function Engagements() {
       >
         <form id="engagement-form" onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label htmlFor="film-search">Film</label>
-            <FilmSearchCombo
-              onFilmSelected={handleFilmSelected}
-              disabled={createMutation.isPending || updateMutation.isPending}
-              selectedFilmId={formData.film}
-            />
+            <label htmlFor="engagement-kind">Type</label>
+            <select
+              id="engagement-kind"
+              value={formData.kind}
+              onChange={(e) => handleKindChange(e.target.value as EngagementKind)}
+              className={styles.input}
+            >
+              {KIND_OPTIONS.map((k) => (
+                <option key={k.value} value={k.value}>{k.label}</option>
+              ))}
+            </select>
           </div>
+
+          {formData.kind === 'DOUBLE_FEATURE' ? (
+            <div className={styles.formGroup}>
+              <label>Films (in play order)</label>
+              {formData.films.length > 0 && (
+                <ol className={styles.filmList}>
+                  {formData.films.map((id, idx) => (
+                    <li key={id} className={styles.filmListItem}>
+                      <span className={styles.filmListOrder}>{idx + 1}</span>
+                      {filmCache[id]?.poster_url && (
+                        <img src={filmCache[id]!.poster_url} alt="" className={styles.posterThumb} />
+                      )}
+                      <span className={styles.filmListTitle}>{filmCache[id]?.title ?? `Film #${id}`}</span>
+                      <button type="button" className={styles.removeFilmButton} onClick={() => removeFilm(id)}>
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              )}
+              <FilmSearchCombo
+                onFilmSelected={handleFilmSelected}
+                disabled={createMutation.isPending || updateMutation.isPending}
+                selectedFilmId={''}
+              />
+              {formData.films.length < 2 && (
+                <p className={styles.fieldHint}>Add at least two films for a double feature.</p>
+              )}
+            </div>
+          ) : (
+            <div className={styles.formGroup}>
+              <label htmlFor="film-search">Film</label>
+              <FilmSearchCombo
+                onFilmSelected={handleFilmSelected}
+                disabled={createMutation.isPending || updateMutation.isPending}
+                selectedFilmId={formData.films[0] ?? ''}
+              />
+            </div>
+          )}
+
+          {formData.kind !== 'REGULAR' && (
+            <div className={styles.formGroup}>
+              <label htmlFor="engagement-event-title">Event Title (optional)</label>
+              <input
+                id="engagement-event-title"
+                type="text"
+                value={formData.event_title}
+                onChange={(e) => setFormData({ ...formData, event_title: e.target.value })}
+                className={styles.input}
+                placeholder="e.g. Creature Double Feature"
+              />
+            </div>
+          )}
 
           <div className={styles.formGroup}>
             <label htmlFor="engagement-screen">Screen</label>
@@ -553,6 +683,19 @@ export default function Engagements() {
                 <option value="CANCELLED">Cancelled</option>
               </select>
             </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={formData.show_in_main_listings}
+                onChange={(e) =>
+                  setFormData({ ...formData, show_in_main_listings: e.target.checked })
+                }
+              />
+              Show in main listings
+            </label>
           </div>
 
           <div className={styles.formGroup}>
